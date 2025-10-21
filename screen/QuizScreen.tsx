@@ -82,7 +82,7 @@ export default function QuizScreen() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [quizState?.currentQuestionIndex, showAnswer]);
+  }, [quizState?.currentQuestionIndex, showAnswer, timerActive]);
 
   // ========= No quiz in progress ==========
   if (!quizState) {
