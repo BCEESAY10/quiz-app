@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   questionText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
     color: "#2C3E50",
     lineHeight: 28,
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
     color: "#2C3E50",
   },
   optionTextBold: {
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingTop: 8,
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
     borderTopColor: "#E8EAED",
@@ -519,6 +519,7 @@ const styles = StyleSheet.create({
   actionButton: {
     backgroundColor: "#5B48E8",
     paddingVertical: 16,
+    marginBottom: -36,
     borderRadius: 12,
     shadowColor: "#5B48E8",
     shadowOffset: { width: 0, height: 4 },
