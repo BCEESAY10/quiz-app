@@ -26,21 +26,25 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="about"
+        name="quiz"
         options={{
-          title: "About",
+          title: "Quiz",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="info.circle.fill" color={color} />
+            <IconSymbol
+              size={28}
+              name="questionmark.circle.fill"
+              color={color}
+            />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="contact"
+        name="scores"
         options={{
-          title: "Contact",
+          title: "Scores",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="mail.fill" color={color} />
+            <IconSymbol size={28} name="chart.bar.fill" color={color} />
           ),
         }}
       />
