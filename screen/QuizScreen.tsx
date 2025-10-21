@@ -40,6 +40,23 @@ export default function QuizScreen() {
     return 15;
   };
 
+  const handleTimeUp = () => {
+    if (!quizState) return;
+
+    const newSelectedAnswers = [...quizState.selectedAnswers];
+    newSelectedAnswers[quizState.currentQuestionIndex] = null;
+
+    setQuizState({
+      questions: quizState.questions,
+      currentQuestionIndex: quizState.currentQuestionIndex,
+      selectedAnswers: newSelectedAnswers,
+      score: quizState.score,
+      isCompleted: quizState.isCompleted,
+    });
+
+    setShowAnswer(true);
+  };
+
   // ======== Initialize quiz when category is provided ==========
   useEffect(() => {
     if (category && MOCK_QUESTIONS[category]) {
@@ -73,7 +90,7 @@ export default function QuizScreen() {
         if (prev <= 1) {
           // Time's up! Auto-submit as wrong
           setTimerActive(false);
-          setShowAnswer(true);
+          handleTimeUp();
           clearInterval(interval);
           return 0;
         }
@@ -266,8 +283,13 @@ export default function QuizScreen() {
             {currentQuestion.options.map((option, index) => {
               const isSelected = selectedAnswer === index;
               const isCorrect = index === currentQuestion.correctAnswer;
-              const showCorrect = showAnswer && isCorrect;
-              const showWrong = showAnswer && isSelected && !isCorrect;
+              const showCorrect =
+                showAnswer && selectedAnswer !== null && isCorrect;
+              const showWrong =
+                showAnswer &&
+                selectedAnswer !== null &&
+                isSelected &&
+                !isCorrect;
 
               return (
                 <TouchableOpacity
