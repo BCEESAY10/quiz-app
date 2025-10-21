@@ -38,15 +38,6 @@ export const MOCK_CATEGORY_STATS: CategoryStats[] = [
     color: "#FF9800",
   },
   {
-    category: "History",
-    icon: "🏛️",
-    totalQuizzes: 4,
-    bestScore: 70,
-    averageScore: 60,
-    accuracy: 60,
-    color: "#9C27B0",
-  },
-  {
     category: "Geography",
     icon: "🌍",
     totalQuizzes: 2,

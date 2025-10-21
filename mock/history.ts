@@ -29,15 +29,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     difficulty: "Easy",
   },
   {
-    id: 4,
-    category: "History",
-    score: 6,
-    totalQuestions: 10,
-    date: "2025-10-20",
-    timeSpent: "3m 50s",
-    difficulty: "Medium",
-  },
-  {
     id: 5,
     category: "Sports",
     score: 10,
