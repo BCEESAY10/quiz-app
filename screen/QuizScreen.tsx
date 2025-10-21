@@ -1,5 +1,5 @@
 import { MOCK_QUESTIONS } from "@/mock/questions";
-import { QuizState } from "@/types/quiz";
+import { Question, QuizState } from "@/types/quiz";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -18,6 +18,27 @@ export default function QuizScreen() {
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
 
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [timerActive, setTimerActive] = useState(false);
+
+  // Timer configuration per category/question type
+  const getQuestionTime = (question: Question): number => {
+    if (question.category === "Math") {
+      return 30;
+    }
+
+    if (
+      question.category === "Science" &&
+      (question.question.includes("speed") ||
+        question.question.includes("calculate") ||
+        question.question.includes("value"))
+    ) {
+      return 30;
+    }
+
+    return 15;
+  };
+
   // Initialize quiz when category is provided
   useEffect(() => {
     if (category && MOCK_QUESTIONS[category]) {
@@ -30,6 +51,34 @@ export default function QuizScreen() {
       });
     }
   }, [category]);
+
+  // Timer effect
+  useEffect(() => {
+    if (!quizState || quizState.isCompleted || showAnswer) {
+      setTimerActive(false);
+      return;
+    }
+
+    // Initialize timer for current question
+    const questionTime = getQuestionTime(currentQuestion);
+    setTimeLeft(questionTime);
+    setTimerActive(true);
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // Time's up! Auto-submit as wrong
+          setTimerActive(false);
+          setShowAnswer(true);
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [quizState?.currentQuestionIndex, showAnswer]);
 
   // No quiz in progress
   if (!quizState) {
@@ -65,8 +114,10 @@ export default function QuizScreen() {
   const handleSubmitAnswer = () => {
     const selectedAnswer =
       quizState.selectedAnswers[quizState.currentQuestionIndex];
+
     if (selectedAnswer === null) return;
 
+    setTimerActive(false);
     setShowAnswer(true);
 
     // Update score if correct
@@ -92,6 +143,7 @@ export default function QuizScreen() {
         ...quizState,
         isCompleted: true,
       });
+      setTimerActive(false);
     }
   };
 
@@ -173,10 +225,22 @@ export default function QuizScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.categoryBadge}>{category}</Text>
-          <Text style={styles.questionCounter}>
-            Question {quizState.currentQuestionIndex + 1} of{" "}
-            {quizState.questions.length}
-          </Text>
+          <View style={styles.questionCounterAndTimer}>
+            <Text style={styles.questionCounter}>
+              Question {quizState.currentQuestionIndex + 1} of{" "}
+              {quizState.questions.length}
+            </Text>
+
+            <View style={styles.timerContainer}>
+              <Text
+                style={[
+                  styles.timerText,
+                  timeLeft <= 5 && styles.timerWarning,
+                ]}>
+                ⏱️ {timeLeft}s
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Progress Bar */}
@@ -237,25 +301,6 @@ export default function QuizScreen() {
               );
             })}
           </View>
-
-          {/* Feedback */}
-          {showAnswer && (
-            <View
-              style={[
-                styles.feedbackCard,
-                selectedAnswer === currentQuestion.correctAnswer
-                  ? styles.feedbackCorrect
-                  : styles.feedbackWrong,
-              ]}>
-              <Text style={styles.feedbackText}>
-                {selectedAnswer === currentQuestion.correctAnswer
-                  ? "🎉 Correct! Well done!"
-                  : `❌ Wrong! The correct answer is: ${
-                      currentQuestion.options[currentQuestion.correctAnswer]
-                    }`}
-              </Text>
-            </View>
-          )}
         </ScrollView>
 
         {/* Action Button */}
@@ -339,10 +384,28 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginBottom: 8,
   },
+  questionCounterAndTimer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   questionCounter: {
     fontSize: 16,
     fontWeight: "600",
     color: "#2C3E50",
+  },
+  timerContainer: {
+    marginTop: 0,
+  },
+  timerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#5B48E8",
+    marginBottom: 8,
+  },
+  timerWarning: {
+    color: "#F44336",
   },
   progressBarContainer: {
     height: 4,
@@ -441,28 +504,10 @@ const styles = StyleSheet.create({
   optionTextBold: {
     fontWeight: "600",
   },
-  feedbackCard: {
-    margin: 20,
-    marginTop: 0,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
-  },
-  feedbackCorrect: {
-    backgroundColor: "#E8F5E9",
-    borderColor: "#4CAF50",
-  },
-  feedbackWrong: {
-    backgroundColor: "#FFEBEE",
-    borderColor: "#F44336",
-  },
-  feedbackText: {
-    fontSize: 15,
-    color: "#2C3E50",
-    lineHeight: 22,
-  },
+
   footer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
     borderTopColor: "#E8EAED",
