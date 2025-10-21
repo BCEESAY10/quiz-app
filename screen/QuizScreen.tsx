@@ -154,6 +154,7 @@ export default function QuizScreen() {
 
   const handleNextQuestion = () => {
     setShowAnswer(false);
+    setTimeoutNotice(false);
 
     if (quizState.currentQuestionIndex < quizState.questions.length - 1) {
       setQuizState({
@@ -180,6 +181,7 @@ export default function QuizScreen() {
       isCompleted: false,
     });
     setShowAnswer(false);
+    setTimeoutNotice(false);
   };
 
   const selectedAnswer =
