@@ -66,6 +66,8 @@ export default function QuizScreen() {
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
+        if (!timerActive) return prev;
+
         if (prev <= 1) {
           // Time's up! Auto-submit as wrong
           setTimerActive(false);
@@ -504,7 +506,6 @@ const styles = StyleSheet.create({
   optionTextBold: {
     fontWeight: "600",
   },
-
   footer: {
     paddingHorizontal: 20,
     paddingTop: 10,
