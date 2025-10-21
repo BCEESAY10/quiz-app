@@ -1,5 +1,6 @@
 import { MOCK_QUESTIONS } from "@/mock/questions";
 import { Question, QuizState } from "@/types/quiz";
+import { getRandomQuestions } from "@/utils/quizHelpers";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -21,7 +22,7 @@ export default function QuizScreen() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
 
-  // Timer configuration per category/question type
+  // ========= Timer configuration per category/question type ========
   const getQuestionTime = (question: Question): number => {
     if (question.category === "Math") {
       return 30;
@@ -39,11 +40,12 @@ export default function QuizScreen() {
     return 15;
   };
 
-  // Initialize quiz when category is provided
+  // ======== Initialize quiz when category is provided ==========
   useEffect(() => {
     if (category && MOCK_QUESTIONS[category]) {
+      const randomQuestions = getRandomQuestions(MOCK_QUESTIONS[category], 5);
       setQuizState({
-        questions: MOCK_QUESTIONS[category],
+        questions: randomQuestions,
         currentQuestionIndex: 0,
         selectedAnswers: new Array(MOCK_QUESTIONS[category].length).fill(null),
         score: 0,
@@ -82,7 +84,7 @@ export default function QuizScreen() {
     return () => clearInterval(interval);
   }, [quizState?.currentQuestionIndex, showAnswer]);
 
-  // No quiz in progress
+  // ========= No quiz in progress ==========
   if (!quizState) {
     return (
       <SafeAreaView style={styles.container}>
@@ -150,8 +152,9 @@ export default function QuizScreen() {
   };
 
   const handleRestartQuiz = () => {
+    const reshuffledQuestions = getRandomQuestions(MOCK_QUESTIONS[category], 5);
     setQuizState({
-      questions: quizState.questions,
+      questions: reshuffledQuestions,
       currentQuestionIndex: 0,
       selectedAnswers: new Array(quizState.questions.length).fill(null),
       score: 0,
@@ -163,7 +166,7 @@ export default function QuizScreen() {
   const selectedAnswer =
     quizState.selectedAnswers[quizState.currentQuestionIndex];
 
-  // Quiz completed - Show results
+  // ========== Quiz completed - Show results ==========
   if (quizState.isCompleted) {
     const percentage = Math.round(
       (quizState.score / quizState.questions.length) * 100
