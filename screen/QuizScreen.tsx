@@ -21,6 +21,7 @@ export default function QuizScreen() {
 
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
+  const [timeoutNotice, setTimeoutNotice] = useState(false);
 
   // ========= Timer configuration per category/question type ========
   const getQuestionTime = (question: Question): number => {
@@ -55,6 +56,7 @@ export default function QuizScreen() {
     });
 
     setShowAnswer(true);
+    setTimeoutNotice(true);
   };
 
   // ======== Initialize quiz when category is provided ==========
@@ -280,6 +282,11 @@ export default function QuizScreen() {
 
           {/* Options */}
           <View style={styles.optionsContainer}>
+            {timeoutNotice && (
+              <Text style={styles.timeoutText}>
+                ⏰ Time’s up! Next question please.
+              </Text>
+            )}
             {currentQuestion.options.map((option, index) => {
               const isSelected = selectedAnswer === index;
               const isCorrect = index === currentQuestion.correctAnswer;
@@ -459,6 +466,15 @@ const styles = StyleSheet.create({
     color: "#2C3E50",
     lineHeight: 28,
   },
+  timeoutText: {
+    fontSize: 16,
+    fontWeight: "600",
+    backgroundColor: "#f44336",
+    marginBottom: 8,
+    padding: 5,
+    borderRadius: 6,
+  },
+
   optionsContainer: {
     paddingHorizontal: 20,
     gap: 12,
