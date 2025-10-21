@@ -1,3 +1,5 @@
+import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
+import { useRouter } from "expo-router";
 import {
   ScrollView,
   StyleSheet,
@@ -8,15 +10,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  // Mock data - replace with actual data from your state/API
+  const router = useRouter();
+
+  // ======== Mock data ==========
   const userName = "BCeesay";
-  const stats = {
+  const stats: Stats = {
     completed: 24,
     streak: 5,
     points: 1250,
   };
 
-  const categories = [
+  const categories: Category[] = [
     { id: 1, name: "Science", icon: "🧪", questions: 50, color: "#4CAF50" },
     { id: 2, name: "Sports", icon: "⚽", questions: 45, color: "#FF9800" },
     { id: 3, name: "English", icon: "📚", questions: 60, color: "#2196F3" },
@@ -25,16 +29,23 @@ export default function HomeScreen() {
     { id: 6, name: "Math", icon: "🔢", questions: 48, color: "#F44336" },
   ];
 
-  const recentQuizzes = [
+  const recentQuizzes: QuizRecord[] = [
     { id: 1, category: "Science", score: 8, total: 10, date: "Today" },
     { id: 2, category: "Sports", score: 7, total: 10, date: "Yesterday" },
   ];
 
-  const leaderboard = [
+  const leaderboard: LeaderboardEntry[] = [
     { id: 1, name: "Sarah", points: 2100, rank: 1 },
     { id: 2, name: "Mike", points: 1890, rank: 2 },
     { id: 3, name: "You", points: 1250, rank: 3 },
   ];
+
+  const handleCategorySelect = (category: Category) => {
+    router.push({
+      pathname: "/quiz",
+      params: { category: category.name },
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,9 +77,9 @@ export default function HomeScreen() {
         </View>
 
         {/* Primary CTA */}
-        <TouchableOpacity style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>🎯 Start New Quiz</Text>
-        </TouchableOpacity>
+        <View style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>Start New Quiz 👇</Text>
+        </View>
 
         {/* Categories Section */}
         <View style={styles.section}>
@@ -80,7 +91,8 @@ export default function HomeScreen() {
                 style={[
                   styles.categoryCard,
                   { borderLeftColor: category.color },
-                ]}>
+                ]}
+                onPress={() => handleCategorySelect(category)}>
                 <Text style={styles.categoryIcon}>{category.icon}</Text>
                 <Text style={styles.categoryName}>{category.name}</Text>
                 <Text style={styles.categoryQuestions}>
