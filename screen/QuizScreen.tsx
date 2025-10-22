@@ -195,7 +195,7 @@ export default function QuizScreen() {
     const passed = percentage >= 60;
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.resultsContainer}>
