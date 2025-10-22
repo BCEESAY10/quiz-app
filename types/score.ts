@@ -5,7 +5,6 @@ export interface QuizScore {
   totalQuestions: number;
   date: string;
   timeSpent: string;
-  difficulty: "Easy" | "Medium" | "Hard";
 }
 
 export interface CategoryStats {

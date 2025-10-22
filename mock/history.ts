@@ -8,7 +8,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-21",
     timeSpent: "3m 45s",
-    difficulty: "Medium",
   },
   {
     id: 2,
@@ -17,7 +16,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-21",
     timeSpent: "4m 20s",
-    difficulty: "Hard",
   },
   {
     id: 3,
@@ -26,7 +24,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-20",
     timeSpent: "2m 15s",
-    difficulty: "Easy",
   },
   {
     id: 5,
@@ -35,7 +32,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-19",
     timeSpent: "2m 30s",
-    difficulty: "Easy",
   },
   {
     id: 6,
@@ -44,7 +40,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-19",
     timeSpent: "3m 10s",
-    difficulty: "Medium",
   },
   {
     id: 7,
@@ -53,7 +48,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-18",
     timeSpent: "4m 05s",
-    difficulty: "Medium",
   },
   {
     id: 8,
@@ -62,7 +56,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-18",
     timeSpent: "5m 00s",
-    difficulty: "Hard",
   },
   {
     id: 9,
@@ -71,7 +64,6 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-17",
     timeSpent: "2m 45s",
-    difficulty: "Medium",
   },
   {
     id: 10,
@@ -80,6 +72,5 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     totalQuestions: 10,
     date: "2025-10-17",
     timeSpent: "3m 30s",
-    difficulty: "Hard",
   },
 ];

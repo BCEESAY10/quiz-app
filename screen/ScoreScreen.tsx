@@ -261,11 +261,6 @@ export default function ScoresScreen() {
                       </View>
                     </View>
                     <View style={styles.historyCardFooter}>
-                      <View style={styles.historyCardTag}>
-                        <Text style={styles.historyCardTagText}>
-                          {quiz.difficulty}
-                        </Text>
-                      </View>
                       <Text style={styles.historyCardTime}>
                         ⏱️ {quiz.timeSpent}
                       </Text>
