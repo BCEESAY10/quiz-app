@@ -65,12 +65,4 @@ export const MOCK_QUIZ_HISTORY: QuizScore[] = [
     date: "2025-10-17",
     timeSpent: "2m 45s",
   },
-  {
-    id: 10,
-    category: "History",
-    score: 5,
-    totalQuestions: 10,
-    date: "2025-10-17",
-    timeSpent: "3m 30s",
-  },
 ];

@@ -1,16 +1,20 @@
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { Colors } from "@/constants/theme";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
 import { useRouter } from "expo-router";
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
 
   // ======== Mock data ==========
   const userName = "BCeesay";
@@ -47,113 +51,218 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}>
-        {/* Hero Section */}
-        <View style={styles.header}>
-          <Text style={styles.logo}>🧠 QuizMaster</Text>
-          <Text style={styles.welcome}>Welcome back, {userName}! 👋</Text>
-          <Text style={styles.tagline}>Test your knowledge today</Text>
-        </View>
+    <ThemedView style={[{ backgroundColor: theme.background }, { flex: 1 }]}>
+      <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
+        <ScrollView
+          style={[styles.scrollView, { backgroundColor: theme.background }]}
+          showsVerticalScrollIndicator={false}>
+          {/* Hero Section */}
+          <ThemedView
+            style={[styles.header, { backgroundColor: theme.background }]}>
+            <ThemedText style={[styles.logo, { color: theme.text }]}>
+              🧠 QuizMaster
+            </ThemedText>
+            <ThemedText style={[styles.welcome, { color: theme.text }]}>
+              Welcome back, {userName}! 👋
+            </ThemedText>
 
-        {/* Stats Dashboard */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{stats.completed}</Text>
-            <Text style={styles.statLabel}>Completed</Text>
-          </View>
+            <ThemedText style={[styles.tagline, { color: theme.icon }]}>
+              Test your knowledge today
+            </ThemedText>
+          </ThemedView>
 
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{stats.points}</Text>
-            <Text style={styles.statLabel}>Points</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{stats.streak}🔥</Text>
-            <Text style={styles.statLabel}>Day Streak</Text>
-          </View>
-        </View>
+          {/* Stats Dashboard */}
+          <ThemedView
+            style={[
+              styles.statsContainer,
+              { backgroundColor: theme.background },
+            ]}>
+            <ThemedView
+              style={[styles.statCard, { backgroundColor: theme.background }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
+                {stats.completed}
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
+                Completed
+              </ThemedText>
+            </ThemedView>
 
-        {/* Primary CTA */}
-        <View style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>Start New Quiz 👇</Text>
-        </View>
+            <ThemedView
+              style={[styles.statCard, { backgroundColor: theme.background }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
+                {stats.points}
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
+                Points
+              </ThemedText>
+            </ThemedView>
 
-        {/* Categories Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Choose a Category</Text>
-          <View style={styles.categoriesGrid}>
-            {categories.map((category) => (
-              <TouchableOpacity
-                key={category.id}
-                style={[
-                  styles.categoryCard,
-                  { borderLeftColor: category.color },
-                ]}
-                onPress={() => handleCategorySelect(category)}>
-                <Text style={styles.categoryIcon}>{category.icon}</Text>
-                <Text style={styles.categoryName}>{category.name}</Text>
-                <Text style={styles.categoryQuestions}>
-                  {category.questions} questions
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+            <ThemedView
+              style={[styles.statCard, { backgroundColor: theme.background }]}>
+              <ThemedText style={[styles.statValue, { color: theme.text }]}>
+                {stats.streak}🔥
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
+                Day Streak
+              </ThemedText>
+            </ThemedView>
+          </ThemedView>
 
-        {/* Recent Activity */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
-          {recentQuizzes.map((quiz) => (
-            <View key={quiz.id} style={styles.activityCard}>
-              <View style={styles.activityLeft}>
-                <Text style={styles.activityCategory}>{quiz.category}</Text>
-                <Text style={styles.activityDate}>{quiz.date}</Text>
-              </View>
-              <View style={styles.activityRight}>
-                <Text style={styles.activityScore}>
-                  {quiz.score}/{quiz.total}
-                </Text>
-                <Text style={styles.activityPercentage}>
-                  {Math.round((quiz.score / quiz.total) * 100)}%
-                </Text>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* Leaderboard Preview */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Leaderboard</Text>
-          {leaderboard.map((player) => (
-            <View
-              key={player.id}
+          {/* Primary CTA */}
+          <ThemedView
+            style={[
+              styles.primaryButton,
+              { backgroundColor: theme.primaryButton.background },
+            ]}>
+            <ThemedText
               style={[
-                styles.leaderboardCard,
-                player.name === "You" && styles.leaderboardHighlight,
+                styles.primaryButtonText,
+                { color: theme.primaryButton.text },
               ]}>
-              <View style={styles.leaderboardLeft}>
-                <Text style={styles.leaderboardRank}>#{player.rank}</Text>
-                <Text
-                  style={[
-                    styles.leaderboardName,
-                    player.name === "You" && styles.leaderboardYou,
-                  ]}>
-                  {player.name}
-                </Text>
-              </View>
-              <Text style={styles.leaderboardPoints}>{player.points} pts</Text>
-            </View>
-          ))}
-          <TouchableOpacity style={styles.viewAllButton}>
-            <Text style={styles.viewAllText}>View Full Leaderboard →</Text>
-          </TouchableOpacity>
-        </View>
+              Start New Quiz 👇
+            </ThemedText>
+          </ThemedView>
 
-        <View style={styles.bottomPadding} />
-      </ScrollView>
-    </SafeAreaView>
+          {/* Categories Section */}
+          <ThemedView
+            style={[styles.section, { backgroundColor: theme.background }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+              Choose a Category
+            </ThemedText>
+
+            <ThemedView
+              style={[
+                styles.categoriesGrid,
+                { backgroundColor: theme.background },
+              ]}>
+              {categories.map((category) => (
+                <TouchableOpacity
+                  key={category.id}
+                  style={[
+                    styles.categoryCard,
+                    {
+                      borderLeftColor: category.color,
+                      backgroundColor: theme.background,
+                    },
+                  ]}
+                  onPress={() => handleCategorySelect(category)}>
+                  <ThemedText
+                    style={[styles.categoryIcon, { color: theme.text }]}>
+                    {category.icon}
+                  </ThemedText>
+                  <ThemedText
+                    style={[styles.categoryName, { color: theme.text }]}>
+                    {category.name}
+                  </ThemedText>
+                  <ThemedText
+                    style={[styles.categoryQuestions, { color: theme.icon }]}>
+                    {category.questions} questions
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
+            </ThemedView>
+          </ThemedView>
+
+          {/* Recent Activity */}
+          <ThemedView
+            style={[styles.section, { backgroundColor: theme.background }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+              Recent Activity
+            </ThemedText>
+            {recentQuizzes.map((quiz) => (
+              <ThemedView
+                key={quiz.id}
+                style={[
+                  styles.activityCard,
+                  { backgroundColor: theme.background },
+                ]}>
+                <ThemedView
+                  style={[
+                    styles.activityLeft,
+                    { backgroundColor: theme.background },
+                  ]}>
+                  <ThemedText
+                    style={[styles.activityCategory, { color: theme.text }]}>
+                    {quiz.category}
+                  </ThemedText>
+                  <ThemedText
+                    style={[styles.activityDate, { color: theme.icon }]}>
+                    {quiz.date}
+                  </ThemedText>
+                </ThemedView>
+                <ThemedView
+                  style={[
+                    styles.activityRight,
+                    { backgroundColor: theme.background },
+                  ]}>
+                  <ThemedText
+                    style={[styles.activityScore, { color: theme.text }]}>
+                    {quiz.score}/{quiz.total}
+                  </ThemedText>
+                  <ThemedText
+                    style={[styles.activityPercentage, { color: theme.tint }]}>
+                    {Math.round((quiz.score / quiz.total) * 100)}%
+                  </ThemedText>
+                </ThemedView>
+              </ThemedView>
+            ))}
+          </ThemedView>
+
+          {/* Leaderboard Preview */}
+          <ThemedView
+            style={[styles.section, { backgroundColor: theme.background }]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+              Leaderboard
+            </ThemedText>
+
+            {leaderboard.map((player) => (
+              <ThemedView
+                key={player.id}
+                style={[
+                  styles.leaderboardCard,
+                  { backgroundColor: theme.background },
+                  player.name === "You" && styles.leaderboardHighlight,
+                ]}>
+                <ThemedView
+                  style={[
+                    styles.leaderboardLeft,
+                    { backgroundColor: "transparent" },
+                  ]}>
+                  <ThemedText
+                    style={[styles.leaderboardRank, { color: theme.icon }]}>
+                    #{player.rank}
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.leaderboardName,
+                      { color: theme.text },
+                      player.name === "You" && styles.leaderboardYou,
+                    ]}>
+                    {player.name}
+                  </ThemedText>
+                </ThemedView>
+                <ThemedText
+                  style={[styles.leaderboardPoints, { color: theme.text }]}>
+                  {player.points} pts
+                </ThemedText>
+              </ThemedView>
+            ))}
+            <TouchableOpacity style={styles.viewAllButton}>
+              <ThemedText style={[styles.viewAllText, { color: theme.tint }]}>
+                View Full Leaderboard →
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+
+          <ThemedView
+            style={[
+              styles.bottomPadding,
+              { backgroundColor: theme.background },
+            ]}
+          />
+        </ScrollView>
+      </SafeAreaView>
+    </ThemedView>
   );
 }
 
