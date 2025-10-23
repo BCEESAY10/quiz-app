@@ -1,3 +1,5 @@
+import { ThemedView } from "@/components/themed-view";
+import { Colors } from "@/constants/theme";
 import { MOCK_QUESTIONS } from "@/mock/questions";
 import { Question, QuizState } from "@/types/quiz";
 import { getRandomQuestions } from "@/utils/quizHelpers";
@@ -8,6 +10,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +18,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function QuizScreen() {
   const params = useLocalSearchParams();
   const category = params.category as string;
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
 
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -106,15 +111,17 @@ export default function QuizScreen() {
   // ========= No quiz in progress ==========
   if (!quizState) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyIcon}>📝</Text>
-          <Text style={styles.emptyTitle}>No Quiz in Progress</Text>
-          <Text style={styles.emptyText}>
-            Select a category from the home screen to start a new quiz!
-          </Text>
-        </View>
-      </SafeAreaView>
+      <ThemedView style={[{ backgroundColor: theme.background }, { flex: 1 }]}>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyIcon}>📝</Text>
+            <Text style={styles.emptyTitle}>No Quiz in Progress</Text>
+            <Text style={styles.emptyText}>
+              Select a category from the home screen to start a new quiz!
+            </Text>
+          </View>
+        </SafeAreaView>
+      </ThemedView>
     );
   }
 
@@ -195,52 +202,54 @@ export default function QuizScreen() {
     const passed = percentage >= 60;
 
     return (
-      <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.resultsContainer}>
-          <View style={styles.resultsCard}>
-            <Text style={styles.resultsIcon}>{passed ? "🎉" : "📚"}</Text>
-            <Text style={styles.resultsTitle}>
-              {passed ? "Congratulations!" : "Keep Learning!"}
-            </Text>
-            <Text style={styles.resultsSubtitle}>Quiz Completed</Text>
-
-            <View style={styles.scoreContainer}>
-              <Text style={styles.scoreLabel}>Your Score</Text>
-              <Text style={styles.scoreValue}>
-                {quizState.score}/{quizState.questions.length}
+      <ThemedView style={[{ backgroundColor: theme.background }, { flex: 1 }]}>
+        <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.resultsContainer}>
+            <View style={styles.resultsCard}>
+              <Text style={styles.resultsIcon}>{passed ? "🎉" : "📚"}</Text>
+              <Text style={styles.resultsTitle}>
+                {passed ? "Congratulations!" : "Keep Learning!"}
               </Text>
-              <Text style={styles.scorePercentage}>{percentage}%</Text>
-            </View>
+              <Text style={styles.resultsSubtitle}>Quiz Completed</Text>
 
-            <View style={styles.resultStats}>
-              <View style={styles.resultStatItem}>
-                <Text style={styles.resultStatValue}>{quizState.score}</Text>
-                <Text style={styles.resultStatLabel}>Correct</Text>
-              </View>
-              <View style={styles.resultStatItem}>
-                <Text style={[styles.resultStatValue, styles.wrongColor]}>
-                  {quizState.questions.length - quizState.score}
+              <View style={styles.scoreContainer}>
+                <Text style={styles.scoreLabel}>Your Score</Text>
+                <Text style={styles.scoreValue}>
+                  {quizState.score}/{quizState.questions.length}
                 </Text>
-                <Text style={styles.resultStatLabel}>Wrong</Text>
+                <Text style={styles.scorePercentage}>{percentage}%</Text>
               </View>
-              <View style={styles.resultStatItem}>
-                <Text style={styles.resultStatValue}>
-                  {quizState.questions.length}
-                </Text>
-                <Text style={styles.resultStatLabel}>Total</Text>
-              </View>
-            </View>
 
-            <TouchableOpacity
-              style={styles.restartButton}
-              onPress={handleRestartQuiz}>
-              <Text style={styles.restartButtonText}>🔄 Try Again</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+              <View style={styles.resultStats}>
+                <View style={styles.resultStatItem}>
+                  <Text style={styles.resultStatValue}>{quizState.score}</Text>
+                  <Text style={styles.resultStatLabel}>Correct</Text>
+                </View>
+                <View style={styles.resultStatItem}>
+                  <Text style={[styles.resultStatValue, styles.wrongColor]}>
+                    {quizState.questions.length - quizState.score}
+                  </Text>
+                  <Text style={styles.resultStatLabel}>Wrong</Text>
+                </View>
+                <View style={styles.resultStatItem}>
+                  <Text style={styles.resultStatValue}>
+                    {quizState.questions.length}
+                  </Text>
+                  <Text style={styles.resultStatLabel}>Total</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.restartButton}
+                onPress={handleRestartQuiz}>
+                <Text style={styles.restartButtonText}>🔄 Try Again</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </ThemedView>
     );
   }
 
