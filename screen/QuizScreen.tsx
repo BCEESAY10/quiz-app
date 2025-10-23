@@ -1,3 +1,4 @@
+import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { MOCK_QUESTIONS } from "@/mock/questions";
@@ -116,10 +117,12 @@ export default function QuizScreen() {
         <ThemedView
           style={[styles.emptyState, { backgroundColor: theme.background }]}>
           <Text style={styles.emptyIcon}>📝</Text>
-          <Text style={styles.emptyTitle}>No Quiz in Progress</Text>
-          <Text style={styles.emptyText}>
+          <ThemedText style={[styles.emptyTitle, { color: theme.tint }]}>
+            No Quiz in Progress
+          </ThemedText>
+          <ThemedText style={[styles.emptyText, { color: theme.text }]}>
             Select a category from the home screen to start a new quiz!
-          </Text>
+          </ThemedText>
         </ThemedView>
       </SafeAreaView>
     );
@@ -207,19 +210,33 @@ export default function QuizScreen() {
           <ScrollView
             style={[styles.scrollView, { backgroundColor: theme.background }]}
             contentContainerStyle={styles.resultsContainer}>
-            <View style={styles.resultsCard}>
+            <View
+              style={[
+                styles.resultsCard,
+                { backgroundColor: theme.background },
+              ]}>
               <Text style={styles.resultsIcon}>{passed ? "🎉" : "📚"}</Text>
-              <Text style={styles.resultsTitle}>
+              <Text style={[styles.resultsTitle, { color: theme.tint }]}>
                 {passed ? "Congratulations!" : "Keep Learning!"}
               </Text>
-              <Text style={styles.resultsSubtitle}>Quiz Completed</Text>
+              <Text style={[styles.resultsSubtitle, { color: theme.text }]}>
+                Quiz Completed
+              </Text>
 
-              <View style={styles.scoreContainer}>
-                <Text style={styles.scoreLabel}>Your Score</Text>
-                <Text style={styles.scoreValue}>
+              <View
+                style={[
+                  styles.scoreContainer,
+                  { backgroundColor: theme.background },
+                ]}>
+                <Text style={[styles.scoreLabel, { color: theme.text }]}>
+                  Your Score
+                </Text>
+                <Text style={[styles.scoreValue, { color: theme.tint }]}>
                   {quizState.score}/{quizState.questions.length}
                 </Text>
-                <Text style={styles.scorePercentage}>{percentage}%</Text>
+                <Text style={[styles.scorePercentage, { color: theme.tint }]}>
+                  {percentage}%
+                </Text>
               </View>
 
               <View style={styles.resultStats}>
@@ -257,12 +274,13 @@ export default function QuizScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.quizContainer}>
+      <View
+        style={[styles.quizContainer, { backgroundColor: theme.background }]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: theme.background }]}>
           <Text style={styles.categoryBadge}>{category}</Text>
           <View style={styles.questionCounterAndTimer}>
-            <Text style={styles.questionCounter}>
+            <Text style={[styles.questionCounter, { color: theme.text }]}>
               Question {quizState.currentQuestionIndex + 1} of{" "}
               {quizState.questions.length}
             </Text>
@@ -285,11 +303,17 @@ export default function QuizScreen() {
         </View>
 
         <ScrollView
-          style={styles.scrollView}
+          style={[styles.scrollView, { backgroundColor: theme.background }]}
           showsVerticalScrollIndicator={false}>
           {/* Question */}
-          <View style={styles.questionCard}>
-            <Text style={styles.questionText}>{currentQuestion.question}</Text>
+          <View
+            style={[
+              styles.questionCard,
+              { backgroundColor: theme.background },
+            ]}>
+            <Text style={[styles.questionText, { color: theme.text }]}>
+              {currentQuestion.question}
+            </Text>
           </View>
 
           {/* Options */}
@@ -318,6 +342,7 @@ export default function QuizScreen() {
                     isSelected && !showAnswer && styles.optionSelected,
                     showCorrect && styles.optionCorrect,
                     showWrong && styles.optionWrong,
+                    { backgroundColor: theme.background },
                   ]}
                   onPress={() => handleAnswerSelect(index)}
                   disabled={showAnswer}>
@@ -339,6 +364,7 @@ export default function QuizScreen() {
                       style={[
                         styles.optionText,
                         (showCorrect || showWrong) && styles.optionTextBold,
+                        { color: theme.text },
                       ]}>
                       {option}
                     </Text>
@@ -350,7 +376,7 @@ export default function QuizScreen() {
         </ScrollView>
 
         {/* Action Button */}
-        <View style={styles.footer}>
+        <View style={[styles.footer, { backgroundColor: theme.background }]}>
           {!showAnswer ? (
             <TouchableOpacity
               style={[
@@ -489,6 +515,7 @@ const styles = StyleSheet.create({
   optionsContainer: {
     paddingHorizontal: 20,
     gap: 12,
+    marginBottom: 12,
   },
   optionButton: {
     backgroundColor: "#FFFFFF",
