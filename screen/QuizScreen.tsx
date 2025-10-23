@@ -111,17 +111,17 @@ export default function QuizScreen() {
   // ========= No quiz in progress ==========
   if (!quizState) {
     return (
-      <ThemedView style={[{ backgroundColor: theme.background }, { flex: 1 }]}>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>📝</Text>
-            <Text style={styles.emptyTitle}>No Quiz in Progress</Text>
-            <Text style={styles.emptyText}>
-              Select a category from the home screen to start a new quiz!
-            </Text>
-          </View>
-        </SafeAreaView>
-      </ThemedView>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.background }]}>
+        <ThemedView
+          style={[styles.emptyState, { backgroundColor: theme.background }]}>
+          <Text style={styles.emptyIcon}>📝</Text>
+          <Text style={styles.emptyTitle}>No Quiz in Progress</Text>
+          <Text style={styles.emptyText}>
+            Select a category from the home screen to start a new quiz!
+          </Text>
+        </ThemedView>
+      </SafeAreaView>
     );
   }
 
@@ -205,7 +205,7 @@ export default function QuizScreen() {
       <ThemedView style={[{ backgroundColor: theme.background }, { flex: 1 }]}>
         <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
           <ScrollView
-            style={styles.scrollView}
+            style={[styles.scrollView, { backgroundColor: theme.background }]}
             contentContainerStyle={styles.resultsContainer}>
             <View style={styles.resultsCard}>
               <Text style={styles.resultsIcon}>{passed ? "🎉" : "📚"}</Text>
@@ -255,7 +255,8 @@ export default function QuizScreen() {
 
   // Quiz in progress
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.quizContainer}>
         {/* Header */}
         <View style={styles.header}>
@@ -380,7 +381,6 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F7FA",
   },
   scrollView: {
     flex: 1,
