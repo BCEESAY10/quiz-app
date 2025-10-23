@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/theme";
 import { MOCK_CATEGORY_STATS } from "@/mock/category-stats";
 import { MOCK_QUIZ_HISTORY } from "@/mock/history";
 import React, { useState } from "react";
@@ -6,11 +7,15 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ScoresScreen() {
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
+
   const [selectedTab, setSelectedTab] = useState<"overview" | "history">(
     "overview"
   );
@@ -69,15 +74,22 @@ export default function ScoresScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "right", "left"]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+      edges={["top", "right", "left"]}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Your Scores 📊</Text>
-        <Text style={styles.headerSubtitle}>Track your progress</Text>
+      <View style={[styles.header, { backgroundColor: theme.background }]}>
+        <Text style={[styles.headerTitle, { color: theme.tint }]}>
+          Your Scores 📊
+        </Text>
+        <Text style={[styles.headerSubtitle, { color: theme.text }]}>
+          Track your progress
+        </Text>
       </View>
 
       {/* Tab Navigation */}
-      <View style={styles.tabContainer}>
+      <View
+        style={[styles.tabContainer, { backgroundColor: theme.background }]}>
         <TouchableOpacity
           style={[styles.tab, selectedTab === "overview" && styles.tabActive]}
           onPress={() => setSelectedTab("overview")}>
@@ -109,33 +121,73 @@ export default function ScoresScreen() {
           <View style={styles.content}>
             {/* Overall Stats */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Overall Performance</Text>
-              <View style={styles.overallStatsContainer}>
-                <View style={styles.overallStatCard}>
-                  <Text style={styles.overallStatValue}>{totalQuizzes}</Text>
-                  <Text style={styles.overallStatLabel}>Total Quizzes</Text>
+              <Text style={[styles.sectionTitle, { color: theme.tint }]}>
+                Overall Performance
+              </Text>
+              <View
+                style={[
+                  styles.overallStatsContainer,
+                  { backgroundColor: theme.background },
+                ]}>
+                <View
+                  style={[
+                    styles.overallStatCard,
+                    { backgroundColor: theme.background },
+                  ]}>
+                  <Text
+                    style={[styles.overallStatValue, { color: theme.tint }]}>
+                    {totalQuizzes}
+                  </Text>
+                  <Text
+                    style={[styles.overallStatLabel, { color: theme.tint }]}>
+                    Total Quizzes
+                  </Text>
                 </View>
-                <View style={styles.overallStatCard}>
+                <View
+                  style={[
+                    styles.overallStatCard,
+                    { backgroundColor: theme.background },
+                  ]}>
                   <Text style={[styles.overallStatValue, { color: "#4CAF50" }]}>
                     {overallAccuracy}%
                   </Text>
-                  <Text style={styles.overallStatLabel}>Accuracy</Text>
-                </View>
-                <View style={styles.overallStatCard}>
-                  <Text style={[styles.overallStatValue, { color: "#5B48E8" }]}>
-                    {averageScore}/10
+                  <Text
+                    style={[styles.overallStatLabel, { color: theme.text }]}>
+                    Accuracy
                   </Text>
-                  <Text style={styles.overallStatLabel}>Avg Score</Text>
+                </View>
+                <View
+                  style={[
+                    styles.overallStatCard,
+                    { backgroundColor: theme.background },
+                  ]}>
+                  <Text style={[styles.overallStatValue, { color: "#5B48E8" }]}>
+                    {averageScore}
+                  </Text>
+                  <Text
+                    style={[styles.overallStatLabel, { color: theme.text }]}>
+                    Avg Score (10)
+                  </Text>
                 </View>
               </View>
             </View>
 
             {/* Best Performance */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Best Performance</Text>
-              <View style={styles.bestPerformanceCard}>
+              <Text style={[styles.sectionTitle, { color: theme.tint }]}>
+                Best Performance
+              </Text>
+              <View
+                style={[
+                  styles.bestPerformanceCard,
+                  { backgroundColor: theme.background },
+                ]}>
                 <View style={styles.bestPerformanceHeader}>
-                  <Text style={styles.bestPerformanceCategory}>
+                  <Text
+                    style={[
+                      styles.bestPerformanceCategory,
+                      { color: theme.tint },
+                    ]}>
                     {bestQuiz.category}
                   </Text>
                   <Text style={styles.bestPerformanceBadge}>🏆 Best</Text>
@@ -151,7 +203,8 @@ export default function ScoresScreen() {
                     %
                   </Text>
                 </View>
-                <Text style={styles.bestPerformanceDate}>
+                <Text
+                  style={[styles.bestPerformanceDate, { color: theme.text }]}>
                   {formatDate(bestQuiz.date)}
                 </Text>
               </View>
@@ -159,17 +212,32 @@ export default function ScoresScreen() {
 
             {/* Category Performance */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Performance by Category</Text>
+              <Text style={[styles.sectionTitle, { color: theme.tint }]}>
+                Performance by Category
+              </Text>
               {MOCK_CATEGORY_STATS.map((stat) => (
-                <View key={stat.category} style={styles.categoryStatCard}>
+                <View
+                  key={stat.category}
+                  style={[
+                    styles.categoryStatCard,
+                    { backgroundColor: theme.background },
+                  ]}>
                   <View style={styles.categoryStatHeader}>
                     <View style={styles.categoryStatLeft}>
                       <Text style={styles.categoryStatIcon}>{stat.icon}</Text>
                       <View>
-                        <Text style={styles.categoryStatName}>
+                        <Text
+                          style={[
+                            styles.categoryStatName,
+                            { color: theme.tint },
+                          ]}>
                           {stat.category}
                         </Text>
-                        <Text style={styles.categoryStatQuizzes}>
+                        <Text
+                          style={[
+                            styles.categoryStatQuizzes,
+                            { color: theme.text },
+                          ]}>
                           {stat.totalQuizzes}{" "}
                           {stat.totalQuizzes === 1 ? "quiz" : "quizzes"}
                         </Text>
@@ -197,10 +265,19 @@ export default function ScoresScreen() {
                     </View>
                   </View>
                   <View style={styles.categoryStatFooter}>
-                    <Text style={styles.categoryStatDetail}>
+                    <Text
+                      style={[
+                        styles.categoryStatDetail,
+                        { color: theme.text },
+                      ]}>
                       Best: {stat.bestScore}%
                     </Text>
-                    <Text style={styles.categoryStatDetail}>
+                    <Text
+                      style={[
+                        styles.categoryStatDetail,
+                        ,
+                        { color: theme.text },
+                      ]}>
                       Avg: {stat.averageScore}%
                     </Text>
                   </View>
@@ -212,7 +289,9 @@ export default function ScoresScreen() {
           <View style={styles.content}>
             {/* Quiz History */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Recent Quizzes</Text>
+              <Text style={[styles.sectionTitle, { color: theme.tint }]}>
+                Recent Quizzes
+              </Text>
               {MOCK_QUIZ_HISTORY.map((quiz) => {
                 const percentage = Math.round(
                   (quiz.score / quiz.totalQuestions) * 100
@@ -224,10 +303,19 @@ export default function ScoresScreen() {
                 const performance = getPerformanceLabel(percentage);
 
                 return (
-                  <View key={quiz.id} style={styles.historyCard}>
+                  <View
+                    key={quiz.id}
+                    style={[
+                      styles.historyCard,
+                      { backgroundColor: theme.background },
+                    ]}>
                     <View style={styles.historyCardHeader}>
                       <View style={styles.historyCardLeft}>
-                        <Text style={styles.historyCardCategory}>
+                        <Text
+                          style={[
+                            styles.historyCardCategory,
+                            { color: theme.tint },
+                          ]}>
                           {quiz.category}
                         </Text>
                         <Text style={styles.historyCardDate}>
@@ -326,6 +414,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#F5F7FA",
     alignItems: "center",
+    marginTop: 8,
   },
   tabActive: {
     backgroundColor: "#5B48E8",
