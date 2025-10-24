@@ -82,7 +82,7 @@ export default function HomeScreen() {
           ]}>
           <ThemedView
             style={[styles.statCard, { backgroundColor: theme.background }]}>
-            <ThemedText style={[styles.statValue, { color: theme.text }]}>
+            <ThemedText style={[styles.statValue, { color: theme.tint }]}>
               {stats.completed}
             </ThemedText>
             <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
@@ -92,7 +92,7 @@ export default function HomeScreen() {
 
           <ThemedView
             style={[styles.statCard, { backgroundColor: theme.background }]}>
-            <ThemedText style={[styles.statValue, { color: theme.text }]}>
+            <ThemedText style={[styles.statValue, { color: theme.tint }]}>
               {stats.points}
             </ThemedText>
             <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
@@ -102,7 +102,7 @@ export default function HomeScreen() {
 
           <ThemedView
             style={[styles.statCard, { backgroundColor: theme.background }]}>
-            <ThemedText style={[styles.statValue, { color: theme.text }]}>
+            <ThemedText style={[styles.statValue, { color: theme.tint }]}>
               {stats.streak}🔥
             </ThemedText>
             <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
@@ -280,6 +280,7 @@ const styles = StyleSheet.create({
       justifyContent: "flex-start",
       alignItems: "center",
       paddingTop: 40,
+      paddingBottom: 0,
     }),
   },
   logo: {
@@ -306,6 +307,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
     gap: 12,
+
+    ...(Platform.OS === "web" && {
+      paddingVertical: 10,
+      marginTop: -20,
+    }),
   },
   statCard: {
     flex: 1,
@@ -313,9 +319,10 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
+    justifyContent: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 2,
   },
