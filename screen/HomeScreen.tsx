@@ -4,6 +4,7 @@ import { Colors } from "@/constants/theme";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
 import { useRouter } from "expo-router";
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -64,7 +65,7 @@ export default function HomeScreen() {
           <ThemedText style={[styles.logo, { color: theme.text }]}>
             🧠 QuizMaster
           </ThemedText>
-          <ThemedText style={[styles.welcome, { color: theme.text }]}>
+          <ThemedText style={[styles.welcome, { color: theme.tint }]}>
             Welcome back, {userName}! 👋
           </ThemedText>
 
@@ -274,6 +275,12 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 20,
     backgroundColor: "#FFFFFF",
+
+    ...(Platform.OS === "web" && {
+      justifyContent: "flex-start",
+      alignItems: "center",
+      paddingTop: 40,
+    }),
   },
   logo: {
     fontSize: 28,
