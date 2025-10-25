@@ -136,47 +136,49 @@ export default function HomeScreen() {
         </ThemedView>
 
         {/* Categories Section */}
-        <ThemedView
-          style={[
-            styles.section,
-            { backgroundColor: theme.background },
-            isWideScreen && styles.sectionWide,
-          ]}>
-          <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-            Choose a Category
-          </ThemedText>
-
+        <View style={{ width: "100%" }}>
           <ThemedView
             style={[
-              styles.categoriesGrid,
+              styles.section,
               { backgroundColor: theme.background },
-              isWideScreen && styles.categoriesGridWide,
+              isWideScreen && styles.sectionWide,
             ]}>
-            {categories.map((category) => (
-              <TouchableOpacity
-                key={category.id}
-                style={[
-                  styles.categoryCard,
-                  {
-                    borderLeftColor: category.color,
-                    backgroundColor: theme.background,
-                  },
-                  isWideScreen && styles.categoryCardWide,
-                ]}
-                onPress={() => handleCategorySelect(category)}>
-                <Text style={[styles.categoryIcon]}>{category.icon}</Text>
-                <ThemedText
-                  style={[styles.categoryName, { color: theme.text }]}>
-                  {category.name}
-                </ThemedText>
-                <ThemedText
-                  style={[styles.categoryQuestions, { color: theme.icon }]}>
-                  {category.questions} questions
-                </ThemedText>
-              </TouchableOpacity>
-            ))}
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+              Choose a Category
+            </ThemedText>
+
+            <ThemedView
+              style={[
+                styles.categoriesGrid,
+                { backgroundColor: theme.background },
+                isWideScreen && styles.categoriesGridWide,
+              ]}>
+              {categories.map((category) => (
+                <TouchableOpacity
+                  key={category.id}
+                  style={[
+                    styles.categoryCard,
+                    {
+                      borderLeftColor: category.color,
+                      backgroundColor: theme.background,
+                    },
+                    isWideScreen && styles.categoryCardWide,
+                  ]}
+                  onPress={() => handleCategorySelect(category)}>
+                  <Text style={[styles.categoryIcon]}>{category.icon}</Text>
+                  <ThemedText
+                    style={[styles.categoryName, { color: theme.text }]}>
+                    {category.name}
+                  </ThemedText>
+                  <ThemedText
+                    style={[styles.categoryQuestions, { color: theme.icon }]}>
+                    {category.questions} questions
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
+            </ThemedView>
           </ThemedView>
-        </ThemedView>
+        </View>
 
         {/* Recent Activity & Leaderboard Row */}
         <View
@@ -313,7 +315,7 @@ const styles = StyleSheet.create({
   },
   headerWeb: {
     paddingTop: 30,
-    paddingBottom: 10,
+    paddingBottom: 44,
   },
   logo: {
     fontSize: 28,
@@ -342,11 +344,11 @@ const styles = StyleSheet.create({
   },
   statsContainerWide: {
     paddingHorizontal: 20,
-    paddingVertical: 0,
     gap: 16,
     maxWidth: 800,
     alignSelf: "center",
     width: "100%",
+    marginBottom: 16,
   },
   statCard: {
     flex: 1,
@@ -362,8 +364,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   statCardWide: {
-    padding: 10,
-    minHeight: 50,
+    padding: 20,
+    minHeight: 100,
   },
   statValue: {
     fontSize: 22,
@@ -378,11 +380,13 @@ const styles = StyleSheet.create({
   section: {
     marginTop: 16,
     paddingHorizontal: 20,
+    width: "100%",
   },
   sectionWide: {
     maxWidth: 1200,
     alignSelf: "center",
     width: "100%",
+    marginTop: 34,
   },
   sectionTitle: {
     fontSize: 20,
@@ -398,6 +402,7 @@ const styles = StyleSheet.create({
   },
   categoriesGridWide: {
     gap: 16,
+    display: "flex",
   },
   categoryCard: {
     width: "48%",
@@ -435,7 +440,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   bottomSectionWide: {
-    marginTop: 24,
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 24,
