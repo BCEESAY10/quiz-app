@@ -10,6 +10,8 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
+  useWindowDimensions,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,6 +19,10 @@ export default function HomeScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
+
+  const { width } = useWindowDimensions();
+  const isWeb = Platform.OS === "web";
+  const isWideScreen = isWeb && width >= 768;
 
   // ======== Mock data ==========
   const userName = "BCeesay";
@@ -58,10 +64,15 @@ export default function HomeScreen() {
       edges={["top", "right", "left"]}>
       <ScrollView
         style={[styles.scrollView, { backgroundColor: theme.background }]}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={isWideScreen && styles.wideContainer}>
         {/* Hero Section */}
         <ThemedView
-          style={[styles.header, { backgroundColor: theme.background }]}>
+          style={[
+            styles.header,
+            { backgroundColor: theme.background },
+            isWeb && styles.headerWeb,
+          ]}>
           <ThemedText style={[styles.logo, { color: theme.text }]}>
             🧠 QuizMaster
           </ThemedText>
@@ -79,9 +90,14 @@ export default function HomeScreen() {
           style={[
             styles.statsContainer,
             { backgroundColor: theme.background },
+            isWideScreen && styles.statsContainerWide,
           ]}>
           <ThemedView
-            style={[styles.statCard, { backgroundColor: theme.background }]}>
+            style={[
+              styles.statCard,
+              { backgroundColor: theme.background },
+              isWideScreen && styles.statCardWide,
+            ]}>
             <ThemedText style={[styles.statValue, { color: theme.tint }]}>
               {stats.completed}
             </ThemedText>
@@ -91,7 +107,11 @@ export default function HomeScreen() {
           </ThemedView>
 
           <ThemedView
-            style={[styles.statCard, { backgroundColor: theme.background }]}>
+            style={[
+              styles.statCard,
+              { backgroundColor: theme.background },
+              isWideScreen && styles.statCardWide,
+            ]}>
             <ThemedText style={[styles.statValue, { color: theme.tint }]}>
               {stats.points}
             </ThemedText>
@@ -101,7 +121,11 @@ export default function HomeScreen() {
           </ThemedView>
 
           <ThemedView
-            style={[styles.statCard, { backgroundColor: theme.background }]}>
+            style={[
+              styles.statCard,
+              { backgroundColor: theme.background },
+              isWideScreen && styles.statCardWide,
+            ]}>
             <ThemedText style={[styles.statValue, { color: theme.tint }]}>
               {stats.streak}🔥
             </ThemedText>
@@ -111,24 +135,13 @@ export default function HomeScreen() {
           </ThemedView>
         </ThemedView>
 
-        {/* Primary CTA */}
-        <ThemedView
-          style={[
-            styles.primaryButton,
-            { backgroundColor: theme.primaryButton.background },
-          ]}>
-          <ThemedText
-            style={[
-              styles.primaryButtonText,
-              { color: theme.primaryButton.text },
-            ]}>
-            Start New Quiz 👇
-          </ThemedText>
-        </ThemedView>
-
         {/* Categories Section */}
         <ThemedView
-          style={[styles.section, { backgroundColor: theme.background }]}>
+          style={[
+            styles.section,
+            { backgroundColor: theme.background },
+            isWideScreen && styles.sectionWide,
+          ]}>
           <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
             Choose a Category
           </ThemedText>
@@ -137,6 +150,7 @@ export default function HomeScreen() {
             style={[
               styles.categoriesGrid,
               { backgroundColor: theme.background },
+              isWideScreen && styles.categoriesGridWide,
             ]}>
             {categories.map((category) => (
               <TouchableOpacity
@@ -147,6 +161,7 @@ export default function HomeScreen() {
                     borderLeftColor: category.color,
                     backgroundColor: theme.background,
                   },
+                  isWideScreen && styles.categoryCardWide,
                 ]}
                 onPress={() => handleCategorySelect(category)}>
                 <Text style={[styles.categoryIcon]}>{category.icon}</Text>
@@ -163,96 +178,111 @@ export default function HomeScreen() {
           </ThemedView>
         </ThemedView>
 
-        {/* Recent Activity */}
-        <ThemedView
-          style={[styles.section, { backgroundColor: theme.background }]}>
-          <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-            Recent Activity
-          </ThemedText>
-          {recentQuizzes.map((quiz) => (
-            <ThemedView
-              key={quiz.id}
-              style={[
-                styles.activityCard,
-                { backgroundColor: theme.background },
-              ]}>
-              <ThemedView
-                style={[
-                  styles.activityLeft,
-                  { backgroundColor: theme.background },
-                ]}>
-                <ThemedText
-                  style={[styles.activityCategory, { color: theme.text }]}>
-                  {quiz.category}
-                </ThemedText>
-                <ThemedText
-                  style={[styles.activityDate, { color: theme.icon }]}>
-                  {quiz.date}
-                </ThemedText>
-              </ThemedView>
-              <ThemedView
-                style={[
-                  styles.activityRight,
-                  { backgroundColor: theme.background },
-                ]}>
-                <ThemedText
-                  style={[styles.activityScore, { color: theme.text }]}>
-                  {quiz.score}/{quiz.total}
-                </ThemedText>
-                <ThemedText
-                  style={[styles.activityPercentage, { color: theme.tint }]}>
-                  {Math.round((quiz.score / quiz.total) * 100)}%
-                </ThemedText>
-              </ThemedView>
-            </ThemedView>
-          ))}
-        </ThemedView>
-
-        {/* Leaderboard Preview */}
-        <ThemedView
-          style={[styles.section, { backgroundColor: theme.background }]}>
-          <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-            Leaderboard
-          </ThemedText>
-
-          {leaderboard.map((player) => (
-            <ThemedView
-              key={player.id}
-              style={[
-                styles.leaderboardCard,
-                { backgroundColor: theme.background },
-                player.name === "You" && styles.leaderboardHighlight,
-              ]}>
-              <ThemedView
-                style={[
-                  styles.leaderboardLeft,
-                  { backgroundColor: "transparent" },
-                ]}>
-                <ThemedText
-                  style={[styles.leaderboardRank, { color: theme.icon }]}>
-                  #{player.rank}
-                </ThemedText>
-                <ThemedText
-                  style={[
-                    styles.leaderboardName,
-                    { color: theme.text },
-                    player.name === "You" && styles.leaderboardYou,
-                  ]}>
-                  {player.name}
-                </ThemedText>
-              </ThemedView>
-              <ThemedText
-                style={[styles.leaderboardPoints, { color: theme.text }]}>
-                {player.points} pts
-              </ThemedText>
-            </ThemedView>
-          ))}
-          <TouchableOpacity style={styles.viewAllButton}>
-            <ThemedText style={[styles.viewAllText, { color: theme.tint }]}>
-              View Full Leaderboard →
+        {/* Recent Activity & Leaderboard Row */}
+        <View
+          style={[
+            styles.bottomSection,
+            isWideScreen && styles.bottomSectionWide,
+          ]}>
+          {/* Recent Activity */}
+          <ThemedView
+            style={[
+              styles.section,
+              { backgroundColor: theme.background },
+              isWideScreen && styles.sectionHalf,
+            ]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+              Recent Activity
             </ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
+            {recentQuizzes.map((quiz) => (
+              <ThemedView
+                key={quiz.id}
+                style={[
+                  styles.activityCard,
+                  { backgroundColor: theme.background },
+                ]}>
+                <ThemedView
+                  style={[
+                    styles.activityLeft,
+                    { backgroundColor: theme.background },
+                  ]}>
+                  <ThemedText
+                    style={[styles.activityCategory, { color: theme.text }]}>
+                    {quiz.category}
+                  </ThemedText>
+                  <ThemedText
+                    style={[styles.activityDate, { color: theme.icon }]}>
+                    {quiz.date}
+                  </ThemedText>
+                </ThemedView>
+                <ThemedView
+                  style={[
+                    styles.activityRight,
+                    { backgroundColor: theme.background },
+                  ]}>
+                  <ThemedText
+                    style={[styles.activityScore, { color: theme.text }]}>
+                    {quiz.score}/{quiz.total}
+                  </ThemedText>
+                  <ThemedText
+                    style={[styles.activityPercentage, { color: theme.tint }]}>
+                    {Math.round((quiz.score / quiz.total) * 100)}%
+                  </ThemedText>
+                </ThemedView>
+              </ThemedView>
+            ))}
+          </ThemedView>
+
+          {/* Leaderboard Preview */}
+          <ThemedView
+            style={[
+              styles.section,
+              { backgroundColor: theme.background },
+              isWideScreen && styles.sectionHalf,
+            ]}>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+              Leaderboard
+            </ThemedText>
+
+            {leaderboard.map((player) => (
+              <ThemedView
+                key={player.id}
+                style={[
+                  styles.leaderboardCard,
+                  { backgroundColor: theme.background },
+                  player.name === "You" && styles.leaderboardHighlight,
+                ]}>
+                <ThemedView
+                  style={[
+                    styles.leaderboardLeft,
+                    { backgroundColor: "transparent" },
+                  ]}>
+                  <ThemedText
+                    style={[styles.leaderboardRank, { color: theme.icon }]}>
+                    #{player.rank}
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.leaderboardName,
+                      { color: theme.text },
+                      player.name === "You" && styles.leaderboardYou,
+                    ]}>
+                    {player.name}
+                  </ThemedText>
+                </ThemedView>
+                <ThemedText
+                  style={[styles.leaderboardPoints, { color: theme.text }]}>
+                  {player.points} pts
+                </ThemedText>
+              </ThemedView>
+            ))}
+            <TouchableOpacity style={styles.viewAllButton}>
+              <ThemedText style={[styles.viewAllText, { color: theme.tint }]}>
+                View Full Leaderboard →
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+        </View>
 
         <ThemedView
           style={[styles.bottomPadding, { backgroundColor: theme.background }]}
@@ -270,18 +300,20 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  wideContainer: {
+    maxWidth: 1200,
+    alignSelf: "center",
+    width: "100%",
+  },
   header: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 20,
+    paddingBottom: 12,
     backgroundColor: "#FFFFFF",
-
-    ...(Platform.OS === "web" && {
-      justifyContent: "flex-start",
-      alignItems: "center",
-      paddingTop: 40,
-      paddingBottom: 0,
-    }),
+  },
+  headerWeb: {
+    paddingTop: 30,
+    paddingBottom: 10,
   },
   logo: {
     fontSize: 28,
@@ -307,11 +339,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
     gap: 12,
-
-    ...(Platform.OS === "web" && {
-      paddingVertical: 10,
-      marginTop: -20,
-    }),
+  },
+  statsContainerWide: {
+    paddingHorizontal: 20,
+    paddingVertical: 0,
+    gap: 16,
+    maxWidth: 800,
+    alignSelf: "center",
+    width: "100%",
   },
   statCard: {
     flex: 1,
@@ -326,6 +361,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  statCardWide: {
+    padding: 10,
+    minHeight: 50,
+  },
   statValue: {
     fontSize: 22,
     fontWeight: "bold",
@@ -336,26 +375,14 @@ const styles = StyleSheet.create({
     color: "#7F8C8D",
     marginTop: 4,
   },
-  primaryButton: {
-    backgroundColor: "#5B48E8",
-    marginHorizontal: 20,
-    paddingVertical: 18,
-    borderRadius: 14,
-    shadowColor: "#5B48E8",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  primaryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
   section: {
-    marginTop: 28,
+    marginTop: 16,
     paddingHorizontal: 20,
+  },
+  sectionWide: {
+    maxWidth: 1200,
+    alignSelf: "center",
+    width: "100%",
   },
   sectionTitle: {
     fontSize: 20,
@@ -366,7 +393,11 @@ const styles = StyleSheet.create({
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  categoriesGridWide: {
+    gap: 16,
   },
   categoryCard: {
     width: "48%",
@@ -375,10 +406,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderLeftWidth: 4,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 2,
+    marginBottom: 12,
+  },
+  categoryCardWide: {
+    width: "31%",
+    padding: 20,
+    minWidth: 220,
   },
   categoryIcon: {
     fontSize: 32,
@@ -393,6 +430,24 @@ const styles = StyleSheet.create({
   categoryQuestions: {
     fontSize: 12,
     color: "#7F8C8D",
+  },
+  bottomSection: {
+    flexDirection: "column",
+  },
+  bottomSectionWide: {
+    marginTop: 24,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 24,
+    maxWidth: 1200,
+    alignSelf: "center",
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  sectionHalf: {
+    flex: 1,
+    paddingHorizontal: 0,
+    marginTop: 28,
   },
   activityCard: {
     backgroundColor: "#FFFFFF",
