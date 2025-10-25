@@ -7,6 +7,7 @@ import { getRandomQuestions } from "@/utils/quizHelpers";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -21,6 +22,7 @@ export default function QuizScreen() {
   const category = params.category as string;
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
+  const isWeb = Platform.OS === "web";
 
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -320,7 +322,7 @@ export default function QuizScreen() {
           <View style={styles.optionsContainer}>
             {timeoutNotice && (
               <Text style={styles.timeoutText}>
-                ⏰ Time’s up! Next question please.
+                ⏰ Time&apos;s up! Next question please.
               </Text>
             )}
             {currentQuestion.options.map((option, index) => {
@@ -373,6 +375,9 @@ export default function QuizScreen() {
               );
             })}
           </View>
+
+          {/* Add bottom spacing for web to prevent button overlap */}
+          {isWeb && <View style={{ height: 100 }} />}
         </ScrollView>
 
         {/* Action Button */}
@@ -382,6 +387,7 @@ export default function QuizScreen() {
               style={[
                 styles.actionButton,
                 selectedAnswer === null && styles.actionButtonDisabled,
+                isWeb && styles.actionButtonWeb,
               ]}
               onPress={handleSubmitAnswer}
               disabled={selectedAnswer === null}>
@@ -389,7 +395,7 @@ export default function QuizScreen() {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, isWeb && styles.actionButtonWeb]}
               onPress={handleNextQuestion}>
               <Text style={styles.actionButtonText}>
                 {quizState.currentQuestionIndex < quizState.questions.length - 1
@@ -587,7 +593,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: 20,
-    paddingTop: 8,
+    paddingVertical: 6,
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
     borderTopColor: "#E8EAED",
@@ -595,13 +601,16 @@ const styles = StyleSheet.create({
   actionButton: {
     backgroundColor: "#5B48E8",
     paddingVertical: 16,
-    marginBottom: -36,
     borderRadius: 12,
     shadowColor: "#5B48E8",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 2, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
+    marginBottom: -32,
+  },
+  actionButtonWeb: {
+    marginBottom: 0,
   },
   actionButtonDisabled: {
     backgroundColor: "#BDC3C7",
