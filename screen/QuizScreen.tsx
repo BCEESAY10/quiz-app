@@ -13,6 +13,7 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,8 +22,10 @@ export default function QuizScreen() {
   const params = useLocalSearchParams();
   const category = params.category as string;
   const colorScheme = useColorScheme();
+  const { width } = useWindowDimensions();
   const theme = Colors[colorScheme ?? "light"];
   const isWeb = Platform.OS === "web";
+  const isWideScreen = isWeb && width >= 768;
 
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -277,7 +280,11 @@ export default function QuizScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}>
       <View
-        style={[styles.quizContainer, { backgroundColor: theme.background }]}>
+        style={[
+          styles.quizContainer,
+          { backgroundColor: theme.background },
+          isWideScreen && styles.quizContainerWide,
+        ]}>
         {/* Header */}
         <View style={[styles.header, { backgroundColor: theme.background }]}>
           <Text style={styles.categoryBadge}>{category}</Text>
@@ -442,6 +449,11 @@ const styles = StyleSheet.create({
   },
   quizContainer: {
     flex: 1,
+  },
+  quizContainerWide: {
+    maxWidth: 800,
+    alignSelf: "center",
+    width: "100%",
   },
   header: {
     paddingHorizontal: 20,
