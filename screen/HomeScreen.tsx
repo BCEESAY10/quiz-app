@@ -403,6 +403,7 @@ const styles = StyleSheet.create({
   categoriesGridWide: {
     gap: 16,
     display: "flex",
+    justifyContent: "flex-start",
   },
   categoryCard: {
     width: "48%",
