@@ -3,6 +3,7 @@ import { Colors } from "@/constants/theme";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -83,70 +84,78 @@ export default function LoginScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
       edges={["top", "right", "left"]}>
-      <ScrollView
-        style={[styles.scrollView, { backgroundColor: theme.background }]}
-        contentContainerStyle={[
-          styles.scrollContent,
-          isWideScreen && styles.scrollContentWide,
-        ]}
-        showsVerticalScrollIndicator={false}>
-        <View
-          style={[
-            styles.contentContainer,
-            isWideScreen && styles.contentContainerWide,
-          ]}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={[styles.logo, { color: theme.text }]}>
-              🧠 QuizMaster
-            </Text>
-            <Text style={[styles.title, { color: theme.tint }]}>
-              Welcome Back!
-            </Text>
-            <Text style={[styles.subtitle, { color: theme.icon }]}>
-              Sign in to continue your learning journey
-            </Text>
-          </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}>
+        {" "}
+        <ScrollView
+          style={[styles.scrollView, { backgroundColor: theme.background }]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            isWideScreen && styles.scrollContentWide,
+          ]}
+          showsVerticalScrollIndicator={false}>
+          <View
+            style={[
+              styles.contentContainer,
+              isWideScreen && styles.contentContainerWide,
+            ]}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={[styles.logo, { color: theme.text }]}>
+                🧠 QuizMaster
+              </Text>
+              <Text style={[styles.title, { color: theme.tint }]}>
+                Welcome Back!
+              </Text>
+              <Text style={[styles.subtitle, { color: theme.icon }]}>
+                Sign in to continue your learning journey
+              </Text>
+            </View>
 
-          {/* Form */}
-          <View style={styles.formWrapper}>
-            <FormComponent
-              fields={formFields}
-              onSubmit={handleLogin}
-              submitButtonText="Sign In"
-              isLoading={isLoading}
-            />
+            {/* Form */}
+            <View style={styles.formWrapper}>
+              <FormComponent
+                fields={formFields}
+                onSubmit={handleLogin}
+                submitButtonText="Sign In"
+                isLoading={isLoading}
+              />
 
-            {/* Forgot Password */}
-            <TouchableOpacity
-              style={styles.forgotPasswordButton}
-              onPress={handleForgotPassword}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
+              {/* Forgot Password */}
+              <TouchableOpacity
+                style={styles.forgotPasswordButton}
+                onPress={handleForgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+            </View>
 
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View
-              style={[styles.dividerLine, { backgroundColor: theme.icon }]}
-            />
-            <Text style={[styles.dividerText, { color: theme.icon }]}>OR</Text>
-            <View
-              style={[styles.dividerLine, { backgroundColor: theme.icon }]}
-            />
-          </View>
+            {/* Divider */}
+            <View style={styles.divider}>
+              <View
+                style={[styles.dividerLine, { backgroundColor: theme.icon }]}
+              />
+              <Text style={[styles.dividerText, { color: theme.icon }]}>
+                OR
+              </Text>
+              <View
+                style={[styles.dividerLine, { backgroundColor: theme.icon }]}
+              />
+            </View>
 
-          {/* Register Link */}
-          <View style={styles.registerContainer}>
-            <Text style={[styles.registerText, { color: theme.text }]}>
-              Don&apos;t have an account?{" "}
-            </Text>
-            <TouchableOpacity onPress={handleNavigateToRegister}>
-              <Text style={styles.registerLink}>Sign Up</Text>
-            </TouchableOpacity>
+            {/* Register Link */}
+            <View style={styles.registerContainer}>
+              <Text style={[styles.registerText, { color: theme.text }]}>
+                Don&apos;t have an account?{" "}
+              </Text>
+              <TouchableOpacity onPress={handleNavigateToRegister}>
+                <Text style={styles.registerLink}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
