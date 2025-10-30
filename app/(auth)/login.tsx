@@ -137,7 +137,7 @@ export default function LoginScreen() {
           {/* Register Link */}
           <View style={styles.registerContainer}>
             <Text style={[styles.registerText, { color: theme.text }]}>
-              Don&copy;t have an account?{" "}
+              Don&apos;t have an account?{" "}
             </Text>
             <TouchableOpacity onPress={handleNavigateToRegister}>
               <Text style={styles.registerLink}>Sign Up</Text>
