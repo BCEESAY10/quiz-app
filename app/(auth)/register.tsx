@@ -1,18 +1,18 @@
+import { FormComponent, FormField } from "@/components/form/Form";
+import { Colors } from "@/constants/theme";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
+  Platform,
   ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
   useColorScheme,
-  Platform,
   useWindowDimensions,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Colors } from "@/constants/theme";
-import { FormComponent, FormField } from "@/components/form/Form";
 
 interface RegisterFormData {
   fullName: string;
@@ -127,8 +127,10 @@ export default function RegisterScreen() {
           ]}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.logo}>🧠 QuizMaster</Text>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <Text style={[styles.logo, { color: theme.text }]}>
+              🧠 QuizMaster
+            </Text>
+            <Text style={[styles.title, { color: theme.tint }]}>
               Create Account
             </Text>
             <Text style={[styles.subtitle, { color: theme.icon }]}>
@@ -207,7 +209,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logo: {
-    fontSize: 48,
+    fontSize: 28,
+    fontWeight: "bold",
     marginBottom: 16,
   },
   title: {
@@ -238,7 +241,7 @@ const styles = StyleSheet.create({
   divider: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 32,
+    marginVertical: 22,
   },
   dividerLine: {
     flex: 1,

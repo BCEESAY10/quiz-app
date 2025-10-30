@@ -97,8 +97,10 @@ export default function LoginScreen() {
           ]}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.logo}>🧠 QuizMaster</Text>
-            <Text style={[styles.title, { color: theme.text }]}>
+            <Text style={[styles.logo, { color: theme.text }]}>
+              🧠 QuizMaster
+            </Text>
+            <Text style={[styles.title, { color: theme.tint }]}>
               Welcome Back!
             </Text>
             <Text style={[styles.subtitle, { color: theme.icon }]}>
@@ -177,7 +179,8 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logo: {
-    fontSize: 48,
+    fontSize: 28,
+    fontWeight: "bold",
     marginBottom: 16,
   },
   title: {
