@@ -1,5 +1,7 @@
-import { FormComponent, FormField } from "@/components/form/Form";
+import { FormComponent } from "@/components/form/Form";
 import { Colors } from "@/constants/theme";
+import { RegisterFormData } from "@/types/auth";
+import { formFields } from "@/utils/validation";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -15,13 +17,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface RegisterFormData {
-  fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
 export default function RegisterScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -30,69 +25,6 @@ export default function RegisterScreen() {
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
   const [isLoading, setIsLoading] = useState(false);
-
-  const formFields: FormField<RegisterFormData>[] = [
-    {
-      name: "fullName",
-      label: "Full Name",
-      placeholder: "Enter your full name",
-      autoCapitalize: "words",
-      rules: {
-        required: "Full name is required",
-        minLength: {
-          value: 3,
-          message: "Name must be at least 3 characters",
-        },
-        pattern: {
-          value: /^[a-zA-Z\s]+$/,
-          message: "Name can only contain letters and spaces",
-        },
-      },
-    },
-    {
-      name: "email",
-      label: "Email Address",
-      placeholder: "Enter your email",
-      keyboardType: "email-address",
-      autoCapitalize: "none",
-      rules: {
-        required: "Email is required",
-        pattern: {
-          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-          message: "Invalid email address",
-        },
-      },
-    },
-    {
-      name: "password",
-      label: "Password",
-      placeholder: "Create a password",
-      secureTextEntry: true,
-      rules: {
-        required: "Password is required",
-        minLength: {
-          value: 8,
-          message: "Password must be at least 8 characters",
-        },
-        pattern: {
-          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-          message: "Password must contain uppercase, lowercase, and number",
-        },
-      },
-    },
-    {
-      name: "confirmPassword",
-      label: "Confirm Password",
-      placeholder: "Re-enter your password",
-      secureTextEntry: true,
-      rules: {
-        required: "Please confirm your password",
-        validate: ((value: string, formValues: any) => {
-          return value === formValues.password || "Passwords do not match";
-        }) as unknown as (value: string) => string | boolean,
-      },
-    },
-  ];
 
   const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
