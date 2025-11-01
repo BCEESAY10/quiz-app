@@ -1,9 +1,13 @@
 import { FormComponent } from "@/components/form/Form";
+import { Toast } from "@/components/ui/toast";
 import { Colors } from "@/constants/theme";
 import { RegisterFormData } from "@/types/auth";
+import { ToastState } from "@/types/toast";
+import { saveUser } from "@/utils/mock-auth";
 import { formFields } from "@/utils/validation";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -25,17 +29,26 @@ export default function RegisterScreen() {
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const { reset } = useForm<RegisterFormData>();
 
-  const handleRegister = async (data: RegisterFormData) => {
-    setIsLoading(true);
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Register data:", data);
+      await new Promise((res) => setTimeout(res, 800));
+
+      saveUser(data);
+      setToast({ message: "Registered successfully!", type: "success" });
+      reset();
+    } catch (err: any) {
+      setToast({
+        message: err.message || "Registeration Failed!",
+        type: "error",
+      });
+    } finally {
       setIsLoading(false);
-      // Navigate to home screen or login
-      router.push("/");
-    }, 1500);
+    }
   };
 
   const handleNavigateToLogin = () => {
@@ -77,9 +90,16 @@ export default function RegisterScreen() {
 
             {/* Form */}
             <View style={styles.formWrapper}>
+              {toast && (
+                <Toast
+                  message={toast.message}
+                  type={toast.type}
+                  onClose={() => setToast(null)}
+                />
+              )}
               <FormComponent
                 fields={formFields}
-                onSubmit={handleRegister}
+                onSubmit={onSubmit}
                 submitButtonText="Create Account"
                 isLoading={isLoading}
               />

@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/theme";
+import { FormComponentProps } from "@/types/form";
 import React from "react";
-import { Controller, FieldValues, Path, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import {
   Platform,
   StyleSheet,
@@ -10,29 +11,6 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-
-export interface FormField<T extends FieldValues> {
-  name: Path<T>;
-  label: string;
-  placeholder: string;
-  rules?: {
-    required?: string;
-    minLength?: { value: number; message: string };
-    maxLength?: { value: number; message: string };
-    pattern?: { value: RegExp; message: string };
-    validate?: (value: string) => string | boolean;
-  };
-  secureTextEntry?: boolean;
-  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
-  autoCapitalize?: "none" | "sentences" | "words" | "characters";
-}
-
-interface FormComponentProps<T extends FieldValues> {
-  fields: FormField<T>[];
-  onSubmit: (data: T) => void;
-  submitButtonText: string;
-  isLoading?: boolean;
-}
 
 export function FormComponent<T extends FieldValues>({
   fields,

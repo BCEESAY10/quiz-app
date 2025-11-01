@@ -1,7 +1,10 @@
 import { FormComponent } from "@/components/form/Form";
+import { Toast } from "@/components/ui/toast";
 import { Colors } from "@/constants/theme";
 import { LoginFormData } from "@/types/auth";
-import { formFields } from "@/utils/validation";
+import { ToastState } from "@/types/toast";
+import { loginUser } from "@/utils/mock-auth";
+import { loginFields } from "@/utils/validation";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -25,19 +28,25 @@ export default function LoginScreen() {
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
-  const handleLogin = async (data: LoginFormData) => {
-    setIsLoading(true);
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Login data:", data);
+      await new Promise((res) => setTimeout(res, 800));
+
+      const user = loginUser(data.email, data.password);
+      if (!user) throw new Error("Invalid credentials");
+
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      setToast({ message: "Login successful!", type: "success" });
+    } catch (err: any) {
+      setToast({ message: err.message || "Login Failed!", type: "error" });
+    } finally {
       setIsLoading(false);
-      // Navigate to home screen
-      router.push("/");
-    }, 1500);
+    }
   };
-
   const handleNavigateToRegister = () => {
     router.push("/register");
   };
@@ -55,7 +64,6 @@ export default function LoginScreen() {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}>
-        {" "}
         <ScrollView
           style={[styles.scrollView, { backgroundColor: theme.background }]}
           contentContainerStyle={[
@@ -83,9 +91,16 @@ export default function LoginScreen() {
 
             {/* Form */}
             <View style={styles.formWrapper}>
+              {toast && (
+                <Toast
+                  message={toast.message}
+                  type={toast.type}
+                  onClose={() => setToast(null)}
+                />
+              )}
               <FormComponent
-                fields={formFields}
-                onSubmit={handleLogin}
+                fields={loginFields}
+                onSubmit={onSubmit}
                 submitButtonText="Sign In"
                 isLoading={isLoading}
               />
