@@ -57,6 +57,8 @@ export default function RegisterScreen() {
     router.push("/login");
   };
 
+  if (isLoading) return <Loader />;
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
@@ -99,7 +101,7 @@ export default function RegisterScreen() {
                   onClose={() => setToast(null)}
                 />
               )}
-              {isLoading && <Loader />}
+
               <FormComponent
                 fields={formFields}
                 onSubmit={onSubmit}
