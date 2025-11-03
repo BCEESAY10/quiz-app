@@ -1,4 +1,5 @@
 import { FormComponent } from "@/components/form/Form";
+import { Loader } from "@/components/ui/loader";
 import { Toast } from "@/components/ui/toast";
 import { Colors } from "@/constants/theme";
 import { LoginFormData } from "@/types/auth";
@@ -48,7 +49,6 @@ export default function LoginScreen() {
         await AsyncStorage.setItem("loggedInUser", serialized);
       }
 
-      setToast({ message: "Login successful!", type: "success" });
       router.push("/");
     } catch (err: any) {
       setToast({ message: err.message || "Login Failed!", type: "error" });
@@ -65,6 +65,10 @@ export default function LoginScreen() {
     // Handle forgot password
     console.log("Forgot password");
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <SafeAreaView
@@ -108,6 +112,7 @@ export default function LoginScreen() {
                   onClose={() => setToast(null)}
                 />
               )}
+
               <FormComponent
                 fields={loginFields}
                 onSubmit={onSubmit}
