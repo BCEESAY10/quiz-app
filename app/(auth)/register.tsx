@@ -41,6 +41,7 @@ export default function RegisterScreen() {
       saveUser(data);
       setToast({ message: "Registered successfully!", type: "success" });
       reset();
+      router.push("/");
     } catch (err: any) {
       setToast({
         message: err.message || "Registeration Failed!",

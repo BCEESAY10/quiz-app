@@ -26,12 +26,12 @@ export const Toast: React.FC<ToastProps> = ({
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 300,
+        duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(opacityAnim, {
         toValue: 1,
-        duration: 300,
+        duration: 500,
         useNativeDriver: true,
       }),
     ]).start();
@@ -48,12 +48,12 @@ export const Toast: React.FC<ToastProps> = ({
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: width,
-        duration: 300,
+        duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(opacityAnim, {
         toValue: 0,
-        duration: 300,
+        duration: 500,
         useNativeDriver: true,
       }),
     ]).start(() => {

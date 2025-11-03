@@ -5,6 +5,7 @@ import { LoginFormData } from "@/types/auth";
 import { ToastState } from "@/types/toast";
 import { loginUser } from "@/utils/mock-auth";
 import { loginFields } from "@/utils/validation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -39,14 +40,23 @@ export default function LoginScreen() {
       const user = loginUser(data.email, data.password);
       if (!user) throw new Error("Invalid credentials");
 
-      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      const serialized = JSON.stringify(user);
+
+      if (Platform.OS === "web") {
+        window.localStorage.setItem("loggedInUser", serialized);
+      } else {
+        await AsyncStorage.setItem("loggedInUser", serialized);
+      }
+
       setToast({ message: "Login successful!", type: "success" });
+      router.push("/");
     } catch (err: any) {
       setToast({ message: err.message || "Login Failed!", type: "error" });
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleNavigateToRegister = () => {
     router.push("/register");
   };
