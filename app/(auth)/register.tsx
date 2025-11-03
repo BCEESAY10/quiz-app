@@ -2,6 +2,7 @@ import { FormComponent } from "@/components/form/Form";
 import { Loader } from "@/components/ui/loader";
 import { Toast } from "@/components/ui/toast";
 import { Colors } from "@/constants/theme";
+import { useAuth } from "@/provider/UserProvider";
 import { RegisterFormData } from "@/types/auth";
 import { ToastState } from "@/types/toast";
 import { saveUser } from "@/utils/mock-auth";
@@ -24,6 +25,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { setUser } = useAuth();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
   const { width } = useWindowDimensions();
@@ -40,6 +42,7 @@ export default function RegisterScreen() {
       await new Promise((res) => setTimeout(res, 800));
 
       saveUser(data);
+      setUser(data);
 
       reset();
       router.push("/");

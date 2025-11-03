@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
+import { useAuth } from "@/provider/UserProvider";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
 import { useRouter } from "expo-router";
 import {
@@ -17,6 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
 
@@ -25,7 +27,8 @@ export default function HomeScreen() {
   const isWideScreen = isWeb && width >= 768;
 
   // ======== Mock data ==========
-  const userName = "BCeesay";
+  const userName = user?.fullName ?? "User";
+  console.log("User:", user);
   const stats: Stats = {
     completed: 24,
     streak: 5,

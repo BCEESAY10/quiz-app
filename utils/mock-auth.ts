@@ -5,7 +5,13 @@ let AsyncStorage:
   | typeof import("@react-native-async-storage/async-storage").default
   | null = null;
 if (Platform.OS !== "web") {
-  AsyncStorage = require("@react-native-async-storage/async-storage").default;
+  import("@react-native-async-storage/async-storage")
+    .then((mod) => {
+      AsyncStorage = mod.default;
+    })
+    .catch(() => {
+      AsyncStorage = null;
+    });
 }
 
 const STORAGE_KEY = "users";

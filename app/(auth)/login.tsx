@@ -2,6 +2,7 @@ import { FormComponent } from "@/components/form/Form";
 import { Loader } from "@/components/ui/loader";
 import { Toast } from "@/components/ui/toast";
 import { Colors } from "@/constants/theme";
+import { useAuth } from "@/provider/UserProvider";
 import { LoginFormData } from "@/types/auth";
 import { ToastState } from "@/types/toast";
 import { loginUser } from "@/utils/mock-auth";
@@ -24,6 +25,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { setUser } = useAuth();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
   const { width } = useWindowDimensions();
@@ -38,7 +40,7 @@ export default function LoginScreen() {
 
       await new Promise((res) => setTimeout(res, 800));
 
-      const user = loginUser(data.email, data.password);
+      const user = await loginUser(data.email, data.password);
       if (!user) throw new Error("Invalid credentials");
 
       const serialized = JSON.stringify(user);
@@ -48,6 +50,8 @@ export default function LoginScreen() {
       } else {
         await AsyncStorage.setItem("loggedInUser", serialized);
       }
+
+      setUser(user);
 
       router.push("/");
     } catch (err: any) {
