@@ -3,7 +3,9 @@ import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useAuth } from "@/provider/UserProvider";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -25,6 +27,7 @@ export default function HomeScreen() {
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   // ======== Mock data ==========
   const userName = user?.fullName ?? "User";
@@ -76,16 +79,23 @@ export default function HomeScreen() {
             { backgroundColor: theme.background },
             isWeb && styles.headerWeb,
           ]}>
-          <ThemedText style={[styles.logo, { color: theme.text }]}>
-            🧠 QuizMaster
-          </ThemedText>
-          <ThemedText style={[styles.welcome, { color: theme.tint }]}>
-            Welcome back, {userName}! 👋
-          </ThemedText>
+          <TouchableOpacity
+            onPress={() => setIsSidebarVisible(true)}
+            style={styles.menuButton}>
+            <Ionicons name="menu" size={28} color={theme.text} />
+          </TouchableOpacity>
+          <ThemedView style={{ backgroundColor: theme.background }}>
+            <ThemedText style={[styles.logo, { color: theme.text }]}>
+              🧠 QuizMaster
+            </ThemedText>
+            <ThemedText style={[styles.welcome, { color: theme.tint }]}>
+              Welcome back, {userName}! 👋
+            </ThemedText>
 
-          <ThemedText style={[styles.tagline, { color: theme.icon }]}>
-            Test your knowledge today
-          </ThemedText>
+            <ThemedText style={[styles.tagline, { color: theme.icon }]}>
+              Test your knowledge today
+            </ThemedText>
+          </ThemedView>
         </ThemedView>
 
         {/* Stats Dashboard */}
@@ -311,10 +321,15 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 12,
     backgroundColor: "#FFFFFF",
+  },
+  menuButton: {
+    padding: 4,
   },
   headerWeb: {
     paddingTop: 30,
