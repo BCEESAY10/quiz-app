@@ -1,17 +1,11 @@
-import React from "react";
-import {
-  View,
-  TouchableOpacity,
-  ScrollView,
-  useColorScheme,
-} from "react-native";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
-import { useRouter, usePathname } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/themed-text";
 import { Avatar } from "@/components/ui/avatar";
-import { useAuth } from "@/provider/UserProvider";
 import { Colors } from "@/constants/theme";
+import { useAuth } from "@/provider/UserProvider";
+import { Ionicons } from "@expo/vector-icons";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
+import { usePathname, useRouter } from "expo-router";
+import { TouchableOpacity, useColorScheme, View } from "react-native";
 
 export function CustomDrawerContent(props: any) {
   const { user, logout } = useAuth();
@@ -110,7 +104,7 @@ export function CustomDrawerContent(props: any) {
                   backgroundColor: isActive ? theme.tint + "15" : "transparent",
                 }}>
                 <Ionicons
-                  name={item.icon}
+                  name={item.icon as any}
                   size={22}
                   color={isActive ? theme.tint : theme.text}
                 />
