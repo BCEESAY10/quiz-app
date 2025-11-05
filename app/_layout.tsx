@@ -67,11 +67,11 @@ function InnerLayout({
           backgroundColor: theme.background,
         }}>
         <Sidebar user={user} onLogout={logout} />
-        <ThemedView style={{ flex: 1 }}>
+        <ThemedView style={{ flex: 3 }}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="quiz" />
-            <Stack.Screen name="settings" />
+            <Stack.Screen name="scores" />
           </Stack>
         </ThemedView>
       </ThemedView>
