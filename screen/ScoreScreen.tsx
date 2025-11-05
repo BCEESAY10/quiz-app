@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { MOCK_CATEGORY_STATS } from "@/mock/category-stats";
 import { MOCK_QUIZ_HISTORY } from "@/mock/history";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -82,7 +82,7 @@ export default function ScoresScreen() {
         <Text style={[styles.headerTitle, { color: theme.tint }]}>
           Your Scores 📊
         </Text>
-        <Text style={[styles.headerSubtitle, { color: theme.text }]}>
+        <Text style={[styles.headerSubtitle, { color: theme.icon }]}>
           Track your progress
         </Text>
       </View>
@@ -386,7 +386,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingTop: 0,
+    paddingBottom: 20,
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
     borderBottomColor: "#E8EAED",
@@ -394,11 +395,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#2C3E50",
   },
   headerSubtitle: {
     fontSize: 14,
-    color: "#7F8C8D",
     marginTop: 4,
   },
   tabContainer: {

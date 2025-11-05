@@ -1,13 +1,17 @@
 import { ThemedText } from "@/components/themed-text";
 import { Avatar } from "@/components/ui/avatar";
 import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
+import {
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+} from "@react-navigation/drawer";
 import { usePathname, useRouter } from "expo-router";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
-export function CustomDrawerContent(props: any) {
+export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -22,17 +26,27 @@ export function CustomDrawerContent(props: any) {
       path: "/",
       onPress: () => {
         props.navigation.closeDrawer();
-        router.push("/");
+        router.push("/(tabs)");
       },
     },
     {
-      id: "settings",
-      label: "Settings",
-      icon: "settings-outline",
-      path: "/settings",
+      id: "quiz",
+      label: "Quiz",
+      icon: "trophy-outline",
+      path: "/quiz",
       onPress: () => {
         props.navigation.closeDrawer();
-        router.push("/");
+        router.push("/quiz");
+      },
+    },
+    {
+      id: "scores",
+      label: "Scores",
+      icon: "bar-chart-outline",
+      path: "/scores",
+      onPress: () => {
+        props.navigation.closeDrawer();
+        router.push("/scores");
       },
     },
   ];
@@ -89,7 +103,8 @@ export function CustomDrawerContent(props: any) {
         {/* Menu Items */}
         <View style={{ paddingTop: 16, paddingHorizontal: 12 }}>
           {menuItems.map((item) => {
-            const isActive = pathname === item.path;
+            const isActive =
+              pathname === item.path || pathname.startsWith(item.path);
             return (
               <TouchableOpacity
                 key={item.id}

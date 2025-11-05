@@ -1,3 +1,4 @@
+import { CustomDrawerContent } from "@/components/CustomDrawerContent";
 import { Sidebar } from "@/components/Sidebar";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
@@ -9,9 +10,11 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { Stack, useRouter } from "expo-router";
+import { Drawer } from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Platform, useWindowDimensions } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 export const unstable_settings = {
@@ -78,18 +81,76 @@ function InnerLayout({
     );
   }
 
+  // Mobile: Drawer + Tabs Navigation
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AuthGate />
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: "modal", title: "Modal" }}
-        />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <AuthGate />
+        <Drawer
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+          screenOptions={{
+            drawerStyle: {
+              width: 280,
+              backgroundColor: theme.background,
+            },
+            headerStyle: {
+              backgroundColor: theme.background,
+            },
+            headerTintColor: theme.text,
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+            drawerType: "front",
+          }}>
+          {/* Main tabs - bottom tab navigation */}
+          <Drawer.Screen
+            name="(tabs)"
+            options={{
+              headerShown: true,
+              drawerLabel: "Home",
+              title: "QuizMaster",
+            }}
+          />
+
+          {/* Auth screens - hidden from drawer */}
+          <Drawer.Screen
+            name="(auth)"
+            options={{
+              headerShown: false,
+              drawerItemStyle: { display: "none" },
+            }}
+          />
+
+          {/* Additional screens in drawer */}
+          <Drawer.Screen
+            name="quiz"
+            options={{
+              title: "Quiz",
+              headerShown: true,
+              drawerLabel: "Quiz",
+            }}
+          />
+
+          <Drawer.Screen
+            name="scores"
+            options={{
+              title: "Scores",
+              headerShown: true,
+              drawerLabel: "Scores",
+            }}
+          />
+
+          {/* Modal - hidden from drawer */}
+          <Drawer.Screen
+            name="modal"
+            options={{
+              title: "Modal",
+              drawerItemStyle: { display: "none" },
+            }}
+          />
+        </Drawer>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
