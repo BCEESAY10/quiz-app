@@ -97,11 +97,6 @@ export default function HomeScreen() {
               { backgroundColor: theme.background },
               isWeb && styles.headerWeb,
             ]}>
-            <TouchableOpacity
-              onPress={() => setIsSidebarVisible(true)}
-              style={styles.menuButton}>
-              <Ionicons name="menu" size={28} color={theme.text} />
-            </TouchableOpacity>
             <ThemedView style={{ backgroundColor: theme.background }}>
               <ThemedText style={[styles.logo, { color: theme.text }]}>
                 🧠 QuizMaster
