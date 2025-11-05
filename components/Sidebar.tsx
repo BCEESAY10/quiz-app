@@ -54,17 +54,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
         },
       ]}>
       <ScrollView
-        style={styles.sidebarScroll}
+        style={[styles.sidebarScroll, { backgroundColor: theme.background }]}
         showsVerticalScrollIndicator={false}>
-        {/* Logo/Brand */}
-        <View style={styles.brandSection}>
-          <ThemedText style={[styles.brandText, { color: theme.text }]}>
-            🧠 QuizMaster
-          </ThemedText>
-        </View>
-
         {/* User Profile Section */}
-        <ThemedView style={styles.profileSection}>
+        <ThemedView
+          style={[
+            styles.profileSection,
+            { backgroundColor: theme.background },
+          ]}>
           <Avatar fullName={user?.fullName || "User"} />
           <ThemedText style={[styles.userName, { color: theme.text }]}>
             {user?.fullName || "User"}
@@ -80,7 +77,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
         />
 
         {/* Menu Items */}
-        <ThemedView style={styles.menuSection}>
+        <ThemedView
+          style={[styles.menuSection, { backgroundColor: theme.background }]}>
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
@@ -137,16 +135,6 @@ const styles = StyleSheet.create({
   },
   sidebarScroll: {
     flex: 1,
-  },
-  brandSection: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-  },
-  brandText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
   },
   profileSection: {
     alignItems: "center",
