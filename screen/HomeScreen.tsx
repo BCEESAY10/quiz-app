@@ -45,7 +45,7 @@ export default function HomeScreen() {
 
   // ======== Mock data ==========
   const userName = user?.fullName ?? "User";
-  console.log("User:", user);
+
   const stats: Stats = {
     completed: 24,
     streak: 5,

@@ -1,9 +1,9 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
+import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
-import React from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,19 +13,12 @@ import {
 } from "react-native";
 import { Avatar } from "./ui/avatar";
 
-interface SidebarProps {
-  user: {
-    fullName?: string;
-    email?: string;
-  } | null;
-  onLogout: () => void;
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
+export const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
+  const { user, logout } = useAuth();
 
   const menuItems = [
     {
@@ -109,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
           {/* Logout button */}
           <TouchableOpacity
             style={[styles.menuItem, styles.logoutItem]}
-            onPress={onLogout}
+            onPress={logout}
             activeOpacity={0.7}>
             <Ionicons name="log-out-outline" size={22} color="#EF4444" />
             <ThemedText style={[styles.menuItemText, { color: "#EF4444" }]}>

@@ -59,8 +59,6 @@ function InnerLayout({
   isWeb: boolean;
   colorScheme: string | null | undefined;
 }) {
-  const { user, logout } = useAuth();
-
   if (isWeb) {
     return (
       <ThemedView
@@ -69,7 +67,7 @@ function InnerLayout({
           flexDirection: "row",
           backgroundColor: theme.background,
         }}>
-        <Sidebar user={user} onLogout={logout} />
+        <Sidebar />
         <ThemedView style={{ flex: 3 }}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />

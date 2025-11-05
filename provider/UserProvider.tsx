@@ -41,9 +41,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (Platform.OS === "web") {
       window.localStorage.removeItem("loggedInUser");
       setUser(null);
+      console.log("Logged out successfully");
     } else {
       await AsyncStorage.removeItem("loggedInUser");
       setUser(null);
+      console.log("Logged out successfully");
     }
   };
 
