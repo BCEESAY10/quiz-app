@@ -13,7 +13,7 @@ export const Avatar = ({ fullName }: AvatarProps) => {
     .slice(0, 2);
 
   return (
-    <View>
+    <View style={styles.avatar}>
       <Text style={styles.avatarText}>{initials}</Text>
     </View>
   );

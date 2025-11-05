@@ -2,11 +2,10 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import React from "react";
 import {
-  Modal,
-  Platform,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
@@ -15,8 +14,6 @@ import {
 import { Avatar } from "./ui/avatar";
 
 interface SidebarProps {
-  isVisible: boolean;
-  onClose: () => void;
   user: {
     fullName?: string;
     email?: string;
@@ -24,191 +21,132 @@ interface SidebarProps {
   onLogout: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({
-  isVisible,
-  onClose,
-  user,
-  onLogout,
-}) => {
+export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
-  const isWeb = Platform.OS === "web";
-
-  //   const handleNavigateToSettings = () => {
-  //     onClose();
-  //     router.push("/settings");
-  //   };
-
-  const handleLogout = () => {
-    onClose();
-    onLogout();
-  };
 
   const menuItems = [
-    // {
-    //   id: "settings",
-    //   label: "Settings",
-    //   icon: "settings-outline" as const,
-    //   onPress: handleNavigateToSettings,
-    // },
     {
-      id: "logout",
-      label: "Logout",
-      icon: "log-out-outline" as const,
-      onPress: handleLogout,
-      isDanger: true,
+      id: "home",
+      label: "Home",
+      icon: "home-outline" as const,
+      path: "/",
+      onPress: () => router.push("/"),
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: "settings-outline" as const,
+      path: "/settings",
+      onPress: () => router.push("/"),
     },
   ];
 
-  const sidebarContent = (
-    <ThemedView style={[styles.sidebar, { backgroundColor: theme.background }]}>
-      {/* Header with close button for mobile */}
-      {!isWeb && (
-        <View style={styles.header}>
-          <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
-            Menu
+  return (
+    <ThemedView
+      style={[
+        styles.sidebar,
+        {
+          backgroundColor: theme.background,
+          borderRightColor: theme.tabIconDefault,
+        },
+      ]}>
+      <ScrollView
+        style={styles.sidebarScroll}
+        showsVerticalScrollIndicator={false}>
+        {/* Logo/Brand */}
+        <View style={styles.brandSection}>
+          <ThemedText style={[styles.brandText, { color: theme.text }]}>
+            🧠 QuizMaster
           </ThemedText>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color={theme.text} />
-          </TouchableOpacity>
         </View>
-      )}
 
-      {/* User Profile Section */}
-      <ThemedView style={styles.profileSection}>
-        <Avatar fullName={user?.fullName || "User"} />
-        <ThemedText style={[styles.userName, { color: theme.text }]}>
-          {user?.fullName || "User"}
-        </ThemedText>
-        <ThemedText style={[styles.userEmail, { color: theme.icon }]}>
-          {user?.email || "user@example.com"}
-        </ThemedText>
-      </ThemedView>
+        {/* User Profile Section */}
+        <ThemedView style={styles.profileSection}>
+          <Avatar fullName={user?.fullName || "User"} />
+          <ThemedText style={[styles.userName, { color: theme.text }]}>
+            {user?.fullName || "User"}
+          </ThemedText>
+          <ThemedText style={[styles.userEmail, { color: theme.icon }]}>
+            {user?.email || "user@example.com"}
+          </ThemedText>
+        </ThemedView>
 
-      {/* Divider */}
-      <View
-        style={[styles.divider, { backgroundColor: theme.tabIconDefault }]}
-      />
+        {/* Divider */}
+        <View
+          style={[styles.divider, { backgroundColor: theme.tabIconDefault }]}
+        />
 
-      {/* Menu Items */}
-      <ThemedView style={styles.menuSection}>
-        {menuItems.map((item) => (
+        {/* Menu Items */}
+        <ThemedView style={styles.menuSection}>
+          {menuItems.map((item) => {
+            const isActive = pathname === item.path;
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.menuItem,
+                  isActive && { backgroundColor: theme.tint + "15" },
+                ]}
+                onPress={item.onPress}
+                activeOpacity={0.7}>
+                <Ionicons
+                  name={item.icon}
+                  size={22}
+                  color={isActive ? theme.tint : theme.text}
+                />
+                <ThemedText
+                  style={[
+                    styles.menuItemText,
+                    { color: isActive ? theme.tint : theme.text },
+                  ]}>
+                  {item.label}
+                </ThemedText>
+              </TouchableOpacity>
+            );
+          })}
+
+          {/* Logout button */}
           <TouchableOpacity
-            key={item.id}
-            style={[styles.menuItem]}
-            onPress={item.onPress}
+            style={[styles.menuItem, styles.logoutItem]}
+            onPress={onLogout}
             activeOpacity={0.7}>
-            <Ionicons
-              name={item.icon}
-              size={22}
-              color={item.isDanger ? "#EF4444" : theme.text}
-            />
-            <ThemedText
-              style={[
-                styles.menuItemText,
-                { color: item.isDanger ? "#EF4444" : theme.text },
-              ]}>
-              {item.label}
+            <Ionicons name="log-out-outline" size={22} color="#EF4444" />
+            <ThemedText style={[styles.menuItemText, { color: "#EF4444" }]}>
+              Logout
             </ThemedText>
           </TouchableOpacity>
-        ))}
-      </ThemedView>
+        </ThemedView>
+      </ScrollView>
     </ThemedView>
-  );
-
-  if (isWeb) {
-    // For web, render as a fixed sidebar
-    if (!isVisible) return null;
-
-    return (
-      <>
-        {/* Overlay */}
-        <TouchableOpacity
-          style={styles.webOverlay}
-          onPress={onClose}
-          activeOpacity={1}
-        />
-        {/* Sidebar */}
-        <View style={styles.webSidebarContainer}>{sidebarContent}</View>
-      </>
-    );
-  }
-
-  // For mobile, use Modal
-  return (
-    <Modal
-      visible={isVisible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}>
-      <View style={styles.modalContainer}>
-        <TouchableOpacity
-          style={styles.overlay}
-          onPress={onClose}
-          activeOpacity={1}
-        />
-        <View style={styles.modalContent}>{sidebarContent}</View>
-      </View>
-    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  // Modal styles (Mobile)
-  modalContainer: {
-    flex: 1,
-    flexDirection: "row",
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: 280,
-    height: "100%",
-  },
-  // Web styles
-  webOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 999,
-  },
-  webSidebarContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: 280,
-    zIndex: 1000,
-  },
-  // Sidebar styles
   sidebar: {
-    flex: 1,
-    paddingTop: Platform.OS === "ios" ? 50 : 20,
+    width: 260,
+    height: "100%",
+    borderRightWidth: 1,
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 3,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+  sidebarScroll: {
+    flex: 1,
+  },
+  brandSection: {
     paddingHorizontal: 20,
+    paddingTop: 20,
     paddingBottom: 16,
   },
-  headerTitle: {
+  brandText: {
     fontSize: 24,
     fontWeight: "bold",
-  },
-  closeButton: {
-    padding: 4,
+    textAlign: "center",
   },
   profileSection: {
     alignItems: "center",
@@ -232,6 +170,7 @@ const styles = StyleSheet.create({
   menuSection: {
     paddingTop: 16,
     paddingHorizontal: 12,
+    paddingBottom: 20,
   },
   menuItem: {
     flexDirection: "row",
@@ -240,6 +179,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     marginBottom: 4,
+  },
+  logoutItem: {
+    marginTop: 16,
   },
   menuItemText: {
     fontSize: 16,

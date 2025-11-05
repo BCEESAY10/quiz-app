@@ -18,6 +18,20 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Add type imports
+import type { ViewProps } from "react-native";
+import type { SafeAreaViewProps } from "react-native-safe-area-context";
+
+// Define prop types for themed components
+type ThemedViewProps = ViewProps & {
+  children?: React.ReactNode;
+  style?: any;
+};
+
+type SafeAreaProps = SafeAreaViewProps & {
+  children?: React.ReactNode;
+};
+
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
@@ -65,245 +79,256 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
-      edges={["top", "right", "left"]}>
-      <ScrollView
-        style={[styles.scrollView, { backgroundColor: theme.background }]}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={isWideScreen && styles.wideContainer}>
-        {/* Hero Section */}
-        <ThemedView
-          style={[
-            styles.header,
-            { backgroundColor: theme.background },
-            isWeb && styles.headerWeb,
-          ]}>
-          <TouchableOpacity
-            onPress={() => setIsSidebarVisible(true)}
-            style={styles.menuButton}>
-            <Ionicons name="menu" size={28} color={theme.text} />
-          </TouchableOpacity>
-          <ThemedView style={{ backgroundColor: theme.background }}>
-            <ThemedText style={[styles.logo, { color: theme.text }]}>
-              🧠 QuizMaster
-            </ThemedText>
-            <ThemedText style={[styles.welcome, { color: theme.tint }]}>
-              Welcome back, {userName}! 👋
-            </ThemedText>
-
-            <ThemedText style={[styles.tagline, { color: theme.icon }]}>
-              Test your knowledge today
-            </ThemedText>
-          </ThemedView>
-        </ThemedView>
-
-        {/* Stats Dashboard */}
-        <ThemedView
-          style={[
-            styles.statsContainer,
-            { backgroundColor: theme.background },
-            isWideScreen && styles.statsContainerWide,
-          ]}>
+    <ThemedView
+      style={[{ backgroundColor: theme.background }, { flex: 1 }]}
+      {...({} as ThemedViewProps)}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.background }]}
+        edges={["top", "right", "left"]}
+        {...({} as SafeAreaProps)}>
+        <ScrollView
+          style={[styles.scrollView, { backgroundColor: theme.background }]}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={isWideScreen && styles.wideContainer}>
+          {/* Hero Section */}
           <ThemedView
             style={[
-              styles.statCard,
+              styles.header,
               { backgroundColor: theme.background },
-              isWideScreen && styles.statCardWide,
+              isWeb && styles.headerWeb,
             ]}>
-            <ThemedText style={[styles.statValue, { color: theme.tint }]}>
-              {stats.completed}
-            </ThemedText>
-            <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
-              Completed
-            </ThemedText>
+            <TouchableOpacity
+              onPress={() => setIsSidebarVisible(true)}
+              style={styles.menuButton}>
+              <Ionicons name="menu" size={28} color={theme.text} />
+            </TouchableOpacity>
+            <ThemedView style={{ backgroundColor: theme.background }}>
+              <ThemedText style={[styles.logo, { color: theme.text }]}>
+                🧠 QuizMaster
+              </ThemedText>
+              <ThemedText style={[styles.welcome, { color: theme.tint }]}>
+                Welcome back, {userName}! 👋
+              </ThemedText>
+
+              <ThemedText style={[styles.tagline, { color: theme.icon }]}>
+                Test your knowledge today
+              </ThemedText>
+            </ThemedView>
           </ThemedView>
 
+          {/* Stats Dashboard */}
           <ThemedView
             style={[
-              styles.statCard,
+              styles.statsContainer,
               { backgroundColor: theme.background },
-              isWideScreen && styles.statCardWide,
+              isWideScreen && styles.statsContainerWide,
             ]}>
-            <ThemedText style={[styles.statValue, { color: theme.tint }]}>
-              {stats.points}
-            </ThemedText>
-            <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
-              Points
-            </ThemedText>
-          </ThemedView>
-
-          <ThemedView
-            style={[
-              styles.statCard,
-              { backgroundColor: theme.background },
-              isWideScreen && styles.statCardWide,
-            ]}>
-            <ThemedText style={[styles.statValue, { color: theme.tint }]}>
-              {stats.streak}🔥
-            </ThemedText>
-            <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
-              Day Streak
-            </ThemedText>
-          </ThemedView>
-        </ThemedView>
-
-        {/* Categories Section */}
-        <View style={{ width: "100%" }}>
-          <ThemedView
-            style={[
-              styles.section,
-              { backgroundColor: theme.background },
-              isWideScreen && styles.sectionWide,
-            ]}>
-            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-              Choose a Category
-            </ThemedText>
+            <ThemedView
+              style={[
+                styles.statCard,
+                { backgroundColor: theme.background },
+                isWideScreen && styles.statCardWide,
+              ]}>
+              <ThemedText style={[styles.statValue, { color: theme.tint }]}>
+                {stats.completed}
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
+                Completed
+              </ThemedText>
+            </ThemedView>
 
             <ThemedView
               style={[
-                styles.categoriesGrid,
+                styles.statCard,
                 { backgroundColor: theme.background },
-                isWideScreen && styles.categoriesGridWide,
+                isWideScreen && styles.statCardWide,
               ]}>
-              {categories.map((category) => (
-                <TouchableOpacity
-                  key={category.id}
-                  style={[
-                    styles.categoryCard,
-                    {
-                      borderLeftColor: category.color,
-                      backgroundColor: theme.background,
-                    },
-                    isWideScreen && styles.categoryCardWide,
-                  ]}
-                  onPress={() => handleCategorySelect(category)}>
-                  <Text style={[styles.categoryIcon]}>{category.icon}</Text>
-                  <ThemedText
-                    style={[styles.categoryName, { color: theme.text }]}>
-                    {category.name}
-                  </ThemedText>
-                  <ThemedText
-                    style={[styles.categoryQuestions, { color: theme.icon }]}>
-                    {category.questions} questions
-                  </ThemedText>
-                </TouchableOpacity>
-              ))}
+              <ThemedText style={[styles.statValue, { color: theme.tint }]}>
+                {stats.points}
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
+                Points
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView
+              style={[
+                styles.statCard,
+                { backgroundColor: theme.background },
+                isWideScreen && styles.statCardWide,
+              ]}>
+              <ThemedText style={[styles.statValue, { color: theme.tint }]}>
+                {stats.streak}🔥
+              </ThemedText>
+              <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
+                Day Streak
+              </ThemedText>
             </ThemedView>
           </ThemedView>
-        </View>
 
-        {/* Recent Activity & Leaderboard Row */}
-        <View
-          style={[
-            styles.bottomSection,
-            isWideScreen && styles.bottomSectionWide,
-          ]}>
-          {/* Recent Activity */}
-          <ThemedView
-            style={[
-              styles.section,
-              { backgroundColor: theme.background },
-              isWideScreen && styles.sectionHalf,
-            ]}>
-            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-              Recent Activity
-            </ThemedText>
-            {recentQuizzes.map((quiz) => (
-              <ThemedView
-                key={quiz.id}
-                style={[
-                  styles.activityCard,
-                  { backgroundColor: theme.background },
-                ]}>
-                <ThemedView
-                  style={[
-                    styles.activityLeft,
-                    { backgroundColor: theme.background },
-                  ]}>
-                  <ThemedText
-                    style={[styles.activityCategory, { color: theme.text }]}>
-                    {quiz.category}
-                  </ThemedText>
-                  <ThemedText
-                    style={[styles.activityDate, { color: theme.icon }]}>
-                    {quiz.date}
-                  </ThemedText>
-                </ThemedView>
-                <ThemedView
-                  style={[
-                    styles.activityRight,
-                    { backgroundColor: theme.background },
-                  ]}>
-                  <ThemedText
-                    style={[styles.activityScore, { color: theme.text }]}>
-                    {quiz.score}/{quiz.total}
-                  </ThemedText>
-                  <ThemedText
-                    style={[styles.activityPercentage, { color: theme.tint }]}>
-                    {Math.round((quiz.score / quiz.total) * 100)}%
-                  </ThemedText>
-                </ThemedView>
-              </ThemedView>
-            ))}
-          </ThemedView>
-
-          {/* Leaderboard Preview */}
-          <ThemedView
-            style={[
-              styles.section,
-              { backgroundColor: theme.background },
-              isWideScreen && styles.sectionHalf,
-            ]}>
-            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-              Leaderboard
-            </ThemedText>
-
-            {leaderboard.map((player) => (
-              <ThemedView
-                key={player.id}
-                style={[
-                  styles.leaderboardCard,
-                  { backgroundColor: theme.background },
-                  player.name === "You" && styles.leaderboardHighlight,
-                ]}>
-                <ThemedView
-                  style={[
-                    styles.leaderboardLeft,
-                    { backgroundColor: "transparent" },
-                  ]}>
-                  <ThemedText
-                    style={[styles.leaderboardRank, { color: theme.icon }]}>
-                    #{player.rank}
-                  </ThemedText>
-                  <ThemedText
-                    style={[
-                      styles.leaderboardName,
-                      { color: theme.text },
-                      player.name === "You" && styles.leaderboardYou,
-                    ]}>
-                    {player.name}
-                  </ThemedText>
-                </ThemedView>
-                <ThemedText
-                  style={[styles.leaderboardPoints, { color: theme.text }]}>
-                  {player.points} pts
-                </ThemedText>
-              </ThemedView>
-            ))}
-            <TouchableOpacity style={styles.viewAllButton}>
-              <ThemedText style={[styles.viewAllText, { color: theme.tint }]}>
-                View Full Leaderboard →
+          {/* Categories Section */}
+          <View style={{ width: "100%" }}>
+            <ThemedView
+              style={[
+                styles.section,
+                { backgroundColor: theme.background },
+                isWideScreen && styles.sectionWide,
+              ]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+                Choose a Category
               </ThemedText>
-            </TouchableOpacity>
-          </ThemedView>
-        </View>
 
-        <ThemedView
-          style={[styles.bottomPadding, { backgroundColor: theme.background }]}
-        />
-      </ScrollView>
-    </SafeAreaView>
+              <ThemedView
+                style={[
+                  styles.categoriesGrid,
+                  { backgroundColor: theme.background },
+                  isWideScreen && styles.categoriesGridWide,
+                ]}>
+                {categories.map((category) => (
+                  <TouchableOpacity
+                    key={category.id}
+                    style={[
+                      styles.categoryCard,
+                      {
+                        borderLeftColor: category.color,
+                        backgroundColor: theme.background,
+                      },
+                      isWideScreen && styles.categoryCardWide,
+                    ]}
+                    onPress={() => handleCategorySelect(category)}>
+                    <Text style={[styles.categoryIcon]}>{category.icon}</Text>
+                    <ThemedText
+                      style={[styles.categoryName, { color: theme.text }]}>
+                      {category.name}
+                    </ThemedText>
+                    <ThemedText
+                      style={[styles.categoryQuestions, { color: theme.icon }]}>
+                      {category.questions} questions
+                    </ThemedText>
+                  </TouchableOpacity>
+                ))}
+              </ThemedView>
+            </ThemedView>
+          </View>
+
+          {/* Recent Activity & Leaderboard Row */}
+          <View
+            style={[
+              styles.bottomSection,
+              isWideScreen && styles.bottomSectionWide,
+            ]}>
+            {/* Recent Activity */}
+            <ThemedView
+              style={[
+                styles.section,
+                { backgroundColor: theme.background },
+                isWideScreen && styles.sectionHalf,
+              ]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+                Recent Activity
+              </ThemedText>
+              {recentQuizzes.map((quiz) => (
+                <ThemedView
+                  key={quiz.id}
+                  style={[
+                    styles.activityCard,
+                    { backgroundColor: theme.background },
+                  ]}>
+                  <ThemedView
+                    style={[
+                      styles.activityLeft,
+                      { backgroundColor: theme.background },
+                    ]}>
+                    <ThemedText
+                      style={[styles.activityCategory, { color: theme.text }]}>
+                      {quiz.category}
+                    </ThemedText>
+                    <ThemedText
+                      style={[styles.activityDate, { color: theme.icon }]}>
+                      {quiz.date}
+                    </ThemedText>
+                  </ThemedView>
+                  <ThemedView
+                    style={[
+                      styles.activityRight,
+                      { backgroundColor: theme.background },
+                    ]}>
+                    <ThemedText
+                      style={[styles.activityScore, { color: theme.text }]}>
+                      {quiz.score}/{quiz.total}
+                    </ThemedText>
+                    <ThemedText
+                      style={[
+                        styles.activityPercentage,
+                        { color: theme.tint },
+                      ]}>
+                      {Math.round((quiz.score / quiz.total) * 100)}%
+                    </ThemedText>
+                  </ThemedView>
+                </ThemedView>
+              ))}
+            </ThemedView>
+
+            {/* Leaderboard Preview */}
+            <ThemedView
+              style={[
+                styles.section,
+                { backgroundColor: theme.background },
+                isWideScreen && styles.sectionHalf,
+              ]}>
+              <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+                Leaderboard
+              </ThemedText>
+
+              {leaderboard.map((player) => (
+                <ThemedView
+                  key={player.id}
+                  style={[
+                    styles.leaderboardCard,
+                    { backgroundColor: theme.background },
+                    player.name === "You" && styles.leaderboardHighlight,
+                  ]}>
+                  <ThemedView
+                    style={[
+                      styles.leaderboardLeft,
+                      { backgroundColor: "transparent" },
+                    ]}>
+                    <ThemedText
+                      style={[styles.leaderboardRank, { color: theme.icon }]}>
+                      #{player.rank}
+                    </ThemedText>
+                    <ThemedText
+                      style={[
+                        styles.leaderboardName,
+                        { color: theme.text },
+                        player.name === "You" && styles.leaderboardYou,
+                      ]}>
+                      {player.name}
+                    </ThemedText>
+                  </ThemedView>
+                  <ThemedText
+                    style={[styles.leaderboardPoints, { color: theme.text }]}>
+                    {player.points} pts
+                  </ThemedText>
+                </ThemedView>
+              ))}
+              <TouchableOpacity style={styles.viewAllButton}>
+                <ThemedText style={[styles.viewAllText, { color: theme.tint }]}>
+                  View Full Leaderboard →
+                </ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+          </View>
+
+          <ThemedView
+            style={[
+              styles.bottomPadding,
+              { backgroundColor: theme.background },
+            ]}
+          />
+        </ScrollView>
+      </SafeAreaView>
+    </ThemedView>
   );
 }
 
