@@ -9,7 +9,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -60,6 +60,9 @@ function InnerLayout({
   isWeb: boolean;
   colorScheme: string | null | undefined;
 }) {
+  const segment = useSegments();
+  const isAuthPage = segment[0] === "(auth)";
+
   if (isWeb) {
     return (
       <ThemedView
@@ -68,7 +71,7 @@ function InnerLayout({
           flexDirection: "row",
           backgroundColor: theme.background,
         }}>
-        <Sidebar />
+        {!isAuthPage && <Sidebar />}
         <ThemedView style={{ flex: 3 }}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
