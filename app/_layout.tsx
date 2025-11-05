@@ -45,6 +45,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      <AuthGate />
       <InnerLayout theme={theme} isWeb={isWeb} colorScheme={colorScheme} />
     </AuthProvider>
   );
