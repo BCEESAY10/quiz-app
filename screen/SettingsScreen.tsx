@@ -4,7 +4,7 @@ import { Colors } from "@/constants/theme";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   Platform,
@@ -18,8 +18,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Avatar } from "@/components/ui/avatar";
-import { Toast } from "@/components/ui/toast";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -39,7 +37,6 @@ export default function SettingsScreen() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [bio, setBio] = useState("");
 
   const handleSaveProfile = () => {
     // TODO: Implement profile update API call
@@ -124,16 +121,6 @@ export default function SettingsScreen() {
             )}
           </View>
 
-          {/* Avatar */}
-          <View style={styles.avatarContainer}>
-            <Avatar fullName={fullName || "User"} />
-            {isEditingProfile && (
-              <TouchableOpacity style={styles.changeAvatarButton}>
-                <Ionicons name="camera" size={20} color="#FFFFFF" />
-              </TouchableOpacity>
-            )}
-          </View>
-
           {/* Profile Form */}
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
@@ -179,31 +166,6 @@ export default function SettingsScreen() {
                 placeholderTextColor={theme.icon}
                 keyboardType="email-address"
                 autoCapitalize="none"
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <ThemedText style={[styles.label, { color: theme.icon }]}>
-                Bio
-              </ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  styles.textArea,
-                  {
-                    backgroundColor: theme.background,
-                    color: theme.text,
-                    borderColor: theme.tabIconDefault,
-                  },
-                  !isEditingProfile && styles.inputDisabled,
-                ]}
-                value={bio}
-                onChangeText={setBio}
-                editable={isEditingProfile}
-                placeholder="Tell us about yourself"
-                placeholderTextColor={theme.icon}
-                multiline
-                numberOfLines={4}
               />
             </View>
 
@@ -258,52 +220,6 @@ export default function SettingsScreen() {
             <Switch
               value={isDarkMode}
               onValueChange={setIsDarkMode}
-              trackColor={{ false: "#D1D5DB", true: theme.tint }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
-
-          <View
-            style={[
-              styles.settingItem,
-              { borderBottomColor: theme.tabIconDefault },
-            ]}>
-            <View style={styles.settingLeft}>
-              <Ionicons
-                name="notifications-outline"
-                size={22}
-                color={theme.text}
-              />
-              <ThemedText style={[styles.settingText, { color: theme.text }]}>
-                Notifications
-              </ThemedText>
-            </View>
-            <Switch
-              value={notificationsEnabled}
-              onValueChange={setNotificationsEnabled}
-              trackColor={{ false: "#D1D5DB", true: theme.tint }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
-
-          <View
-            style={[
-              styles.settingItem,
-              { borderBottomColor: theme.tabIconDefault },
-            ]}>
-            <View style={styles.settingLeft}>
-              <Ionicons
-                name="volume-high-outline"
-                size={22}
-                color={theme.text}
-              />
-              <ThemedText style={[styles.settingText, { color: theme.text }]}>
-                Sound Effects
-              </ThemedText>
-            </View>
-            <Switch
-              value={soundEnabled}
-              onValueChange={setSoundEnabled}
               trackColor={{ false: "#D1D5DB", true: theme.tint }}
               thumbColor="#FFFFFF"
             />
