@@ -2,8 +2,7 @@ import { CustomDrawerContent } from "@/components/CustomDrawerContent";
 import { Sidebar } from "@/components/Sidebar";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { ThemeProvider } from "@/provider/ThemeProvider";
+import { ThemeProvider, useAppTheme } from "@/provider/ThemeProvider";
 import { AuthProvider, useAuth } from "@/provider/UserProvider";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { Drawer } from "expo-router/drawer";
@@ -34,15 +33,14 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web" && width >= 768;
 
   return (
     <AuthProvider>
       <AuthGate />
-      <InnerLayout theme={theme} isWeb={isWeb} colorScheme={colorScheme} />
+      <InnerLayout theme={theme} isWeb={isWeb} />
     </AuthProvider>
   );
 }
@@ -50,11 +48,9 @@ export default function RootLayout() {
 function InnerLayout({
   theme,
   isWeb,
-  colorScheme,
 }: {
   theme: (typeof Colors)["light"];
   isWeb: boolean;
-  colorScheme: string | null | undefined;
 }) {
   const segment = useSegments();
   const isAuthPage = segment[0] === "(auth)";
