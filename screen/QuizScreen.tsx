@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Colors } from "@/constants/theme";
 import { MOCK_QUESTIONS } from "@/mock/questions";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import { Question, QuizState } from "@/types/quiz";
 import { getRandomQuestions } from "@/utils/quizHelpers";
 import { useLocalSearchParams } from "expo-router";
@@ -12,7 +12,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  useColorScheme,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -21,9 +20,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function QuizScreen() {
   const params = useLocalSearchParams();
   const category = params.category as string;
-  const colorScheme = useColorScheme();
   const { width } = useWindowDimensions();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
 

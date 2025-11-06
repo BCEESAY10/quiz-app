@@ -1,23 +1,16 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Colors } from "@/constants/theme";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Avatar } from "./ui/avatar";
 
 export const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
   const { user, logout } = useAuth();
 
   const menuItems = [

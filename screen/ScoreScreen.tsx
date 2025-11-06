@@ -1,20 +1,18 @@
-import { Colors } from "@/constants/theme";
 import { MOCK_CATEGORY_STATS } from "@/mock/category-stats";
 import { MOCK_QUIZ_HISTORY } from "@/mock/history";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ScoresScreen() {
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
 
   const [selectedTab, setSelectedTab] = useState<"overview" | "history">(
     "overview"

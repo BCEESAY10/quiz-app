@@ -1,7 +1,6 @@
 import { ThemedText } from "@/components/themed-text";
 import { Avatar } from "@/components/ui/avatar";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme.web";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -15,8 +14,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
 
   const menuItems = [
     {
