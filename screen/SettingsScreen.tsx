@@ -91,6 +91,7 @@ export default function SettingsScreen() {
           style={[
             styles.section,
             isWideScreen && styles.wideSection,
+            isWeb && styles.profileSection,
             { backgroundColor: theme.background },
           ]}>
           <View style={styles.sectionHeader}>
@@ -313,6 +314,9 @@ const styles = StyleSheet.create({
   },
   wideSection: {
     paddingVertical: 16,
+  },
+  profileSection: {
+    marginBottom: 150,
   },
   sectionHeader: {
     flexDirection: "row",
