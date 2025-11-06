@@ -82,7 +82,10 @@ export default function SettingsScreen() {
       <ScrollView
         style={[styles.scrollView, { backgroundColor: theme.background }]}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={isWideScreen && styles.wideContainer}>
+        contentContainerStyle={[
+          styles.scrollContent,
+          isWideScreen ? styles.wideContainer : undefined,
+        ]}>
         {/* Profile Section */}
         <ThemedView
           style={[
@@ -187,7 +190,11 @@ export default function SettingsScreen() {
 
         {/* Theme & Preferences Section */}
         <ThemedView
-          style={[styles.section, { backgroundColor: theme.background }]}>
+          style={[
+            styles.section,
+            isWideScreen && styles.wideSection,
+            { backgroundColor: theme.background },
+          ]}>
           <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
             Appearance & Preferences
           </ThemedText>
@@ -214,7 +221,11 @@ export default function SettingsScreen() {
 
         {/* Security Section */}
         <ThemedView
-          style={[styles.section, { backgroundColor: theme.background }]}>
+          style={[
+            styles.section,
+            isWideScreen && styles.wideSection,
+            { backgroundColor: theme.background },
+          ]}>
           <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
             Security
           </ThemedText>
@@ -241,7 +252,11 @@ export default function SettingsScreen() {
 
         {/* Danger Zone */}
         <ThemedView
-          style={[styles.section, { backgroundColor: theme.background }]}>
+          style={[
+            styles.section,
+            isWideScreen && styles.wideSection,
+            { backgroundColor: theme.background },
+          ]}>
           <ThemedText style={[styles.sectionTitle, { color: "#EF4444" }]}>
             Danger Zone
           </ThemedText>
@@ -271,6 +286,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    paddingVertical: 20,
+  },
   wideContainer: {
     maxWidth: 800,
     alignSelf: "center",
@@ -284,9 +302,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
-  backButton: {
-    padding: 4,
-  },
+
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
@@ -296,7 +312,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   wideSection: {
-    marginTop: 24,
+    paddingVertical: 16,
   },
   sectionHeader: {
     flexDirection: "row",
