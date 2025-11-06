@@ -1,6 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Colors } from "@/constants/theme";
 import { useAuth } from "@/provider/UserProvider";
 import { Category } from "@/types/home";
 import { useRouter } from "expo-router";
@@ -10,7 +9,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  useColorScheme,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -19,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // Add type imports
 import { categories } from "@/mock/categories";
 import { leaderboard, recentQuizzes, stats } from "@/mock/home-stats";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import type { ViewProps } from "react-native";
 import type { SafeAreaViewProps } from "react-native-safe-area-context";
 
@@ -35,8 +34,7 @@ type SafeAreaProps = SafeAreaViewProps & {
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
 
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
