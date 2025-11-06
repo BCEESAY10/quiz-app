@@ -30,23 +30,13 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
       },
     },
     {
-      id: "quiz",
-      label: "Quiz",
-      icon: "trophy-outline",
-      path: "/quiz",
+      id: "settings",
+      label: "Settings",
+      icon: "settings-outline",
+      path: "/settings",
       onPress: () => {
         props.navigation.closeDrawer();
-        router.push("/quiz");
-      },
-    },
-    {
-      id: "scores",
-      label: "Scores",
-      icon: "bar-chart-outline",
-      path: "/scores",
-      onPress: () => {
-        props.navigation.closeDrawer();
-        router.push("/scores");
+        router.push("/settings");
       },
     },
   ];

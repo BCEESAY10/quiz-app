@@ -9,7 +9,7 @@ import { loginUser } from "@/utils/mock-auth";
 import { loginFields } from "@/utils/validation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,

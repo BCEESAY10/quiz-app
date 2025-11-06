@@ -5,7 +5,7 @@ import { MOCK_QUESTIONS } from "@/mock/questions";
 import { Question, QuizState } from "@/types/quiz";
 import { getRandomQuestions } from "@/utils/quizHelpers";
 import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Platform,
   ScrollView,

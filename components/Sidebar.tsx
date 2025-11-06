@@ -33,7 +33,7 @@ export const Sidebar = () => {
       label: "Settings",
       icon: "settings-outline" as const,
       path: "/settings",
-      onPress: () => router.push("/"),
+      onPress: () => router.push("/settings"),
     },
   ];
 

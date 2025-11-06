@@ -3,7 +3,6 @@ import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useAuth } from "@/provider/UserProvider";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
