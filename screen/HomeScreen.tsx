@@ -2,9 +2,8 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useAuth } from "@/provider/UserProvider";
-import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
+import { Category } from "@/types/home";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -18,6 +17,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Add type imports
+import { categories } from "@/mock/categories";
+import { leaderboard, recentQuizzes, stats } from "@/mock/home-stats";
 import type { ViewProps } from "react-native";
 import type { SafeAreaViewProps } from "react-native-safe-area-context";
 
@@ -40,35 +41,9 @@ export default function HomeScreen() {
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   // ======== Mock data ==========
   const userName = user?.fullName ?? "User";
-
-  const stats: Stats = {
-    completed: 24,
-    streak: 5,
-    points: 1250,
-  };
-
-  const categories: Category[] = [
-    { id: 1, name: "Science", icon: "🧪", questions: 50, color: "#4CAF50" },
-    { id: 2, name: "Sports", icon: "⚽", questions: 45, color: "#FF9800" },
-    { id: 3, name: "English", icon: "📚", questions: 60, color: "#2196F3" },
-    { id: 5, name: "Geography", icon: "🌍", questions: 55, color: "#00BCD4" },
-    { id: 6, name: "Math", icon: "🔢", questions: 48, color: "#F44336" },
-  ];
-
-  const recentQuizzes: QuizRecord[] = [
-    { id: 1, category: "Science", score: 8, total: 10, date: "Today" },
-    { id: 2, category: "Sports", score: 7, total: 10, date: "Yesterday" },
-  ];
-
-  const leaderboard: LeaderboardEntry[] = [
-    { id: 1, name: "Sarah", points: 2100, rank: 1 },
-    { id: 2, name: "Mike", points: 1890, rank: 2 },
-    { id: 3, name: "You", points: 1250, rank: 3 },
-  ];
 
   const handleCategorySelect = (category: Category) => {
     router.push({
