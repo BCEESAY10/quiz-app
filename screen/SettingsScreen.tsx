@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme.web";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -13,7 +14,6 @@ import {
   Switch,
   TextInput,
   TouchableOpacity,
-  useColorScheme,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -23,7 +23,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const theme = Colors[colorScheme ?? "dark"];
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
@@ -178,9 +178,13 @@ export default function SettingsScreen() {
                   style={[
                     styles.button,
                     styles.saveButton,
-                    { backgroundColor: theme.tint },
+                    { backgroundColor: theme.primaryButton.background },
                   ]}>
-                  <ThemedText style={[styles.buttonText, { color: "#FFFFFF" }]}>
+                  <ThemedText
+                    style={[
+                      styles.buttonText,
+                      { color: theme.primaryButton.text },
+                    ]}>
                     Save Changes
                   </ThemedText>
                 </TouchableOpacity>
@@ -370,6 +374,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   cancelButton: {
     borderWidth: 1,
