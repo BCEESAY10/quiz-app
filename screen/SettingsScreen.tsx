@@ -30,8 +30,6 @@ export default function SettingsScreen() {
 
   // Theme settings
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Profile settings (initially from user data)
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -85,25 +83,13 @@ export default function SettingsScreen() {
         style={[styles.scrollView, { backgroundColor: theme.background }]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={isWideScreen && styles.wideContainer}>
-        {/* Header */}
-        <ThemedView
-          style={[styles.header, { backgroundColor: theme.background }]}>
-          {!isWideScreen && (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color={theme.text} />
-            </TouchableOpacity>
-          )}
-          <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
-            Settings
-          </ThemedText>
-          <View style={{ width: 24 }} />
-        </ThemedView>
-
         {/* Profile Section */}
         <ThemedView
-          style={[styles.section, { backgroundColor: theme.background }]}>
+          style={[
+            styles.section,
+            isWideScreen && styles.wideSection,
+            { backgroundColor: theme.background },
+          ]}>
           <View style={styles.sectionHeader}>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
               Profile Settings
@@ -296,7 +282,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 10,
   },
   backButton: {
     padding: 4,
@@ -306,8 +292,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   section: {
-    marginTop: 24,
+    marginTop: 0,
     paddingHorizontal: 20,
+  },
+  wideSection: {
+    marginTop: 24,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -329,24 +318,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  avatarContainer: {
-    alignItems: "center",
-    marginBottom: 24,
-    position: "relative",
-  },
-  changeAvatarButton: {
-    position: "absolute",
-    bottom: 0,
-    right: "40%",
-    backgroundColor: "#5B48E8",
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 3,
-    borderColor: "#FFFFFF",
-  },
+
   formContainer: {
     gap: 16,
   },
