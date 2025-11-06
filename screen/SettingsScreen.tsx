@@ -321,6 +321,7 @@ const styles = StyleSheet.create({
 
   formContainer: {
     gap: 16,
+    marginBottom: 24,
   },
   inputGroup: {
     gap: 8,
@@ -338,11 +339,6 @@ const styles = StyleSheet.create({
   },
   inputDisabled: {
     opacity: 0.6,
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
-    paddingTop: 12,
   },
   buttonRow: {
     flexDirection: "row",
@@ -371,6 +367,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 16,
     borderBottomWidth: 1,
+    marginBottom: 20,
   },
   settingLeft: {
     flexDirection: "row",
