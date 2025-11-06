@@ -286,7 +286,12 @@ export default function QuizScreen() {
           isWideScreen && styles.quizContainerWide,
         ]}>
         {/* Header */}
-        <View style={[styles.header, { backgroundColor: theme.background }]}>
+        <View
+          style={[
+            styles.header,
+            isWeb && styles.webHeader,
+            { backgroundColor: theme.background },
+          ]}>
           <Text style={styles.categoryBadge}>{category}</Text>
           <View style={styles.questionCounterAndTimer}>
             <Text style={[styles.questionCounter, { color: theme.text }]}>
@@ -457,10 +462,15 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 0,
+    marginTop: -16,
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
     borderBottomColor: "#E8EAED",
+  },
+  webHeader: {
+    paddingVertical: 16,
+    marginTop: 0,
   },
   categoryBadge: {
     fontSize: 14,

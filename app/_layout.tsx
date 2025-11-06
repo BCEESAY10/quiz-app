@@ -3,12 +3,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { ThemeProvider } from "@/provider/ThemeProvider";
 import { AuthProvider, useAuth } from "@/provider/UserProvider";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
@@ -86,7 +82,7 @@ function InnerLayout({
   // Mobile: Drawer + Tabs Navigation
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <ThemeProvider>
         <AuthGate />
         <Drawer
           drawerContent={(props) => <CustomDrawerContent {...props} />}

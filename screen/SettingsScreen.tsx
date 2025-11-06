@@ -1,10 +1,8 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme.web";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -20,16 +18,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
-  const router = useRouter();
   const { user } = useAuth();
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "dark"];
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
 
   // Theme settings
-  const [isDarkMode, setIsDarkMode] = useState(colorScheme === "dark");
+  const { colorScheme, setColorScheme, theme } = useAppTheme();
+
+  const isDarkMode = colorScheme === "dark";
 
   // Profile settings (initially from user data)
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -217,7 +214,7 @@ export default function SettingsScreen() {
             </View>
             <Switch
               value={isDarkMode}
-              onValueChange={setIsDarkMode}
+              onValueChange={(val) => setColorScheme(val ? "dark" : "light")}
               trackColor={{ false: "#D1D5DB", true: theme.tint }}
               thumbColor="#FFFFFF"
             />
@@ -305,7 +302,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
 
   headerTitle: {
