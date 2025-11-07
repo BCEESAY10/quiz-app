@@ -46,8 +46,16 @@ export default function SettingsScreen() {
     setIsEditingProfile(false);
   };
 
+  const handleToggle = () => {
+    const newValue = !isDarkMode;
+    setColorScheme(newValue ? "dark" : "light");
+  };
+
   const handleChangePassword = () => {
     // TODO: Navigate to change password screen or show modal
+    if (isWeb) {
+      window.alert("This will navigate to the password screen");
+    }
     Alert.alert(
       "Change Password",
       "This will navigate to change password screen"
@@ -55,6 +63,11 @@ export default function SettingsScreen() {
   };
 
   const handleDeleteAccount = () => {
+    if (isWeb) {
+      window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      );
+    }
     Alert.alert(
       "Delete Account",
       "Are you sure you want to delete your account? This action cannot be undone.",
@@ -205,16 +218,18 @@ export default function SettingsScreen() {
             style={[
               styles.settingItem,
               { borderBottomColor: theme.tabIconDefault },
-            ]}>
+            ]}
+            pointerEvents="box-none">
             <View style={styles.settingLeft}>
               <Ionicons name="moon-outline" size={22} color={theme.text} />
               <ThemedText style={[styles.settingText, { color: theme.text }]}>
                 Dark Mode
               </ThemedText>
             </View>
+
             <Switch
               value={isDarkMode}
-              onValueChange={(val) => setColorScheme(val ? "dark" : "light")}
+              onValueChange={handleToggle}
               trackColor={{ false: "#D1D5DB", true: theme.tint }}
               thumbColor="#FFFFFF"
             />
