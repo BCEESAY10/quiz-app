@@ -23,6 +23,9 @@ function AuthGate() {
     if (loading) return;
     if (!user) {
       router.replace("/login");
+      setTimeout(() => {
+        router.replace("/login");
+      }, 100);
     } else {
       router.replace("/");
     }
