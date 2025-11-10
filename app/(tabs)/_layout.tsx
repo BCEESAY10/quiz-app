@@ -1,13 +1,25 @@
-import { Tabs } from "expo-router";
+import { Stack, Tabs } from "expo-router";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useAppTheme } from "@/provider/ThemeProvider";
+import { Platform, useWindowDimensions } from "react-native";
 
 export default function TabLayout() {
   const { theme } = useAppTheme();
+  const { width } = useWindowDimensions();
+  const isWeb = Platform.OS === "web" && width >= 768;
+
+  if (isWeb) {
+    // For web, use Stack without Tabs
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="quiz" />
+        <Stack.Screen name="scores" />
+      </Stack>
+    );
+  }
 
   return (
     <Tabs
