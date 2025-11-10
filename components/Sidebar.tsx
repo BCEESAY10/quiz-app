@@ -22,6 +22,20 @@ export const Sidebar = () => {
       onPress: () => router.push("/"),
     },
     {
+      id: "quiz",
+      label: "Quiz",
+      icon: "help-circle-outline" as const,
+      path: "/quiz",
+      onPress: () => router.push("/quiz"),
+    },
+    {
+      id: "scores",
+      label: "Scores",
+      icon: "stats-chart-outline" as const,
+      path: "/scores",
+      onPress: () => router.push("/scores"),
+    },
+    {
       id: "settings",
       label: "Settings",
       icon: "settings-outline" as const,
