@@ -66,7 +66,7 @@ export default function LoginScreen() {
   };
 
   const handleForgotPassword = () => {
-    // Handle forgot password
+    router.push("/forgot-password");
     console.log("Forgot password");
   };
 
