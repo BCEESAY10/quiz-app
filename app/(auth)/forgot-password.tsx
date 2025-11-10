@@ -1,6 +1,8 @@
+import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
+import { loginFields, resetPasswordField } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -24,26 +26,11 @@ export default function ForgotPasswordScreen() {
   const theme = Colors[colorScheme ?? "light"];
 
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const handleSendResetLink = async () => {
-    if (!email.trim()) {
-      Alert.alert("Error", "Please enter your email address");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      Alert.alert("Error", "Please enter a valid email address");
-      return;
-    }
-
-    setLoading(true);
+  const onSubmit = async () => {
+    setIsLoading(true);
 
     try {
       // TODO: Implement API call to send reset link
@@ -56,13 +43,13 @@ export default function ForgotPasswordScreen() {
     } catch (error) {
       Alert.alert("Error", "Failed to send reset link. Please try again.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const handleResendEmail = async () => {
     setEmailSent(false);
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       // TODO: Implement API call
@@ -72,7 +59,7 @@ export default function ForgotPasswordScreen() {
     } catch (error) {
       Alert.alert("Error", "Failed to resend link. Please try again.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -202,55 +189,12 @@ export default function ForgotPasswordScreen() {
             </ThemedText>
 
             {/* Email Input */}
-            <View style={styles.inputContainer}>
-              <ThemedText style={[styles.label, { color: theme.icon }]}>
-                Email Address
-              </ThemedText>
-              <View
-                style={[
-                  styles.inputWrapper,
-                  {
-                    backgroundColor: theme.background,
-                    borderColor: theme.tabIconDefault,
-                  },
-                ]}>
-                <Ionicons
-                  name="mail-outline"
-                  size={20}
-                  color={theme.icon}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={[styles.input, { color: theme.text }]}
-                  placeholder="Enter your email"
-                  placeholderTextColor={theme.icon}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  editable={!loading}
-                />
-              </View>
-            </View>
-
-            {/* Submit Button */}
-            <TouchableOpacity
-              onPress={handleSendResetLink}
-              style={[
-                styles.submitButton,
-                { backgroundColor: theme.tint },
-                loading && styles.disabledButton,
-              ]}
-              disabled={loading}>
-              {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <ThemedText style={styles.submitButtonText}>
-                  Send Reset Link
-                </ThemedText>
-              )}
-            </TouchableOpacity>
+            <FormComponent
+              fields={resetPasswordField}
+              onSubmit={onSubmit}
+              submitButtonText="Send Reset Link"
+              isLoading={isLoading}
+            />
 
             {/* Back to Login */}
             <View style={styles.loginLinkContainer}>
