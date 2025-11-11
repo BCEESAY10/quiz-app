@@ -7,7 +7,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { Platform, useWindowDimensions } from "react-native";
+import { BackHandler, Platform, useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
@@ -15,17 +15,24 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-function AuthGate() {
+export function AuthGate() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
   useEffect(() => {
     if (loading) return;
+
     if (!user) {
-      router.replace("/login");
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => true
+      );
+
       setTimeout(() => {
         router.replace("/login");
       }, 100);
+
+      return () => backHandler.remove();
     } else {
       router.replace("/");
     }
