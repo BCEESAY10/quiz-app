@@ -1,6 +1,8 @@
+import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
+import { formFields, newPasswordFields } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -33,23 +35,9 @@ export default function ResetPasswordScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const validatePassword = (password: string) => {
-    // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    return passwordRegex.test(password);
-  };
-
-  const handleResetPassword = async () => {
+  const onSubmit = async () => {
     if (!newPassword || !confirmPassword) {
       Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
-
-    if (!validatePassword(newPassword)) {
-      Alert.alert(
-        "Error",
-        "Password must be at least 8 characters with uppercase, lowercase, and number"
-      );
       return;
     }
 
@@ -120,87 +108,12 @@ export default function ResetPasswordScreen() {
               </ThemedText>
             )}
 
-            {/* New Password Input */}
-            <View style={styles.inputContainer}>
-              <ThemedText style={[styles.label, { color: theme.icon }]}>
-                New Password
-              </ThemedText>
-              <View
-                style={[
-                  styles.inputWrapper,
-                  {
-                    backgroundColor: theme.background,
-                    borderColor: theme.tabIconDefault,
-                  },
-                ]}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={20}
-                  color={theme.icon}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={[styles.input, { color: theme.text }]}
-                  placeholder="Enter new password"
-                  placeholderTextColor={theme.icon}
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  editable={!loading}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}>
-                  <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    size={20}
-                    color={theme.icon}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Confirm Password Input */}
-            <View style={styles.inputContainer}>
-              <ThemedText style={[styles.label, { color: theme.icon }]}>
-                Confirm Password
-              </ThemedText>
-              <View
-                style={[
-                  styles.inputWrapper,
-                  {
-                    backgroundColor: theme.background,
-                    borderColor: theme.tabIconDefault,
-                  },
-                ]}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={20}
-                  color={theme.icon}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={[styles.input, { color: theme.text }]}
-                  placeholder="Confirm new password"
-                  placeholderTextColor={theme.icon}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showConfirmPassword}
-                  autoCapitalize="none"
-                  editable={!loading}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                  <Ionicons
-                    name={
-                      showConfirmPassword ? "eye-off-outline" : "eye-outline"
-                    }
-                    size={20}
-                    color={theme.icon}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <FormComponent
+              fields={newPasswordFields}
+              onSubmit={onSubmit}
+              submitButtonText="Reset Password"
+              isLoading={loading}
+            />
 
             {/* Password Requirements */}
             <View style={styles.requirementsContainer}>
@@ -270,24 +183,6 @@ export default function ResetPasswordScreen() {
               </View>
             </View>
 
-            {/* Submit Button */}
-            <TouchableOpacity
-              onPress={handleResetPassword}
-              style={[
-                styles.submitButton,
-                { backgroundColor: theme.tint },
-                loading && styles.disabledButton,
-              ]}
-              disabled={loading}>
-              {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <ThemedText style={styles.submitButtonText}>
-                  Reset Password
-                </ThemedText>
-              )}
-            </TouchableOpacity>
-
             {/* Back to Login */}
             <TouchableOpacity
               onPress={() => router.replace("/login")}
@@ -302,3 +197,120 @@ export default function ResetPasswordScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 40,
+    paddingBottom: 40,
+    maxWidth: 500,
+    width: "100%",
+    alignSelf: "center",
+  },
+  iconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: "center",
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  email: {
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    height: "100%",
+  },
+  requirementsContainer: {
+    marginBottom: 24,
+    padding: 16,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 8,
+  },
+  requirementsTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  requirement: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
+  },
+  requirementText: {
+    fontSize: 14,
+  },
+  submitButton: {
+    height: 56,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  submitButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  loginLinkContainer: {
+    alignItems: "center",
+    paddingVertical: 12,
+  },
+  loginLink: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+});
