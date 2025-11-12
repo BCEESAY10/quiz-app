@@ -66,7 +66,7 @@ export default function LoginScreen() {
   };
 
   const handleForgotPassword = () => {
-    router.push("/reset-password");
+    router.push("/forgot-password");
   };
 
   if (isLoading) {
