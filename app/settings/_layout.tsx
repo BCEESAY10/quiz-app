@@ -1,12 +1,6 @@
 import { Colors } from "@/constants/theme";
 import { Stack, useRouter } from "expo-router";
-import {
-  Platform,
-  TouchableOpacity,
-  useColorScheme,
-  useWindowDimensions,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Platform, useColorScheme, useWindowDimensions } from "react-native";
 
 export default function SettingsLayout() {
   const router = useRouter();
@@ -34,6 +28,13 @@ export default function SettingsLayout() {
         name="index"
         options={{
           title: "Settings",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="change-password"
+        options={{
+          title: "Change Password",
           headerShown: false,
         }}
       />

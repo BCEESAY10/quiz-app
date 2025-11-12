@@ -89,33 +89,6 @@ export default function ChangePasswordScreen() {
               submitButtonText="Change Password"
               isLoading={isLoading}
             />
-
-            {/* Security Tips */}
-            <View
-              style={[
-                styles.tipsContainer,
-                { backgroundColor: theme.tint + "10" },
-              ]}>
-              <View style={styles.tipHeader}>
-                <Ionicons
-                  name="information-circle"
-                  size={20}
-                  color={theme.tint}
-                />
-                <ThemedText style={[styles.tipsTitle, { color: theme.tint }]}>
-                  Security Tips
-                </ThemedText>
-              </View>
-              <ThemedText style={[styles.tipText, { color: theme.icon }]}>
-                • Use a unique password you don't use elsewhere
-              </ThemedText>
-              <ThemedText style={[styles.tipText, { color: theme.icon }]}>
-                • Avoid personal information like names or birthdays
-              </ThemedText>
-              <ThemedText style={[styles.tipText, { color: theme.icon }]}>
-                • Consider using a password manager
-              </ThemedText>
-            </View>
           </ThemedView>
         </KeyboardAvoidingView>
       </ScrollView>

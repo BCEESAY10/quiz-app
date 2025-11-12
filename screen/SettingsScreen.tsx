@@ -3,6 +3,7 @@ import { ThemedView } from "@/components/themed-view";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -18,6 +19,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const { user } = useAuth();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
@@ -28,19 +30,16 @@ export default function SettingsScreen() {
 
   const isDarkMode = colorScheme === "dark";
 
-  // Profile settings (initially from user data)
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [email, setEmail] = useState(user?.email || "");
 
   const handleSaveProfile = () => {
-    // TODO: Implement profile update API call
     Alert.alert("Success", "Profile updated successfully!");
     setIsEditingProfile(false);
   };
 
   const handleCancelEdit = () => {
-    // Reset to original values
     setFullName(user?.fullName || "");
     setEmail(user?.email || "");
     setIsEditingProfile(false);
@@ -52,14 +51,7 @@ export default function SettingsScreen() {
   };
 
   const handleChangePassword = () => {
-    // TODO: Navigate to change password screen or show modal
-    if (isWeb) {
-      window.alert("This will navigate to the password screen");
-    }
-    Alert.alert(
-      "Change Password",
-      "This will navigate to change password screen"
-    );
+    router.push("/settings/change-password");
   };
 
   const handleDeleteAccount = () => {
