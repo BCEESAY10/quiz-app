@@ -146,3 +146,52 @@ export const newPasswordFields: FormField<RegisterFormData>[] = [
     },
   },
 ];
+
+export const changePasswordFields: FormField<RegisterFormData>[] = [
+  {
+    name: "currentPassword",
+    label: "Current Password",
+    placeholder: "Enter your current password",
+    secureTextEntry: true,
+    rules: {
+      required: "Password is required",
+      minLength: {
+        value: 8,
+        message: "Password must be at least 8 characters",
+      },
+      pattern: {
+        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        message: "Password must contain uppercase, lowercase, and number",
+      },
+    },
+  },
+  {
+    name: "newPassword",
+    label: "New Password",
+    placeholder: "Enter your new password",
+    secureTextEntry: true,
+    rules: {
+      required: "Password is required",
+      minLength: {
+        value: 8,
+        message: "Password must be at least 8 characters",
+      },
+      pattern: {
+        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        message: "Password must contain uppercase, lowercase, and number",
+      },
+    },
+  },
+  {
+    name: "confirmPassword",
+    label: "Confirm Password",
+    placeholder: "Re-enter your password",
+    secureTextEntry: true,
+    rules: {
+      required: "Please confirm your password",
+      validate: ((value: string, formValues: any) => {
+        return value === formValues.newPassword || "Passwords do not match";
+      }) as unknown as (value: string) => string | boolean,
+    },
+  },
+];

@@ -3,6 +3,8 @@ export interface RegisterFormData {
   email: string;
   password: string;
   confirmPassword: string;
+  currentPassword?: string;
+  newPassword?: string;
 }
 
 export interface LoginFormData {
