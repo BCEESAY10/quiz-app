@@ -19,6 +19,7 @@ export const Sidebar = () => {
       label: "Home",
       icon: "home-outline" as const,
       path: "/",
+      exactMatch: true,
       onPress: () => router.push("/"),
     },
     {
@@ -26,6 +27,7 @@ export const Sidebar = () => {
       label: "Quiz",
       icon: "help-circle-outline" as const,
       path: "/quiz",
+      exactMatch: true,
       onPress: () => router.push("/quiz"),
     },
     {
@@ -33,6 +35,7 @@ export const Sidebar = () => {
       label: "Scores",
       icon: "stats-chart-outline" as const,
       path: "/scores",
+      exactMatch: true,
       onPress: () => router.push("/scores"),
     },
     {
@@ -40,6 +43,7 @@ export const Sidebar = () => {
       label: "Settings",
       icon: "settings-outline" as const,
       path: "/settings",
+      exactMatch: false,
       onPress: () => router.push("/settings"),
     },
   ];
@@ -80,7 +84,9 @@ export const Sidebar = () => {
         <ThemedView
           style={[styles.menuSection, { backgroundColor: theme.background }]}>
           {menuItems.map((item) => {
-            const isActive = pathname === item.path;
+            const isActive = item.exactMatch
+              ? pathname === item.path
+              : pathname === item.path || pathname.startsWith(item.path + "/");
             return (
               <TouchableOpacity
                 key={item.id}
