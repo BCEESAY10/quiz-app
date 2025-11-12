@@ -3,7 +3,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { ThemedView } from "@/components/themed-view";
 import { ThemeProvider, useAppTheme } from "@/provider/ThemeProvider";
 import { AuthProvider, useAuth } from "@/provider/UserProvider";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, usePathname, useRouter, useSegments } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -17,6 +17,7 @@ export const unstable_settings = {
 
 export function AuthGate() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -37,6 +38,21 @@ export function AuthGate() {
       router.replace("/");
     }
   }, [user, loading, router]);
+
+  useEffect(() => {
+    if (Platform.OS !== "web" || loading) return;
+
+    const handlePopState = () => {
+      if (user && pathname === "/login") {
+        router.replace("/");
+      } else if (!user && pathname !== "/login") {
+        router.replace("/login");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [user, pathname, loading, router]);
 
   return null;
 }
