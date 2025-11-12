@@ -1,14 +1,14 @@
 import { FormComponent } from "@/components/form/Form";
 import { Loader } from "@/components/ui/loader";
 import { Toast } from "@/components/ui/toast";
-import { Colors } from "@/constants/theme";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
 import { RegisterFormData } from "@/types/auth";
 import { ToastState } from "@/types/toast";
 import { saveUser } from "@/utils/mock-auth";
 import { formFields } from "@/utils/validation";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
@@ -17,7 +17,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  useColorScheme,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -26,8 +25,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function RegisterScreen() {
   const router = useRouter();
   const { setUser } = useAuth();
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;

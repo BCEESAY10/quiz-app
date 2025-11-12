@@ -1,29 +1,25 @@
 import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Colors } from "@/constants/theme";
-import { loginFields, resetPasswordField } from "@/utils/validation";
+import { useAppTheme } from "@/provider/ThemeProvider";
+import { resetPasswordField } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
 
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);

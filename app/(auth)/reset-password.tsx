@@ -2,6 +2,7 @@ import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
+import { useAppTheme } from "@/provider/ThemeProvider";
 import { formFields, newPasswordFields } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -26,8 +27,7 @@ export default function ResetPasswordScreen() {
     token: string;
     email: string;
   }>();
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const { theme } = useAppTheme();
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
