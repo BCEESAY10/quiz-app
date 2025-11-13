@@ -5,7 +5,7 @@ import { useAppTheme } from "@/provider/ThemeProvider";
 import { resetPasswordField } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -114,7 +114,7 @@ export default function ForgotPasswordScreen() {
                 </ThemedText>
                 <TouchableOpacity
                   onPress={handleResendEmail}
-                  disabled={loading}>
+                  disabled={isLoading}>
                   <ThemedText
                     style={[styles.resendLink, { color: theme.tint }]}>
                     Resend Link
