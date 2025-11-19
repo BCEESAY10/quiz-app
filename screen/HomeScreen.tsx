@@ -20,6 +20,7 @@ import { leaderboard, recentQuizzes, stats } from "@/mock/home-stats";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import type { ViewProps } from "react-native";
 import type { SafeAreaViewProps } from "react-native-safe-area-context";
+import { useReviewPrompt } from "@/hooks/use-review-prompt";
 
 // Define prop types for themed components
 type ThemedViewProps = ViewProps & {
@@ -42,6 +43,15 @@ export default function HomeScreen() {
 
   // ======== Mock data ==========
   const userName = user?.fullName ?? "User";
+  const quizzesCompleted = user?.stats?.quizzesCompleted ?? 0;
+
+  const {
+    shouldShow,
+    isChecking,
+    handleDismiss,
+    handleDontAskAgain,
+    handleSubmitSuccess,
+  } = useReviewPrompt(quizzesCompleted);
 
   const handleCategorySelect = (category: Category) => {
     router.push({
