@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Avatar } from "./ui/avatar";
 
-export const Sidebar = () => {
+export const Sidebar = ({ onReviewClick }: { onReviewClick?: () => void }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { theme } = useAppTheme();
@@ -37,6 +37,15 @@ export const Sidebar = () => {
       path: "/scores",
       exactMatch: true,
       onPress: () => router.push("/scores"),
+    },
+    {
+      id: "reviews",
+      label: "Review",
+      icon: "star-outline" as const,
+      exactMatch: true,
+      onPress: () => {
+        onReviewClick?.();
+      },
     },
     {
       id: "settings",

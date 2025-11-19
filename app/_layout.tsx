@@ -6,10 +6,11 @@ import { AuthProvider, useAuth } from "@/provider/UserProvider";
 import { Stack, usePathname, useRouter, useSegments } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BackHandler, Platform, useWindowDimensions } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
+import ReviewModal from "./modal";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -75,6 +76,7 @@ function InnerLayout({ isWeb }: { isWeb: boolean }) {
   const { theme, colorScheme } = useAppTheme();
   const segment = useSegments();
   const isAuthPage = segment[0] === "(auth)";
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   if (isWeb) {
     return (
@@ -84,7 +86,18 @@ function InnerLayout({ isWeb }: { isWeb: boolean }) {
           flexDirection: "row",
           backgroundColor: theme.background,
         }}>
-        {!isAuthPage && <Sidebar />}
+        {!isAuthPage && (
+          <>
+            <Sidebar onReviewClick={() => setShowReviewModal(true)} />
+
+            <ReviewModal
+              visible={showReviewModal}
+              onClose={() => setShowReviewModal(false)}
+              onSubmitSuccess={() => setShowReviewModal(false)}
+              onDontAskAgain={() => setShowReviewModal(false)}
+            />
+          </>
+        )}
         <ThemedView style={{ flex: 3 }}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
