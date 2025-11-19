@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingVertical: 0,
   },
   userName: {
     fontSize: 18,
