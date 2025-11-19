@@ -122,7 +122,7 @@ export default function ReviewModal({
             showsVerticalScrollIndicator={false}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={[styles.title, { color: theme.text }]}>
+              <Text style={[styles.title, { color: theme.tint }]}>
                 We&apos;d love your feedback! 💭
               </Text>
               <Text style={[styles.subtitle, { color: theme.icon }]}>
@@ -141,9 +141,19 @@ export default function ReviewModal({
                     key={star}
                     onPress={() => handleStarPress(star)}
                     style={styles.starButton}>
-                    <Text style={styles.star}>
-                      {star <= rating ? "⭐" : "☆"}
-                    </Text>
+                    <View
+                      style={[
+                        styles.starCircle,
+                        star <= rating && styles.starCircleFilled,
+                      ]}>
+                      <Text
+                        style={[
+                          styles.starText,
+                          star <= rating && styles.starTextFilled,
+                        ]}>
+                        ★
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -290,13 +300,17 @@ const styles = StyleSheet.create({
   starsContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 8,
+    gap: 4,
   },
   starButton: {
     padding: 4,
   },
-  star: {
-    fontSize: 40,
+  starText: {
+    fontSize: 38,
+    color: "#D1D5DB",
+  },
+  starTextFilled: {
+    color: "#F59E0B",
   },
   feedbackContainer: {
     marginBottom: 24,
