@@ -133,7 +133,7 @@ export default function ReviewModal({
             {/* Star Rating */}
             <View style={styles.ratingContainer}>
               <Text style={[styles.ratingLabel, { color: theme.text }]}>
-                How would you rate your experience?
+                How would you rate this Quiz?
               </Text>
               <View style={styles.starsContainer}>
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -152,7 +152,7 @@ export default function ReviewModal({
             {/* Feedback Input */}
             <View style={styles.feedbackContainer}>
               <Text style={[styles.feedbackLabel, { color: theme.text }]}>
-                Tell us more about your experience *
+                Tell us about your experience
               </Text>
               <TextInput
                 style={[
