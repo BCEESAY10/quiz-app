@@ -42,7 +42,8 @@ export const Toast: React.FC<ToastProps> = ({
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duration, slideAnim, opacityAnim]);
 
   const handleClose = () => {
     Animated.parallel([

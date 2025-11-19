@@ -1,13 +1,14 @@
 import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Toast } from "@/components/ui/toast";
 import { useAppTheme } from "@/provider/ThemeProvider";
+import { ToastState } from "@/types/toast";
 import { resetPasswordField } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -24,6 +25,7 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -34,10 +36,17 @@ export default function ForgotPasswordScreen() {
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
+      setToast({
+        message: "Link successfully sent to your email",
+        type: "success",
+      });
       setEmailSent(true);
     } catch (error) {
-      Alert.alert("Error", "Failed to send reset link. Please try again.");
+      setToast({
+        message: "Failed to send reset link. Please try again.",
+        type: "error",
+      });
+      console.error("Link sent failed:", error);
     } finally {
       setIsLoading(false);
     }
@@ -51,9 +60,14 @@ export default function ForgotPasswordScreen() {
       // TODO: Implement API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setEmailSent(true);
-      Alert.alert("Success", "Reset link resent successfully!");
+      setToast({ message: "Reset link resent successfully!", type: "success" });
     } catch (error) {
-      Alert.alert("Error", "Failed to resend link. Please try again.");
+      console.error("Resent link failed:", error);
+
+      setToast({
+        message: "Failed to resend link. Please try again.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -94,8 +108,16 @@ export default function ForgotPasswordScreen() {
                 Check Your Email
               </ThemedText>
 
+              {toast && (
+                <Toast
+                  message={toast.message}
+                  type={toast.type}
+                  onClose={() => setToast(null)}
+                />
+              )}
+
               <ThemedText style={[styles.description, { color: theme.icon }]}>
-                We've sent a password reset link to
+                We&apos;ve sent a password reset link to
               </ThemedText>
 
               <ThemedText style={[styles.email, { color: theme.tint }]}>
@@ -110,7 +132,7 @@ export default function ForgotPasswordScreen() {
               {/* Resend Link */}
               <View style={styles.resendContainer}>
                 <ThemedText style={[styles.resendText, { color: theme.icon }]}>
-                  Didn't receive the email?
+                  Didn&apos;t receive the email?
                 </ThemedText>
                 <TouchableOpacity
                   onPress={handleResendEmail}
@@ -180,8 +202,8 @@ export default function ForgotPasswordScreen() {
             </ThemedText>
 
             <ThemedText style={[styles.description, { color: theme.icon }]}>
-              No worries! Enter your email address and we'll send you a link to
-              reset your password.
+              No worries! Enter your email address and we&apos;ll send you a
+              link to reset your password.
             </ThemedText>
 
             {/* Email Input */}
