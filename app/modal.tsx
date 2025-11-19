@@ -141,19 +141,13 @@ export default function ReviewModal({
                     key={star}
                     onPress={() => handleStarPress(star)}
                     style={styles.starButton}>
-                    <View
+                    <Text
                       style={[
-                        styles.starCircle,
-                        star <= rating && styles.starCircleFilled,
+                        styles.starText,
+                        star <= rating && styles.starTextFilled,
                       ]}>
-                      <Text
-                        style={[
-                          styles.starText,
-                          star <= rating && styles.starTextFilled,
-                        ]}>
-                        ★
-                      </Text>
-                    </View>
+                      ★
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
