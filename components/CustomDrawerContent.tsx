@@ -10,7 +10,14 @@ import {
 import { usePathname, useRouter } from "expo-router";
 import { TouchableOpacity, View } from "react-native";
 
-export function CustomDrawerContent(props: DrawerContentComponentProps) {
+type CustomDrawerContentProps = DrawerContentComponentProps & {
+  onReviewClick?: () => void;
+};
+
+export function CustomDrawerContent({
+  onReviewClick,
+  navigation,
+}: CustomDrawerContentProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -23,8 +30,18 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
       icon: "home-outline",
       path: "/",
       onPress: () => {
-        props.navigation.closeDrawer();
+        navigation.closeDrawer();
         router.push("/(tabs)");
+      },
+    },
+    {
+      id: "reviews",
+      label: "Review",
+      icon: "star-outline",
+      path: "#",
+      onPress: () => {
+        navigation.closeDrawer();
+        onReviewClick?.();
       },
     },
     {
@@ -33,20 +50,20 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
       icon: "settings-outline",
       path: "/settings",
       onPress: () => {
-        props.navigation.closeDrawer();
+        navigation.closeDrawer();
         router.push("/settings");
       },
     },
   ];
 
   const handleLogout = () => {
-    props.navigation.closeDrawer();
+    navigation.closeDrawer();
     logout();
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <DrawerContentScrollView {...props} scrollEnabled={true}>
+      <DrawerContentScrollView {...navigation} scrollEnabled={true}>
         {/* Brand */}
         <View
           style={{ paddingTop: 20, paddingHorizontal: 20, paddingBottom: 16 }}>

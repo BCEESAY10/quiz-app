@@ -114,7 +114,12 @@ function InnerLayout({ isWeb }: { isWeb: boolean }) {
     <GestureHandlerRootView
       style={{ flex: 1, backgroundColor: theme.background }}>
       <Drawer
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
+        drawerContent={(props) => (
+          <CustomDrawerContent
+            {...props}
+            onReviewClick={() => setShowReviewModal(true)}
+          />
+        )}
         screenOptions={{
           drawerStyle: {
             width: 280,
@@ -165,6 +170,12 @@ function InnerLayout({ isWeb }: { isWeb: boolean }) {
           }}
         />
       </Drawer>
+      <ReviewModal
+        visible={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        onSubmitSuccess={() => setShowReviewModal(false)}
+        onDontAskAgain={() => setShowReviewModal(false)}
+      />
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
     </GestureHandlerRootView>
   );
