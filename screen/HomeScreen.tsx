@@ -15,12 +15,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Add type imports
+import ReviewModal from "@/app/modal";
+import { useReviewPrompt } from "@/hooks/use-review-prompt";
 import { categories } from "@/mock/categories";
 import { leaderboard, recentQuizzes, stats } from "@/mock/home-stats";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import type { ViewProps } from "react-native";
 import type { SafeAreaViewProps } from "react-native-safe-area-context";
-import { useReviewPrompt } from "@/hooks/use-review-prompt";
 
 // Define prop types for themed components
 type ThemedViewProps = ViewProps & {
@@ -51,7 +52,7 @@ export default function HomeScreen() {
     handleDismiss,
     handleDontAskAgain,
     handleSubmitSuccess,
-  } = useReviewPrompt(quizzesCompleted);
+  } = useReviewPrompt(10);
 
   const handleCategorySelect = (category: Category) => {
     router.push({
@@ -304,6 +305,16 @@ export default function HomeScreen() {
             ]}
           />
         </ScrollView>
+
+        {/* Review Modal - automatically shows at milestones */}
+        {!isChecking && (
+          <ReviewModal
+            visible={shouldShow}
+            onClose={handleDismiss}
+            onSubmitSuccess={handleSubmitSuccess}
+            onDontAskAgain={handleDontAskAgain}
+          />
+        )}
       </SafeAreaView>
     </ThemedView>
   );
