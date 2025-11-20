@@ -52,7 +52,7 @@ export default function HomeScreen() {
     handleDismiss,
     handleDontAskAgain,
     handleSubmitSuccess,
-  } = useReviewPrompt(10);
+  } = useReviewPrompt(quizzesCompleted);
 
   const handleCategorySelect = (category: Category) => {
     router.push({
