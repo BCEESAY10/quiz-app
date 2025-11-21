@@ -135,9 +135,19 @@ export default function HomeScreen() {
                 { backgroundColor: theme.background },
                 isWideScreen && styles.statCardWide,
               ]}>
-              <ThemedText style={[styles.statValue, { color: theme.tint }]}>
-                {stats.streak}🔥
-              </ThemedText>
+              <View style={styles.streakContainer}>
+                <ThemedText style={[styles.statValue, { color: theme.tint }]}>
+                  {stats.streak}
+                </ThemedText>
+
+                <IconSymbol
+                  name="flame.fill"
+                  color="#FF5722"
+                  size={22}
+                  style={{ marginLeft: 4 }}
+                />
+              </View>
+
               <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
                 Day Streak
               </ThemedText>
@@ -402,14 +412,16 @@ const styles = StyleSheet.create({
     padding: 20,
     minHeight: 100,
   },
+  streakContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   statValue: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#2C3E50",
   },
   statLabel: {
     fontSize: 11,
-    color: "#7F8C8D",
     marginTop: 4,
   },
   section: {

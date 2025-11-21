@@ -25,6 +25,7 @@ const MAPPING = {
   "mail.fill": "mail",
   "questionmark.circle.fill": "quiz",
   "chart.bar.fill": "assessment",
+  "flame.fill": "local-fire-department",
 
   // 🧪 Science / Lab
   "testtube.2": "science",
