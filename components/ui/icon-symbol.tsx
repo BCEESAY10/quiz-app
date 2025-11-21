@@ -25,6 +25,30 @@ const MAPPING = {
   "mail.fill": "mail",
   "questionmark.circle.fill": "quiz",
   "chart.bar.fill": "assessment",
+
+  // 🧪 Science / Lab
+  "testtube.2": "science",
+  "flask.fill": "biotech",
+
+  // ⚽ Sports
+  soccerball: "sports-soccer",
+  "basketball.fill": "sports-basketball",
+  "sportscourt.fill": "sports",
+
+  // 📚 Education / Books
+  "book.fill": "menu-book",
+  "books.vertical.fill": "library-books",
+  "graduationcap.fill": "school",
+
+  // 🌍 World / Geography
+  globe: "public",
+  "map.fill": "map",
+  "location.fill": "location-on",
+
+  // 🔢 Numbers / Math
+  number: "calculate",
+  function: "functions",
+  "123.rectangle.fill": "pin",
 } as IconMapping;
 
 /**

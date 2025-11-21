@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   useWindowDimensions,
   View,
@@ -16,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // Add type imports
 import ReviewModal from "@/app/modal";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useReviewPrompt } from "@/hooks/use-review-prompt";
 import { categories } from "@/mock/categories";
 import { leaderboard, recentQuizzes, stats } from "@/mock/home-stats";
@@ -174,7 +174,11 @@ export default function HomeScreen() {
                       isWideScreen && styles.categoryCardWide,
                     ]}
                     onPress={() => handleCategorySelect(category)}>
-                    <Text style={[styles.categoryIcon]}>{category.icon}</Text>
+                    <IconSymbol
+                      name={category.icon as any}
+                      size={48}
+                      color={category.color}
+                      style={[styles.categoryIcon]}></IconSymbol>
                     <ThemedText
                       style={[styles.categoryName, { color: theme.text }]}>
                       {category.name}
