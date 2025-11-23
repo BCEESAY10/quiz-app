@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // Add type imports
 import ReviewModal from "@/app/modal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { IconRegistry } from "@/components/ui/shared/icons/icon-registry";
 import { useReviewPrompt } from "@/hooks/use-review-prompt";
 import { categories } from "@/mock/categories";
 import { leaderboard, recentQuizzes, stats } from "@/mock/home-stats";
@@ -172,33 +173,44 @@ export default function HomeScreen() {
                   { backgroundColor: theme.background },
                   isWideScreen && styles.categoriesGridWide,
                 ]}>
-                {categories.map((category) => (
-                  <TouchableOpacity
-                    key={category.id}
-                    style={[
-                      styles.categoryCard,
-                      {
-                        borderLeftColor: category.color,
-                        backgroundColor: theme.background,
-                      },
-                      isWideScreen && styles.categoryCardWide,
-                    ]}
-                    onPress={() => handleCategorySelect(category)}>
-                    <IconSymbol
-                      name={category.icon as any}
-                      size={48}
-                      color={category.color}
-                      style={[styles.categoryIcon]}></IconSymbol>
-                    <ThemedText
-                      style={[styles.categoryName, { color: theme.text }]}>
-                      {category.name}
-                    </ThemedText>
-                    <ThemedText
-                      style={[styles.categoryQuestions, { color: theme.icon }]}>
-                      {category.questions} questions
-                    </ThemedText>
-                  </TouchableOpacity>
-                ))}
+                {categories.map((category) => {
+                  const IconComponent =
+                    IconRegistry[category.icon as keyof typeof IconRegistry];
+
+                  return (
+                    <TouchableOpacity
+                      key={category.id}
+                      style={[
+                        styles.categoryCard,
+                        {
+                          borderLeftColor: category.color,
+                          backgroundColor: theme.background,
+                        },
+                        isWideScreen && styles.categoryCardWide,
+                      ]}
+                      onPress={() => handleCategorySelect(category)}>
+                      {IconComponent ? (
+                        <IconComponent
+                          width={48}
+                          height={48}
+                          fill={category.color}
+                          style={styles.categoryIcon}
+                        />
+                      ) : null}
+                      <ThemedText
+                        style={[styles.categoryName, { color: theme.text }]}>
+                        {category.name}
+                      </ThemedText>
+                      <ThemedText
+                        style={[
+                          styles.categoryQuestions,
+                          { color: theme.icon },
+                        ]}>
+                        {category.questions} questions
+                      </ThemedText>
+                    </TouchableOpacity>
+                  );
+                })}
               </ThemedView>
             </ThemedView>
           </View>
