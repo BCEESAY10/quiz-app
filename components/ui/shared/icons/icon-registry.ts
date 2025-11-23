@@ -12,7 +12,7 @@ import {
 
 export const IconRegistry = {
   science: Science,
-  sport: Sports,
+  sports: Sports,
   arts: Arts,
   computer: Computer,
   english: English,
