@@ -8,7 +8,7 @@ import {
   Maths,
   Science,
   Sports,
-} from "../category-icons";
+} from "./category-icons";
 
 export const IconRegistry = {
   science: Science,
