@@ -1,0 +1,9 @@
+export { default as Arts } from "./Arts";
+export { default as Computer } from "./Computer";
+export { default as English } from "./English";
+export { default as Geography } from "./Geography";
+export { default as History } from "./History";
+export { default as Literature } from "./Literature";
+export { default as Maths } from "./Maths";
+export { default as Science } from "./Science";
+export { default as Sports } from "./Sports";
