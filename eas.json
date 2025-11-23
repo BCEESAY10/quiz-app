@@ -12,15 +12,13 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "output": "QuizMaster-1.0.0-android"
+      }
     },
     "production": {
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
-      },
-      "output": "QuizMaster-1.0.0-android"
+      }
     }
   },
   "submit": {
