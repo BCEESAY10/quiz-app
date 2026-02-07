@@ -1,13 +1,11 @@
 import { FormComponent } from "@/components/form/Form";
 import { Loader } from "@/components/ui/loader";
 import { Toast } from "@/components/ui/toast";
+import { useLogin } from "@/hooks/use-auth";
 import { useAppTheme } from "@/provider/ThemeProvider";
-import { useAuth } from "@/provider/UserProvider";
 import { LoginFormData } from "@/types/auth";
 import { ToastState } from "@/types/toast";
-import { loginUser } from "@/utils/mock-auth";
 import { loginFields } from "@/utils/validation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -24,38 +22,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { setUser } = useAuth();
   const { theme } = useAppTheme();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
-  const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+
+  const loginMutation = useLogin();
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setIsLoading(true);
-
-      await new Promise((res) => setTimeout(res, 800));
-
-      const user = await loginUser(data.email, data.password);
-      if (!user) throw new Error("Invalid credentials");
-
-      const serialized = JSON.stringify(user);
-
-      if (Platform.OS === "web") {
-        window.localStorage.setItem("loggedInUser", serialized);
-      } else {
-        await AsyncStorage.setItem("loggedInUser", serialized);
-      }
-
-      setUser(user);
-
+      await loginMutation.mutateAsync(data);
       router.push("/");
     } catch (err: any) {
-      setToast({ message: err.message || "Login Failed!", type: "error" });
-    } finally {
-      setIsLoading(false);
+      const errorMessage =
+        err.response?.data?.message || err.message || "Login Failed!";
+      setToast({ message: errorMessage, type: "error" });
     }
   };
 
@@ -67,7 +49,7 @@ export default function LoginScreen() {
     router.push("/forgot-password");
   };
 
-  if (isLoading) {
+  if (loginMutation.isPending) {
     return <Loader />;
   }
 
@@ -118,7 +100,7 @@ export default function LoginScreen() {
                 fields={loginFields}
                 onSubmit={onSubmit}
                 submitButtonText="Sign In"
-                isLoading={isLoading}
+                isLoading={loginMutation.isPending}
               />
 
               {/* Forgot Password */}

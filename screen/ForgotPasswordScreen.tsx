@@ -2,6 +2,7 @@ import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Toast } from "@/components/ui/toast";
+import { useForgotPassword } from "@/hooks/use-auth";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import { ToastState } from "@/types/toast";
 import { resetPasswordField } from "@/utils/validation";
@@ -22,54 +23,51 @@ export default function ForgotPasswordScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
 
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [email] = useState("");
   const [emailSent, setEmailSent] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
+  const forgotPasswordMutation = useForgotPassword();
+  const isLoading = forgotPasswordMutation.isPending;
+
   const onSubmit = async () => {
-    setIsLoading(true);
-
     try {
-      // TODO: Implement API call to send reset link
-      // await sendPasswordResetEmail(email);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await forgotPasswordMutation.mutateAsync(email);
       setToast({
-        message: "Link successfully sent to your email",
+        message: "Reset link successfully sent to your email",
         type: "success",
       });
       setEmailSent(true);
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to send reset link";
       setToast({
-        message: "Failed to send reset link. Please try again.",
+        message: errorMessage,
         type: "error",
       });
       console.error("Link sent failed:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleResendEmail = async () => {
     setEmailSent(false);
-    setIsLoading(true);
 
     try {
-      // TODO: Implement API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await forgotPasswordMutation.mutateAsync(email);
       setEmailSent(true);
       setToast({ message: "Reset link resent successfully!", type: "success" });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Resent link failed:", error);
-
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to resend link";
       setToast({
-        message: "Failed to resend link. Please try again.",
+        message: errorMessage,
         type: "error",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 

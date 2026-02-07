@@ -1,11 +1,10 @@
 import { FormComponent } from "@/components/form/Form";
 import { Loader } from "@/components/ui/loader";
 import { Toast } from "@/components/ui/toast";
+import { useRegister } from "@/hooks/use-auth";
 import { useAppTheme } from "@/provider/ThemeProvider";
-import { useAuth } from "@/provider/UserProvider";
 import { RegisterFormData } from "@/types/auth";
 import { ToastState } from "@/types/toast";
-import { saveUser } from "@/utils/mock-auth";
 import { formFields } from "@/utils/validation";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -24,33 +23,37 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { setUser } = useAuth();
   const { theme } = useAppTheme();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
-  const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
   const { reset } = useForm<RegisterFormData>();
 
+  const registerMutation = useRegister();
+
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      setIsLoading(true);
+      await registerMutation.mutateAsync(data);
 
-      await new Promise((res) => setTimeout(res, 800));
-
-      saveUser(data);
-      setUser(data);
+      setToast({
+        message: "Registration successful! Please login.",
+        type: "success",
+      });
 
       reset();
-      router.push("/");
+
+      // Navigate to login after 2 seconds
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
     } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message || err.message || "Registration Failed!";
       setToast({
-        message: err.message || "Registeration Failed!",
+        message: errorMessage,
         type: "error",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -58,7 +61,7 @@ export default function RegisterScreen() {
     router.push("/login");
   };
 
-  if (isLoading) return <Loader />;
+  if (registerMutation.isPending) return <Loader />;
 
   return (
     <SafeAreaView
@@ -107,7 +110,7 @@ export default function RegisterScreen() {
                 fields={formFields}
                 onSubmit={onSubmit}
                 submitButtonText="Create Account"
-                isLoading={isLoading}
+                isLoading={registerMutation.isPending}
               />
 
               {/* Terms */}

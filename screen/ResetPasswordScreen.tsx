@@ -1,22 +1,19 @@
 import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Colors } from "@/constants/theme";
+import { useResetPassword } from "@/hooks/use-auth";
 import { useAppTheme } from "@/provider/ThemeProvider";
-import { formFields, newPasswordFields } from "@/utils/validation";
+import { newPasswordFields } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -33,7 +30,8 @@ export default function ResetPasswordScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  const resetPasswordMutation = useResetPassword();
 
   const onSubmit = async () => {
     if (!newPassword || !confirmPassword) {
@@ -46,14 +44,12 @@ export default function ResetPasswordScreen() {
       return;
     }
 
-    setLoading(true);
-
     try {
-      // TODO: Implement API call to reset password
-      // await resetPassword(token, newPassword);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await resetPasswordMutation.mutateAsync({
+        token: token || "",
+        password: newPassword,
+        confirmPassword,
+      });
 
       Alert.alert("Success", "Your password has been reset successfully!", [
         {
@@ -61,13 +57,12 @@ export default function ResetPasswordScreen() {
           onPress: () => router.replace("/login"),
         },
       ]);
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        "Failed to reset password. The link may have expired."
-      );
-    } finally {
-      setLoading(false);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to reset password";
+      Alert.alert("Error", errorMessage);
     }
   };
 
@@ -112,7 +107,7 @@ export default function ResetPasswordScreen() {
               fields={newPasswordFields}
               onSubmit={onSubmit}
               submitButtonText="Reset Password"
-              isLoading={loading}
+              isLoading={resetPasswordMutation.isPending}
             />
 
             {/* Back to Login */}

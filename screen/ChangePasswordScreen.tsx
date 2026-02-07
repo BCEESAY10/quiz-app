@@ -1,11 +1,12 @@
 import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useChangePassword } from "@/hooks/use-user";
 import { useAppTheme } from "@/provider/ThemeProvider";
+import { useAuth } from "@/provider/UserProvider";
 import { changePasswordFields } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -19,18 +20,23 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ChangePasswordScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
+  const { user } = useAuth();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const changePasswordMutation = useChangePassword();
 
   const onSubmit = async (data: any) => {
-    setIsLoading(true);
+    if (!user?.id) {
+      Alert.alert("Error", "User not authenticated");
+      return;
+    }
 
     try {
-      // TODO: Implement API call to change password
-      // await changePassword(currentPassword, newPassword);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await changePasswordMutation.mutateAsync({
+        userId: user.id,
+        oldPassword: data.currentPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword,
+      });
 
       Alert.alert("Success", "Your password has been changed successfully!", [
         {
@@ -40,11 +46,10 @@ export default function ChangePasswordScreen() {
       ]);
     } catch (error: any) {
       const errorMessage =
+        error.response?.data?.message ||
         error?.message ||
         "Failed to change password. Please check your current password and try again.";
       Alert.alert("Error", errorMessage);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -85,7 +90,7 @@ export default function ChangePasswordScreen() {
               fields={changePasswordFields}
               onSubmit={onSubmit}
               submitButtonText="Change Password"
-              isLoading={isLoading}
+              isLoading={changePasswordMutation.isPending}
             />
           </ThemedView>
         </KeyboardAvoidingView>
