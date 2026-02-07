@@ -20,32 +20,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const loadUser = async () => {
-      const stored = await getLoggedInUser();
-      if (stored) setUser(stored);
-      setLoading(false);
+      try {
+        const stored = await getLoggedInUser();
+        if (stored) setUser(stored);
+      } catch (error) {
+        console.error("Failed to load user:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     loadUser();
   }, []);
 
   async function getLoggedInUser(): Promise<User | null> {
-    if (Platform.OS === "web") {
-      const data = window.localStorage.getItem("loggedInUser");
-      return data ? JSON.parse(data) : null;
-    } else {
-      const data = await AsyncStorage.getItem("loggedInUser");
-      return data ? JSON.parse(data) : null;
+    try {
+      if (Platform.OS === "web") {
+        if (typeof window === "undefined") return null;
+        const data = window.localStorage.getItem("loggedInUser");
+        return data ? JSON.parse(data) : null;
+      } else {
+        const data = await AsyncStorage.getItem("loggedInUser");
+        return data ? JSON.parse(data) : null;
+      }
+    } catch (error) {
+      console.error("Error reading user data:", error);
+      return null;
     }
   }
 
   const logout = async () => {
-    if (Platform.OS === "web") {
-      window.localStorage.removeItem("loggedInUser");
+    try {
+      if (Platform.OS === "web") {
+        window.localStorage.removeItem("loggedInUser");
+      } else {
+        await AsyncStorage.removeItem("loggedInUser");
+      }
       setUser(null);
       console.log("Logged out successfully");
-    } else {
-      await AsyncStorage.removeItem("loggedInUser");
-      setUser(null);
-      console.log("Logged out successfully");
+    } catch (error) {
+      console.error("Error during logout:", error);
     }
   };
 
