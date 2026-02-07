@@ -1,6 +1,7 @@
 import { CustomDrawerContent } from "@/components/CustomDrawerContent";
 import { Sidebar } from "@/components/Sidebar";
 import { ThemedView } from "@/components/themed-view";
+import { QueryProvider } from "@/provider/QueryProvider";
 import { ThemeProvider, useAppTheme } from "@/provider/ThemeProvider";
 import { AuthProvider, useAuth } from "@/provider/UserProvider";
 import { Stack, usePathname, useRouter, useSegments } from "expo-router";
@@ -24,29 +25,43 @@ export function AuthGate() {
   useEffect(() => {
     if (loading) return;
 
-    if (!user) {
-      const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        () => true
-      );
+    const isAuthRoute =
+      pathname.startsWith("/login") ||
+      pathname.startsWith("/register") ||
+      pathname.startsWith("forgot-password") ||
+      pathname.startsWith("/reset-password");
 
-      setTimeout(() => {
+    if (!user && !isAuthRoute) {
+      if (Platform.OS !== "web") {
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          () => true,
+        );
         router.replace("/login");
-      }, 100);
-
-      return () => backHandler.remove();
-    } else {
+        return () => backHandler.remove();
+      } else {
+        router.replace("/login");
+      }
+    } else if (user && isAuthRoute) {
       router.replace("/");
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, pathname]);
 
   useEffect(() => {
     if (Platform.OS !== "web" || loading) return;
 
-    const handlePopState = () => {
-      if (user && pathname === "/login") {
+    const handlePopState = (event: PopStateEvent) => {
+      event.preventDefault();
+
+      const isAuthRoute =
+        pathname.startsWith("/login") ||
+        pathname.startsWith("/register") ||
+        pathname.startsWith("/forgot-password") ||
+        pathname.startsWith("/reset-password");
+
+      if (user && isAuthRoute) {
         router.replace("/");
-      } else if (!user && pathname !== "/login") {
+      } else if (!user && isAuthRoute) {
         router.replace("/login");
       }
     };
@@ -54,6 +69,8 @@ export function AuthGate() {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [user, pathname, loading, router]);
+
+  if (loading) return null;
 
   return null;
 }
@@ -63,12 +80,14 @@ export default function RootLayout() {
   const isWeb = Platform.OS === "web" && width >= 768;
 
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <AuthGate />
-        <InnerLayout isWeb={isWeb} />
-      </ThemeProvider>
-    </AuthProvider>
+    <QueryProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <AuthGate />
+          <InnerLayout isWeb={isWeb} />
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 }
 
