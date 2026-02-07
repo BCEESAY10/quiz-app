@@ -7,6 +7,7 @@ export const formFields: FormField<RegisterFormData>[] = [
     label: "Full Name",
     placeholder: "Enter your full name",
     autoCapitalize: "words",
+    defaultValue: "",
     rules: {
       required: "Full name is required",
       minLength: {
@@ -25,6 +26,7 @@ export const formFields: FormField<RegisterFormData>[] = [
     placeholder: "Enter your email",
     keyboardType: "email-address",
     autoCapitalize: "none",
+    defaultValue: "",
     rules: {
       required: "Email is required",
       pattern: {
@@ -38,6 +40,7 @@ export const formFields: FormField<RegisterFormData>[] = [
     label: "Password",
     placeholder: "Create a password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Password is required",
       minLength: {
@@ -55,6 +58,7 @@ export const formFields: FormField<RegisterFormData>[] = [
     label: "Confirm Password",
     placeholder: "Re-enter your password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Please confirm your password",
       validate: ((value: string, formValues: any) => {
@@ -71,6 +75,7 @@ export const loginFields: FormField<LoginFormData>[] = [
     placeholder: "Enter your email",
     keyboardType: "email-address",
     autoCapitalize: "none",
+    defaultValue: "",
     rules: {
       required: "Email is required",
       pattern: {
@@ -84,6 +89,7 @@ export const loginFields: FormField<LoginFormData>[] = [
     label: "Password",
     placeholder: "Create a password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Password is required",
       minLength: {
@@ -105,6 +111,7 @@ export const resetPasswordField: FormField<LoginFormData>[] = [
     placeholder: "Enter your email",
     keyboardType: "email-address",
     autoCapitalize: "none",
+    defaultValue: "",
     rules: {
       required: "Email is required",
       pattern: {
@@ -121,6 +128,7 @@ export const newPasswordFields: FormField<RegisterFormData>[] = [
     label: "Password",
     placeholder: "Create a password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Password is required",
       minLength: {
@@ -138,6 +146,7 @@ export const newPasswordFields: FormField<RegisterFormData>[] = [
     label: "Confirm Password",
     placeholder: "Re-enter your password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Please confirm your password",
       validate: ((value: string, formValues: any) => {
@@ -153,6 +162,7 @@ export const changePasswordFields: FormField<RegisterFormData>[] = [
     label: "Current Password",
     placeholder: "Enter your current password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Password is required",
       minLength: {
@@ -170,6 +180,7 @@ export const changePasswordFields: FormField<RegisterFormData>[] = [
     label: "New Password",
     placeholder: "Enter your new password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Password is required",
       minLength: {
@@ -187,6 +198,7 @@ export const changePasswordFields: FormField<RegisterFormData>[] = [
     label: "Confirm Password",
     placeholder: "Re-enter your password",
     secureTextEntry: true,
+    defaultValue: "",
     rules: {
       required: "Please confirm your password",
       validate: ((value: string, formValues: any) => {

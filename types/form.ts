@@ -4,6 +4,7 @@ export interface FormField<T extends FieldValues> {
   name: Path<T>;
   label: string;
   placeholder: string;
+  defaultValue?: string;
   rules?: {
     required?: string;
     minLength?: { value: number; message: string };

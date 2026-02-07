@@ -1,7 +1,12 @@
 import { Colors } from "@/constants/theme";
 import { FormComponentProps } from "@/types/form";
-import React from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useMemo } from "react";
+import {
+  Controller,
+  DefaultValues,
+  FieldValues,
+  useForm,
+} from "react-hook-form";
 import {
   Platform,
   StyleSheet,
@@ -18,14 +23,24 @@ export function FormComponent<T extends FieldValues>({
   submitButtonText,
   isLoading = false,
 }: FormComponentProps<T>) {
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
+
+  const defaultValues = useMemo<Partial<T>>(() => {
+    const values: Partial<T> = {};
+    fields.forEach((field) => {
+      values[field.name as keyof T] = "" as any;
+    });
+    return values;
+  }, [fields]);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<T>();
-
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  } = useForm<T>({
+    defaultValues: defaultValues as DefaultValues<T>,
+  });
 
   return (
     <View style={styles.formContainer}>
@@ -55,7 +70,7 @@ export function FormComponent<T extends FieldValues>({
                 placeholderTextColor={theme.icon}
                 onBlur={onBlur}
                 onChangeText={onChange}
-                value={value}
+                value={value || ""}
                 secureTextEntry={field.secureTextEntry}
                 keyboardType={field.keyboardType || "default"}
                 autoCapitalize={field.autoCapitalize || "none"}
