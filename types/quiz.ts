@@ -1,9 +1,10 @@
 export interface Question {
-  id: number;
+  id: string;
   question: string;
   options: string[];
   correctAnswer: number;
-  category: string;
+  category?: string;
+  categoryId?: string;
 }
 
 export interface QuizState {

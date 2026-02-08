@@ -1,21 +1,22 @@
 export type Category = {
-  id: number;
+  id: string;
   name: string;
-  icon: string;
-  questions: number;
-  color: string;
+  icon?: string;
+  questions?: number;
+  color?: string;
 };
 
 export type QuizRecord = {
-  id: number;
+  id: string;
   category: string;
   score: number;
   total: number;
   date: string;
+  percentage?: number;
 };
 
 export type LeaderboardEntry = {
-  id: number;
+  id?: string;
   name: string;
   points: number;
   rank: number;

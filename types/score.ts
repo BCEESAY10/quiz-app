@@ -1,10 +1,11 @@
 export interface QuizScore {
-  id: number;
+  id: string;
   category: string;
   score: number;
   totalQuestions: number;
   date: string;
-  timeSpent: string;
+  timeSpent?: string;
+  percentage?: number;
 }
 
 export interface CategoryStats {
