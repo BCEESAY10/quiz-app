@@ -1,11 +1,10 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { MOCK_QUESTIONS } from "@/mock/questions";
+import { useStartQuiz, useSubmitQuiz } from "@/hooks/use-quiz";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import { Question, QuizState } from "@/types/quiz";
-import { getRandomQuestions } from "@/utils/quizHelpers";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -19,7 +18,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function QuizScreen() {
   const params = useLocalSearchParams();
-  const category = params.category as string;
+  const categoryId = useMemo(() => {
+    const id = params.categoryId || params.category;
+    return typeof id === "string" ? id : "";
+  }, [params.categoryId, params.category]);
+
+  const categoryName = useMemo(() => {
+    const name = params.categoryName || params.category;
+    return typeof name === "string" ? name : "General";
+  }, [params.categoryName, params.category]);
   const { width } = useWindowDimensions();
   const { theme } = useAppTheme();
   const isWeb = Platform.OS === "web";
@@ -27,10 +34,15 @@ export default function QuizScreen() {
 
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [quizId, setQuizId] = useState<string | null>(null);
 
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [timeoutNotice, setTimeoutNotice] = useState(false);
+  const hasSubmittedRef = useRef(false);
+
+  const startQuizMutation = useStartQuiz();
+  const submitQuizMutation = useSubmitQuiz();
 
   // ========= Timer configuration per category/question type ========
   const getQuestionTime = (question: Question): number => {
@@ -70,17 +82,73 @@ export default function QuizScreen() {
 
   // ======== Initialize quiz when category is provided ==========
   useEffect(() => {
-    if (category && MOCK_QUESTIONS[category]) {
-      const randomQuestions = getRandomQuestions(MOCK_QUESTIONS[category], 5);
-      setQuizState({
-        questions: randomQuestions,
-        currentQuestionIndex: 0,
-        selectedAnswers: new Array(MOCK_QUESTIONS[category].length).fill(null),
-        score: 0,
-        isCompleted: false,
+    const initializeQuiz = async () => {
+      if (!categoryId) return;
+
+      try {
+        const response = await startQuizMutation.mutateAsync(categoryId);
+        const normalizedQuestions: Question[] = response.questions.map(
+          (question) => {
+            const correctIndex = question.options.findIndex(
+              (option) => option === question.correct_answer,
+            );
+
+            return {
+              id: question.id,
+              question: question.question,
+              options: question.options,
+              correctAnswer: correctIndex >= 0 ? correctIndex : 0,
+              category: categoryName,
+              categoryId: question.category_id,
+            };
+          },
+        );
+
+        setQuizId(response.quiz_id);
+        setQuizState({
+          questions: normalizedQuestions,
+          currentQuestionIndex: 0,
+          selectedAnswers: new Array(normalizedQuestions.length).fill(null),
+          score: 0,
+          isCompleted: false,
+        });
+        hasSubmittedRef.current = false;
+      } catch (error) {
+        console.error("Failed to start quiz:", error);
+      }
+    };
+
+    initializeQuiz();
+  }, [categoryId, categoryName, startQuizMutation]);
+
+  useEffect(() => {
+    const submitResults = async () => {
+      if (!quizState?.isCompleted || !quizId || hasSubmittedRef.current) return;
+
+      const answers = quizState.questions.map((question, index) => {
+        const selectedIndex = quizState.selectedAnswers[index];
+        const selectedAnswer =
+          selectedIndex !== null ? question.options[selectedIndex] : "";
+
+        return {
+          question_id: question.id,
+          selected_answer: selectedAnswer,
+        };
       });
-    }
-  }, [category]);
+
+      try {
+        await submitQuizMutation.mutateAsync({
+          quiz_id: quizId,
+          answers,
+        });
+        hasSubmittedRef.current = true;
+      } catch (error) {
+        console.error("Failed to submit quiz:", error);
+      }
+    };
+
+    submitResults();
+  }, [quizId, quizState, submitQuizMutation]);
 
   // Timer effect
   useEffect(() => {
@@ -121,10 +189,14 @@ export default function QuizScreen() {
           style={[styles.emptyState, { backgroundColor: theme.background }]}>
           <Text style={styles.emptyIcon}>📝</Text>
           <ThemedText style={[styles.emptyTitle, { color: theme.tint }]}>
-            No Quiz in Progress
+            {startQuizMutation.isPending
+              ? "Loading Quiz"
+              : "No Quiz in Progress"}
           </ThemedText>
           <ThemedText style={[styles.emptyText, { color: theme.text }]}>
-            Select a category from the home screen to start a new quiz!
+            {startQuizMutation.isPending
+              ? "Fetching questions from the server..."
+              : "Select a category from the home screen to start a new quiz!"}
           </ThemedText>
         </ThemedView>
       </SafeAreaView>
@@ -185,14 +257,7 @@ export default function QuizScreen() {
   };
 
   const handleRestartQuiz = () => {
-    const reshuffledQuestions = getRandomQuestions(MOCK_QUESTIONS[category], 5);
-    setQuizState({
-      questions: reshuffledQuestions,
-      currentQuestionIndex: 0,
-      selectedAnswers: new Array(quizState.questions.length).fill(null),
-      score: 0,
-      isCompleted: false,
-    });
+    setQuizState(null);
     setShowAnswer(false);
     setTimeoutNotice(false);
   };
@@ -203,7 +268,7 @@ export default function QuizScreen() {
   // ========== Quiz completed - Show results ==========
   if (quizState.isCompleted) {
     const percentage = Math.round(
-      (quizState.score / quizState.questions.length) * 100
+      (quizState.score / quizState.questions.length) * 100,
     );
     const passed = percentage >= 60;
 
