@@ -1,7 +1,7 @@
-import { MOCK_CATEGORY_STATS } from "@/mock/category-stats";
-import { MOCK_QUIZ_HISTORY } from "@/mock/history";
+import { useScoreHistory, useScoreOverview } from "@/hooks/use-scores";
 import { useAppTheme } from "@/provider/ThemeProvider";
-import { useState } from "react";
+import { useAuth } from "@/provider/UserProvider";
+import { useMemo, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,30 +13,110 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ScoresScreen() {
   const { theme } = useAppTheme();
+  const { user } = useAuth();
+  const userId = user?.id ?? "";
+
+  const { data: overview } = useScoreOverview(userId, !!userId);
+  const { data: historyData } = useScoreHistory(userId, 1, !!userId);
 
   const [selectedTab, setSelectedTab] = useState<"overview" | "history">(
-    "overview"
+    "overview",
   );
 
-  // Calculate overall stats
-  const totalQuizzes = MOCK_QUIZ_HISTORY.length;
-  const totalScore = MOCK_QUIZ_HISTORY.reduce(
-    (sum, quiz) => sum + quiz.score,
-    0
-  );
-  const totalPossible = MOCK_QUIZ_HISTORY.reduce(
-    (sum, quiz) => sum + quiz.totalQuestions,
-    0
-  );
-  const overallAccuracy = Math.round((totalScore / totalPossible) * 100);
-  const averageScore = Math.round(totalScore / totalQuizzes);
+  const history = historyData?.scores ?? [];
 
-  // Get best performance
-  const bestQuiz = MOCK_QUIZ_HISTORY.reduce((best, quiz) => {
-    const currentPercentage = (quiz.score / quiz.totalQuestions) * 100;
-    const bestPercentage = (best.score / best.totalQuestions) * 100;
-    return currentPercentage > bestPercentage ? quiz : best;
-  });
+  const { overallAccuracy, averageScore, bestQuiz, categoryStats } =
+    useMemo(() => {
+      const totalQuizzes = overview?.total_quizzes ?? history.length;
+      const totalScore = history.reduce((sum, quiz) => sum + quiz.score, 0);
+      const totalPossible = history.reduce(
+        (sum, quiz) => sum + quiz.total_questions,
+        0,
+      );
+
+      const accuracy = totalPossible
+        ? Math.round((totalScore / totalPossible) * 100)
+        : 0;
+      const avgScore = totalQuizzes ? Math.round(totalScore / totalQuizzes) : 0;
+
+      const best = history.reduce((currentBest, quiz) => {
+        const currentPercentage = (quiz.score / quiz.total_questions) * 100;
+        const bestPercentage = currentBest
+          ? (currentBest.score / currentBest.total_questions) * 100
+          : 0;
+
+        return currentPercentage > bestPercentage ? quiz : currentBest;
+      }, history[0] ?? null);
+
+      const CATEGORY_META: Record<string, { icon: string; color: string }> = {
+        science: { icon: "🧪", color: "#4CAF50" },
+        sports: { icon: "🏅", color: "#FF9800" },
+        english: { icon: "📚", color: "#2196F3" },
+        geography: { icon: "🌍", color: "#00BCD4" },
+        history: { icon: "📜", color: "#9C27B0" },
+        literature: { icon: "📖", color: "#3F51B5" },
+        arts: { icon: "🎨", color: "#E91E63" },
+        computer: { icon: "💻", color: "#607D8B" },
+        maths: { icon: "➗", color: "#F44336" },
+        math: { icon: "➗", color: "#F44336" },
+      };
+
+      const statsMap = new Map<
+        string,
+        {
+          category: string;
+          totalQuizzes: number;
+          bestScore: number;
+          averageScore: number;
+          accuracy: number;
+          icon: string;
+          color: string;
+          scoreSum: number;
+        }
+      >();
+
+      history.forEach((quiz) => {
+        const key = quiz.category_name.toLowerCase();
+        const meta = CATEGORY_META[key] ?? {
+          icon: "🧠",
+          color: "#5B48E8",
+        };
+        const percentage =
+          quiz.total_questions > 0
+            ? Math.round((quiz.score / quiz.total_questions) * 100)
+            : 0;
+
+        const existing = statsMap.get(key);
+        if (!existing) {
+          statsMap.set(key, {
+            category: quiz.category_name,
+            totalQuizzes: 1,
+            bestScore: percentage,
+            averageScore: percentage,
+            accuracy: percentage,
+            icon: meta.icon,
+            color: meta.color,
+            scoreSum: percentage,
+          });
+          return;
+        }
+
+        existing.totalQuizzes += 1;
+        existing.bestScore = Math.max(existing.bestScore, percentage);
+        existing.scoreSum += percentage;
+        existing.averageScore = Math.round(
+          existing.scoreSum / existing.totalQuizzes,
+        );
+        existing.accuracy = existing.averageScore;
+      });
+
+      return {
+        overallAccuracy: accuracy,
+        averageScore: avgScore,
+        bestQuiz: best,
+        categoryStats: Array.from(statsMap.values()),
+      };
+    }, [history, overview]);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -134,7 +214,7 @@ export default function ScoresScreen() {
                   ]}>
                   <Text
                     style={[styles.overallStatValue, { color: theme.tint }]}>
-                    {totalQuizzes}
+                    {overview?.total_quizzes ?? history.length}
                   </Text>
                   <Text
                     style={[styles.overallStatLabel, { color: theme.tint }]}>
@@ -180,31 +260,43 @@ export default function ScoresScreen() {
                   styles.bestPerformanceCard,
                   { backgroundColor: theme.background },
                 ]}>
-                <View style={styles.bestPerformanceHeader}>
+                {bestQuiz ? (
+                  <>
+                    <View style={styles.bestPerformanceHeader}>
+                      <Text
+                        style={[
+                          styles.bestPerformanceCategory,
+                          { color: theme.tint },
+                        ]}>
+                        {bestQuiz.category_name}
+                      </Text>
+                      <Text style={styles.bestPerformanceBadge}>🏆 Best</Text>
+                    </View>
+                    <View style={styles.bestPerformanceBody}>
+                      <Text style={styles.bestPerformanceScore}>
+                        {bestQuiz.score}/{bestQuiz.total_questions}
+                      </Text>
+                      <Text style={styles.bestPerformancePercentage}>
+                        {Math.round(
+                          (bestQuiz.score / bestQuiz.total_questions) * 100,
+                        )}
+                        %
+                      </Text>
+                    </View>
+                    <Text
+                      style={[
+                        styles.bestPerformanceDate,
+                        { color: theme.text },
+                      ]}>
+                      {formatDate(bestQuiz.completed_at)}
+                    </Text>
+                  </>
+                ) : (
                   <Text
-                    style={[
-                      styles.bestPerformanceCategory,
-                      { color: theme.tint },
-                    ]}>
-                    {bestQuiz.category}
+                    style={[styles.bestPerformanceDate, { color: theme.text }]}>
+                    No quiz data yet
                   </Text>
-                  <Text style={styles.bestPerformanceBadge}>🏆 Best</Text>
-                </View>
-                <View style={styles.bestPerformanceBody}>
-                  <Text style={styles.bestPerformanceScore}>
-                    {bestQuiz.score}/{bestQuiz.totalQuestions}
-                  </Text>
-                  <Text style={styles.bestPerformancePercentage}>
-                    {Math.round(
-                      (bestQuiz.score / bestQuiz.totalQuestions) * 100
-                    )}
-                    %
-                  </Text>
-                </View>
-                <Text
-                  style={[styles.bestPerformanceDate, { color: theme.text }]}>
-                  {formatDate(bestQuiz.date)}
-                </Text>
+                )}
               </View>
             </View>
 
@@ -213,7 +305,7 @@ export default function ScoresScreen() {
               <Text style={[styles.sectionTitle, { color: theme.tint }]}>
                 Performance by Category
               </Text>
-              {MOCK_CATEGORY_STATS.map((stat) => (
+              {categoryStats.map((stat) => (
                 <View
                   key={stat.category}
                   style={[
@@ -273,7 +365,6 @@ export default function ScoresScreen() {
                     <Text
                       style={[
                         styles.categoryStatDetail,
-                        ,
                         { color: theme.text },
                       ]}>
                       Avg: {stat.averageScore}%
@@ -290,13 +381,13 @@ export default function ScoresScreen() {
               <Text style={[styles.sectionTitle, { color: theme.tint }]}>
                 Recent Quizzes
               </Text>
-              {MOCK_QUIZ_HISTORY.map((quiz) => {
+              {history.map((quiz) => {
                 const percentage = Math.round(
-                  (quiz.score / quiz.totalQuestions) * 100
+                  (quiz.score / quiz.total_questions) * 100,
                 );
                 const scoreColor = getScoreColor(
                   quiz.score,
-                  quiz.totalQuestions
+                  quiz.total_questions,
                 );
                 const performance = getPerformanceLabel(percentage);
 
@@ -314,10 +405,10 @@ export default function ScoresScreen() {
                             styles.historyCardCategory,
                             { color: theme.tint },
                           ]}>
-                          {quiz.category}
+                          {quiz.category_name}
                         </Text>
                         <Text style={styles.historyCardDate}>
-                          {formatDate(quiz.date)}
+                          {formatDate(quiz.completed_at)}
                         </Text>
                       </View>
                       <View style={styles.historyCardRight}>
@@ -326,7 +417,7 @@ export default function ScoresScreen() {
                             styles.historyCardScore,
                             { color: scoreColor },
                           ]}>
-                          {quiz.score}/{quiz.totalQuestions}
+                          {quiz.score}/{quiz.total_questions}
                         </Text>
                         <Text style={styles.historyCardPercentage}>
                           {percentage}%
@@ -347,9 +438,7 @@ export default function ScoresScreen() {
                       </View>
                     </View>
                     <View style={styles.historyCardFooter}>
-                      <Text style={styles.historyCardTime}>
-                        ⏱️ {quiz.timeSpent}
-                      </Text>
+                      <Text style={styles.historyCardTime}>⏱️ —</Text>
                       <View
                         style={[
                           styles.historyCardBadge,

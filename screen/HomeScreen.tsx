@@ -1,7 +1,13 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useCategories } from "@/hooks/use-categories";
+import {
+  useLeaderboard,
+  useScoreHistory,
+  useScoreOverview,
+} from "@/hooks/use-scores";
 import { useAuth } from "@/provider/UserProvider";
-import { Category } from "@/types/home";
+import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
 import { useRouter } from "expo-router";
 import {
   Platform,
@@ -18,8 +24,6 @@ import ReviewModal from "@/app/modal";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { IconRegistry } from "@/components/ui/shared/icons/icon-registry";
 import { useReviewPrompt } from "@/hooks/use-review-prompt";
-import { categories } from "@/mock/categories";
-import { leaderboard, recentQuizzes, stats } from "@/mock/home-stats";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import type { ViewProps } from "react-native";
 import type { SafeAreaViewProps } from "react-native-safe-area-context";
@@ -38,14 +42,20 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const { theme } = useAppTheme();
+  const userId = user?.id ?? "";
 
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
 
-  // ======== Mock data ==========
+  const { data: categoriesData = [] } = useCategories();
+  const { data: scoreOverview } = useScoreOverview(userId, !!userId);
+  const { data: scoreHistory } = useScoreHistory(userId, 1, !!userId);
+  const { data: leaderboardData } = useLeaderboard(1, 5);
+
   const userName = user?.fullName ?? "User";
-  const quizzesCompleted = user?.stats?.quizzesCompleted ?? 0;
+  const quizzesCompleted =
+    scoreOverview?.total_quizzes ?? user?.stats?.quizzesCompleted ?? 0;
 
   const {
     shouldShow,
@@ -55,10 +65,79 @@ export default function HomeScreen() {
     handleSubmitSuccess,
   } = useReviewPrompt(quizzesCompleted);
 
+  const CATEGORY_META: Record<string, { icon: string; color: string }> = {
+    science: { icon: "science", color: "#4CAF50" },
+    sports: { icon: "sports", color: "#FF9800" },
+    english: { icon: "english", color: "#2196F3" },
+    geography: { icon: "geography", color: "#00BCD4" },
+    history: { icon: "history", color: "#9C27B0" },
+    literature: { icon: "literature", color: "#3F51B5" },
+    arts: { icon: "arts", color: "#E91E63" },
+    computer: { icon: "computer", color: "#607D8B" },
+    maths: { icon: "maths", color: "#F44336" },
+    math: { icon: "maths", color: "#F44336" },
+  };
+
+  const getCategoryMeta = (name: string, icon?: string) => {
+    const key = (icon || name).toLowerCase();
+    return CATEGORY_META[key] ?? { icon: "science", color: "#5B48E8" };
+  };
+
+  const categories: Category[] = categoriesData.map((category) => {
+    const meta = getCategoryMeta(category.name, category.icon);
+    return {
+      id: category.id,
+      name: category.name,
+      icon: meta.icon,
+      color: meta.color,
+    };
+  });
+
+  const stats: Stats = {
+    completed: scoreOverview?.total_quizzes ?? 0,
+    points: scoreOverview?.total_points ?? 0,
+    streak: scoreOverview?.streak ?? 0,
+  };
+
+  const recentQuizzes: QuizRecord[] =
+    scoreHistory?.scores?.map((quiz) => ({
+      id: quiz.id,
+      category: quiz.category_name,
+      score: quiz.score,
+      total: quiz.total_questions,
+      date: quiz.completed_at,
+    })) ?? [];
+
+  const leaderboard: LeaderboardEntry[] =
+    leaderboardData?.leaderboard?.map((entry) => ({
+      id: entry.user_id,
+      name: entry.fullname,
+      points: entry.total_points,
+      rank: entry.rank,
+    })) ?? [];
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) return "Today";
+    if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   const handleCategorySelect = (category: Category) => {
     router.push({
       pathname: "/quiz",
-      params: { category: category.name },
+      params: {
+        categoryId: category.id,
+        categoryName: category.name,
+      },
     });
   };
 
@@ -201,13 +280,23 @@ export default function HomeScreen() {
                         style={[styles.categoryName, { color: theme.text }]}>
                         {category.name}
                       </ThemedText>
-                      <ThemedText
-                        style={[
-                          styles.categoryQuestions,
-                          { color: theme.icon },
-                        ]}>
-                        {category.questions} questions
-                      </ThemedText>
+                      {typeof category.questions === "number" ? (
+                        <ThemedText
+                          style={[
+                            styles.categoryQuestions,
+                            { color: theme.icon },
+                          ]}>
+                          {category.questions} questions
+                        </ThemedText>
+                      ) : (
+                        <ThemedText
+                          style={[
+                            styles.categoryQuestions,
+                            { color: theme.icon },
+                          ]}>
+                          Tap to start
+                        </ThemedText>
+                      )}
                     </TouchableOpacity>
                   );
                 })}
@@ -249,7 +338,7 @@ export default function HomeScreen() {
                     </ThemedText>
                     <ThemedText
                       style={[styles.activityDate, { color: theme.icon }]}>
-                      {quiz.date}
+                      {formatDate(quiz.date)}
                     </ThemedText>
                   </ThemedView>
                   <ThemedView
@@ -290,7 +379,7 @@ export default function HomeScreen() {
                   style={[
                     styles.leaderboardCard,
                     { backgroundColor: theme.background },
-                    player.name === "You" && styles.leaderboardHighlight,
+                    player.id === userId && styles.leaderboardHighlight,
                   ]}>
                   <ThemedView
                     style={[
@@ -305,7 +394,7 @@ export default function HomeScreen() {
                       style={[
                         styles.leaderboardName,
                         { color: theme.text },
-                        player.name === "You" && styles.leaderboardYou,
+                        player.id === userId && styles.leaderboardYou,
                       ]}>
                       {player.name}
                     </ThemedText>
