@@ -1,11 +1,8 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useUserActivities } from "@/hooks/use-activities";
 import { useCategories } from "@/hooks/use-categories";
-import {
-  useLeaderboard,
-  useScoreHistory,
-  useScoreOverview,
-} from "@/hooks/use-scores";
+import { useLeaderboard } from "@/hooks/use-scores";
 import { useAuth } from "@/provider/UserProvider";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
 import { useRouter } from "expo-router";
@@ -49,13 +46,11 @@ export default function HomeScreen() {
   const isWideScreen = isWeb && width >= 768;
 
   const { data: categoriesData = [] } = useCategories();
-  const { data: scoreOverview } = useScoreOverview(userId, !!userId);
-  const { data: scoreHistory } = useScoreHistory(userId, 1, !!userId);
   const { data: leaderboardData } = useLeaderboard(1, 5);
+  const { data: activitiesData = [] } = useUserActivities(userId, !!userId);
 
   const userName = user?.fullName ?? "User";
-  const quizzesCompleted =
-    scoreOverview?.total_quizzes ?? user?.stats?.quizzesCompleted ?? 0;
+  const quizzesCompleted = user?.stats?.quizzesCompleted ?? 0;
 
   const {
     shouldShow,
@@ -94,26 +89,33 @@ export default function HomeScreen() {
   });
 
   const stats: Stats = {
-    completed: scoreOverview?.total_quizzes ?? 0,
-    points: scoreOverview?.total_points ?? 0,
-    streak: scoreOverview?.streak ?? 0,
+    completed: user?.stats?.quizzesCompleted ?? 0,
+    points: user?.stats?.totalPoints ?? 0,
+    streak: user?.stats?.streak ?? 0,
   };
 
-  const recentQuizzes: QuizRecord[] =
-    scoreHistory?.scores?.map((quiz) => ({
-      id: quiz.id,
-      category: quiz.category_name,
-      score: quiz.score,
-      total: quiz.total_questions,
-      date: quiz.completed_at,
-    })) ?? [];
+  const recentQuizzes: QuizRecord[] = activitiesData.map((activity, index) => {
+    const total =
+      activity.percentage > 0
+        ? Math.round((activity.score * 100) / activity.percentage)
+        : 0;
+
+    return {
+      id: `${activity.category}-${activity.takenAt}-${index}`,
+      category: activity.category,
+      score: activity.score,
+      total,
+      date: activity.takenAt,
+      percentage: activity.percentage,
+    };
+  });
 
   const leaderboard: LeaderboardEntry[] =
-    leaderboardData?.leaderboard?.map((entry) => ({
-      id: entry.user_id,
+    leaderboardData?.users?.map((entry, index) => ({
+      id: entry._id,
       name: entry.fullname,
-      points: entry.total_points,
-      rank: entry.rank,
+      points: entry.totalPoints,
+      rank: entry.rank ?? index + 1,
     })) ?? [];
 
   const formatDate = (dateString: string): string => {
@@ -355,7 +357,12 @@ export default function HomeScreen() {
                         styles.activityPercentage,
                         { color: theme.tint },
                       ]}>
-                      {Math.round((quiz.score / quiz.total) * 100)}%
+                      {typeof quiz.percentage === "number"
+                        ? Math.round(quiz.percentage)
+                        : quiz.total > 0
+                        ? Math.round((quiz.score / quiz.total) * 100)
+                        : 0}
+                      %
                     </ThemedText>
                   </ThemedView>
                 </ThemedView>
