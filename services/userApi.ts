@@ -21,6 +21,13 @@ export interface ChangePasswordResponse {
   message: string;
 }
 
+export interface UserActivity {
+  category: string;
+  score: number;
+  percentage: number;
+  takenAt: string;
+}
+
 export const userApi = {
   updateProfile: async (
     userId: string,
@@ -40,6 +47,13 @@ export const userApi = {
     const response = await apiClient.patch<ChangePasswordResponse>(
       `/users/${userId}/password`,
       data,
+    );
+    return response.data;
+  },
+
+  getActivities: async (userId: string): Promise<UserActivity[]> => {
+    const response = await apiClient.get<UserActivity[]>(
+      `/user/${userId}/activities`,
     );
     return response.data;
   },

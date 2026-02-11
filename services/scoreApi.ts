@@ -29,21 +29,15 @@ export interface ScoreHistoryResponse {
 }
 
 export interface LeaderboardEntry {
-  rank: number;
-  user_id: string;
+  rank?: number;
+  _id: string;
   fullname: string;
-  total_points: number;
-  quizzes_completed: number;
-  average_score: number;
+  totalPoints: number;
 }
 
 export interface LeaderboardResponse {
-  leaderboard: LeaderboardEntry[];
-  pagination: {
-    page: number;
-    limit: number;
-    total_count: number;
-  };
+  page: number;
+  users: LeaderboardEntry[];
 }
 
 export const scoreApi = {

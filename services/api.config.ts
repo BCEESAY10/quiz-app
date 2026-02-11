@@ -2,24 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Platform } from "react-native";
 
-const DEFAULT_WEB_BASE_URL = "http://localhost:5000/api/v1";
-const DEFAULT_ANDROID_EMULATOR_BASE_URL = "http://10.0.2.2:5000/api/v1";
-const DEFAULT_IOS_SIMULATOR_BASE_URL = "http://localhost:5000/api/v1";
-
-const getDefaultBaseUrl = (): string => {
-  if (Platform.OS === "android") {
-    return DEFAULT_ANDROID_EMULATOR_BASE_URL;
-  }
-
-  if (Platform.OS === "ios") {
-    return DEFAULT_IOS_SIMULATOR_BASE_URL;
-  }
-
-  return DEFAULT_WEB_BASE_URL;
-};
-
-export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL || getDefaultBaseUrl();
+// Base URL from environment variable
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 // Create axios instance
 export const apiClient = axios.create({
@@ -73,7 +57,9 @@ apiClient.interceptors.request.use(
 
 // Response interceptor for error handling
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   async (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid, clear it
