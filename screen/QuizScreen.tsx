@@ -119,7 +119,8 @@ export default function QuizScreen() {
     };
 
     initializeQuiz();
-  }, [categoryId, categoryName, startQuizMutation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryId, categoryName]);
 
   useEffect(() => {
     const submitResults = async () => {
@@ -148,7 +149,8 @@ export default function QuizScreen() {
     };
 
     submitResults();
-  }, [quizId, quizState, submitQuizMutation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizId, quizState]);
 
   // Timer effect
   useEffect(() => {
@@ -355,7 +357,7 @@ export default function QuizScreen() {
             isWeb && styles.webHeader,
             { backgroundColor: theme.background },
           ]}>
-          <Text style={styles.categoryBadge}>{category}</Text>
+          <Text style={styles.categoryBadge}>{categoryName}</Text>
           <View style={styles.questionCounterAndTimer}>
             <Text style={[styles.questionCounter, { color: theme.text }]}>
               Question {quizState.currentQuestionIndex + 1} of{" "}
