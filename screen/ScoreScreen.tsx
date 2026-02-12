@@ -364,7 +364,6 @@ export default function ScoresScreen() {
                       </View>
                     </View>
                     <View style={styles.historyCardFooter}>
-                      <Text style={styles.historyCardTime}>⏱️ —</Text>
                       <View
                         style={[
                           styles.historyCardBadge,
