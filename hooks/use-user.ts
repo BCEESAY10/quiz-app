@@ -61,11 +61,6 @@ export const useDeleteAccount = () => {
     mutationFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       return userApi.deleteAccount(user.id);
-    },
-  });
-};
-
-export const useUserStats = (userId: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: ["userStats", userId],
     queryFn: () => userApi.getUserStats(userId),

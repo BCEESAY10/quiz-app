@@ -75,6 +75,31 @@ export default function SettingsScreen() {
     router.push("/settings/change-password");
   };
 
+  const performDeleteAccount = async () => {
+    if (!user?.id) {
+      Alert.alert("Error", "User not authenticated");
+      return;
+    }
+
+    try {
+      await deleteAccountMutation.mutateAsync();
+      await logout();
+
+      Alert.alert("Account Deleted", "Your account has been deleted.", [
+        {
+          text: "OK",
+          onPress: () => router.replace("/login"),
+        },
+      ]);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error?.message ||
+        "Failed to delete account. Please try again.";
+      Alert.alert("Error", errorMessage);
+    }
+  };
+
   const confirmDeleteAccount = () => {
     Alert.alert(
       "Delete Account",
@@ -84,24 +109,7 @@ export default function SettingsScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteAccountMutation.mutateAsync();
-              await logout();
-              Alert.alert("Account Deleted", "Your account has been deleted.", [
-                {
-                  text: "OK",
-                  onPress: () => router.replace("/login"),
-                },
-              ]);
-            } catch (error: any) {
-              const errorMessage =
-                error.response?.data?.message ||
-                error?.message ||
-                "Failed to delete account. Please try again.";
-              Alert.alert("Error", errorMessage);
-            }
-          },
+          onPress: performDeleteAccount,
         },
       ],
     );
@@ -113,8 +121,10 @@ export default function SettingsScreen() {
         "Are you sure you want to delete your account? This action cannot be undone.",
       );
       if (!confirmed) return;
+      performDeleteAccount();
+    } else {
+      confirmDeleteAccount();
     }
-    confirmDeleteAccount();
   };
 
   return (
