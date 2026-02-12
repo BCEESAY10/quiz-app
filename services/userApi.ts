@@ -21,6 +21,10 @@ export interface ChangePasswordResponse {
   message: string;
 }
 
+export interface DeleteAccountResponse {
+  message: string;
+}
+
 export interface UserActivity {
   category: string;
   score: number;
@@ -41,7 +45,7 @@ export const userApi = {
     data: UpdateProfileRequest,
   ): Promise<UpdateProfileResponse> => {
     const response = await apiClient.patch<UpdateProfileResponse>(
-      `/users/${userId}`,
+      `/user/${userId}`,
       data,
     );
     return response.data;
@@ -52,8 +56,15 @@ export const userApi = {
     data: ChangePasswordRequest,
   ): Promise<ChangePasswordResponse> => {
     const response = await apiClient.patch<ChangePasswordResponse>(
-      `/users/${userId}/password`,
+      `/user/${userId}/password`,
       data,
+    );
+    return response.data;
+  },
+
+  deleteAccount: async (userId: string): Promise<DeleteAccountResponse> => {
+    const response = await apiClient.delete<DeleteAccountResponse>(
+      `/user/${userId}`,
     );
     return response.data;
   },

@@ -54,6 +54,17 @@ export const useChangePassword = () => {
   });
 };
 
+export const useDeleteAccount = () => {
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("User not authenticated");
+      return userApi.deleteAccount(user.id);
+    },
+  });
+};
+
 export const useUserStats = (userId: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: ["userStats", userId],

@@ -1,5 +1,6 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useDeleteAccount, useUpdateProfile } from "@/hooks/use-user";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,7 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
@@ -34,9 +35,29 @@ export default function SettingsScreen() {
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [email, setEmail] = useState(user?.email || "");
 
-  const handleSaveProfile = () => {
-    Alert.alert("Success", "Profile updated successfully!");
-    setIsEditingProfile(false);
+  const updateProfileMutation = useUpdateProfile();
+  const deleteAccountMutation = useDeleteAccount();
+
+  const handleSaveProfile = async () => {
+    if (!user?.id) {
+      Alert.alert("Error", "User not authenticated");
+      return;
+    }
+
+    try {
+      await updateProfileMutation.mutateAsync({
+        fullname: fullName.trim() || undefined,
+        email: email.trim() || undefined,
+      });
+      Alert.alert("Success", "Profile updated successfully!");
+      setIsEditingProfile(false);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error?.message ||
+        "Failed to update profile. Please try again.";
+      Alert.alert("Error", errorMessage);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -54,12 +75,7 @@ export default function SettingsScreen() {
     router.push("/settings/change-password");
   };
 
-  const handleDeleteAccount = () => {
-    if (isWeb) {
-      window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      );
-    }
+  const confirmDeleteAccount = () => {
     Alert.alert(
       "Delete Account",
       "Are you sure you want to delete your account? This action cannot be undone.",
@@ -68,13 +84,37 @@ export default function SettingsScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
-            // TODO: Implement account deletion
-            console.log("Account deletion requested");
+          onPress: async () => {
+            try {
+              await deleteAccountMutation.mutateAsync();
+              await logout();
+              Alert.alert("Account Deleted", "Your account has been deleted.", [
+                {
+                  text: "OK",
+                  onPress: () => router.replace("/login"),
+                },
+              ]);
+            } catch (error: any) {
+              const errorMessage =
+                error.response?.data?.message ||
+                error?.message ||
+                "Failed to delete account. Please try again.";
+              Alert.alert("Error", errorMessage);
+            }
           },
         },
-      ]
+      ],
     );
+  };
+
+  const handleDeleteAccount = () => {
+    if (isWeb) {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone.",
+      );
+      if (!confirmed) return;
+    }
+    confirmDeleteAccount();
   };
 
   return (
@@ -181,13 +221,16 @@ export default function SettingsScreen() {
                     styles.button,
                     styles.saveButton,
                     { backgroundColor: theme.primaryButton.background },
-                  ]}>
+                  ]}
+                  disabled={updateProfileMutation.isPending}>
                   <ThemedText
                     style={[
                       styles.buttonText,
                       { color: theme.primaryButton.text },
                     ]}>
-                    Save Changes
+                    {updateProfileMutation.isPending
+                      ? "Saving..."
+                      : "Save Changes"}
                   </ThemedText>
                 </TouchableOpacity>
               </View>
@@ -272,10 +315,13 @@ export default function SettingsScreen() {
 
           <TouchableOpacity
             onPress={handleDeleteAccount}
-            style={[styles.dangerButton, { borderColor: "#EF4444" }]}>
+            style={[styles.dangerButton, { borderColor: "#EF4444" }]}
+            disabled={deleteAccountMutation.isPending}>
             <Ionicons name="trash-outline" size={20} color="#EF4444" />
             <ThemedText style={[styles.dangerButtonText, { color: "#EF4444" }]}>
-              Delete Account
+              {deleteAccountMutation.isPending
+                ? "Deleting..."
+                : "Delete Account"}
             </ThemedText>
           </TouchableOpacity>
         </ThemedView>
