@@ -231,8 +231,8 @@ export default function ScoresScreen() {
                   category.accuracy >= 80
                     ? "#4CAF50"
                     : category.accuracy >= 60
-                      ? "#FF9800"
-                      : "#F44336";
+                    ? "#FF9800"
+                    : "#F44336";
 
                 return (
                   <View
@@ -298,7 +298,7 @@ export default function ScoresScreen() {
                           styles.categoryStatDetail,
                           { color: theme.text },
                         ]}>
-                        Avg: {category.averageScore}%
+                        Avg: {category.averageScore}
                       </Text>
                     </View>
                   </View>
