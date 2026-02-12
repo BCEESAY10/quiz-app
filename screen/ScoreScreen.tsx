@@ -1,7 +1,7 @@
 import { useScoreHistory, useScoreOverview } from "@/hooks/use-scores";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -23,100 +23,7 @@ export default function ScoresScreen() {
     "overview",
   );
 
-  const history = historyData?.scores ?? [];
-
-  const { overallAccuracy, averageScore, bestQuiz, categoryStats } =
-    useMemo(() => {
-      const totalQuizzes = overview?.total_quizzes ?? history.length;
-      const totalScore = history.reduce((sum, quiz) => sum + quiz.score, 0);
-      const totalPossible = history.reduce(
-        (sum, quiz) => sum + quiz.total_questions,
-        0,
-      );
-
-      const accuracy = totalPossible
-        ? Math.round((totalScore / totalPossible) * 100)
-        : 0;
-      const avgScore = totalQuizzes ? Math.round(totalScore / totalQuizzes) : 0;
-
-      const best = history.reduce((currentBest, quiz) => {
-        const currentPercentage = (quiz.score / quiz.total_questions) * 100;
-        const bestPercentage = currentBest
-          ? (currentBest.score / currentBest.total_questions) * 100
-          : 0;
-
-        return currentPercentage > bestPercentage ? quiz : currentBest;
-      }, history[0] ?? null);
-
-      const CATEGORY_META: Record<string, { icon: string; color: string }> = {
-        science: { icon: "🧪", color: "#4CAF50" },
-        sports: { icon: "🏅", color: "#FF9800" },
-        english: { icon: "📚", color: "#2196F3" },
-        geography: { icon: "🌍", color: "#00BCD4" },
-        history: { icon: "📜", color: "#9C27B0" },
-        literature: { icon: "📖", color: "#3F51B5" },
-        arts: { icon: "🎨", color: "#E91E63" },
-        computer: { icon: "💻", color: "#607D8B" },
-        maths: { icon: "➗", color: "#F44336" },
-        math: { icon: "➗", color: "#F44336" },
-      };
-
-      const statsMap = new Map<
-        string,
-        {
-          category: string;
-          totalQuizzes: number;
-          bestScore: number;
-          averageScore: number;
-          accuracy: number;
-          icon: string;
-          color: string;
-          scoreSum: number;
-        }
-      >();
-
-      history.forEach((quiz) => {
-        const key = quiz.category_name.toLowerCase();
-        const meta = CATEGORY_META[key] ?? {
-          icon: "🧠",
-          color: "#5B48E8",
-        };
-        const percentage =
-          quiz.total_questions > 0
-            ? Math.round((quiz.score / quiz.total_questions) * 100)
-            : 0;
-
-        const existing = statsMap.get(key);
-        if (!existing) {
-          statsMap.set(key, {
-            category: quiz.category_name,
-            totalQuizzes: 1,
-            bestScore: percentage,
-            averageScore: percentage,
-            accuracy: percentage,
-            icon: meta.icon,
-            color: meta.color,
-            scoreSum: percentage,
-          });
-          return;
-        }
-
-        existing.totalQuizzes += 1;
-        existing.bestScore = Math.max(existing.bestScore, percentage);
-        existing.scoreSum += percentage;
-        existing.averageScore = Math.round(
-          existing.scoreSum / existing.totalQuizzes,
-        );
-        existing.accuracy = existing.averageScore;
-      });
-
-      return {
-        overallAccuracy: accuracy,
-        averageScore: avgScore,
-        bestQuiz: best,
-        categoryStats: Array.from(statsMap.values()),
-      };
-    }, [history, overview]);
+  const history = historyData?.items ?? [];
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -214,7 +121,7 @@ export default function ScoresScreen() {
                   ]}>
                   <Text
                     style={[styles.overallStatValue, { color: theme.tint }]}>
-                    {overview?.total_quizzes ?? history.length}
+                    {overview?.total_quizzes ?? 0}
                   </Text>
                   <Text
                     style={[styles.overallStatLabel, { color: theme.tint }]}>
@@ -227,7 +134,7 @@ export default function ScoresScreen() {
                     { backgroundColor: theme.background },
                   ]}>
                   <Text style={[styles.overallStatValue, { color: "#4CAF50" }]}>
-                    {overallAccuracy}%
+                    {overview?.accuracy ?? 0}%
                   </Text>
                   <Text
                     style={[styles.overallStatLabel, { color: theme.text }]}>
@@ -240,11 +147,11 @@ export default function ScoresScreen() {
                     { backgroundColor: theme.background },
                   ]}>
                   <Text style={[styles.overallStatValue, { color: "#5B48E8" }]}>
-                    {averageScore}
+                    {overview?.average_score ?? 0}
                   </Text>
                   <Text
                     style={[styles.overallStatLabel, { color: theme.text }]}>
-                    Avg Score (10)
+                    Avg Score
                   </Text>
                 </View>
               </View>
@@ -260,7 +167,7 @@ export default function ScoresScreen() {
                   styles.bestPerformanceCard,
                   { backgroundColor: theme.background },
                 ]}>
-                {bestQuiz ? (
+                {overview?.best_performance ? (
                   <>
                     <View style={styles.bestPerformanceHeader}>
                       <Text
@@ -268,19 +175,16 @@ export default function ScoresScreen() {
                           styles.bestPerformanceCategory,
                           { color: theme.tint },
                         ]}>
-                        {bestQuiz.category_name}
+                        Category ID: {overview.best_performance.category}
                       </Text>
                       <Text style={styles.bestPerformanceBadge}>🏆 Best</Text>
                     </View>
                     <View style={styles.bestPerformanceBody}>
                       <Text style={styles.bestPerformanceScore}>
-                        {bestQuiz.score}/{bestQuiz.total_questions}
+                        {overview.best_performance.score}
                       </Text>
                       <Text style={styles.bestPerformancePercentage}>
-                        {Math.round(
-                          (bestQuiz.score / bestQuiz.total_questions) * 100,
-                        )}
-                        %
+                        {overview.best_performance.percentage}%
                       </Text>
                     </View>
                     <Text
@@ -288,7 +192,7 @@ export default function ScoresScreen() {
                         styles.bestPerformanceDate,
                         { color: theme.text },
                       ]}>
-                      {formatDate(bestQuiz.completed_at)}
+                      {formatDate(overview.best_performance.date)}
                     </Text>
                   </>
                 ) : (
@@ -299,80 +203,6 @@ export default function ScoresScreen() {
                 )}
               </View>
             </View>
-
-            {/* Category Performance */}
-            <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: theme.tint }]}>
-                Performance by Category
-              </Text>
-              {categoryStats.map((stat) => (
-                <View
-                  key={stat.category}
-                  style={[
-                    styles.categoryStatCard,
-                    { backgroundColor: theme.background },
-                  ]}>
-                  <View style={styles.categoryStatHeader}>
-                    <View style={styles.categoryStatLeft}>
-                      <Text style={styles.categoryStatIcon}>{stat.icon}</Text>
-                      <View>
-                        <Text
-                          style={[
-                            styles.categoryStatName,
-                            { color: theme.tint },
-                          ]}>
-                          {stat.category}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.categoryStatQuizzes,
-                            { color: theme.text },
-                          ]}>
-                          {stat.totalQuizzes}{" "}
-                          {stat.totalQuizzes === 1 ? "quiz" : "quizzes"}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text
-                      style={[
-                        styles.categoryStatAccuracy,
-                        { color: stat.color },
-                      ]}>
-                      {stat.accuracy}%
-                    </Text>
-                  </View>
-                  <View style={styles.categoryStatProgress}>
-                    <View style={styles.categoryStatProgressBar}>
-                      <View
-                        style={[
-                          styles.categoryStatProgressFill,
-                          {
-                            width: `${stat.accuracy}%`,
-                            backgroundColor: stat.color,
-                          },
-                        ]}
-                      />
-                    </View>
-                  </View>
-                  <View style={styles.categoryStatFooter}>
-                    <Text
-                      style={[
-                        styles.categoryStatDetail,
-                        { color: theme.text },
-                      ]}>
-                      Best: {stat.bestScore}%
-                    </Text>
-                    <Text
-                      style={[
-                        styles.categoryStatDetail,
-                        { color: theme.text },
-                      ]}>
-                      Avg: {stat.averageScore}%
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
           </View>
         ) : (
           <View style={styles.content}>
@@ -382,18 +212,12 @@ export default function ScoresScreen() {
                 Recent Quizzes
               </Text>
               {history.map((quiz) => {
-                const percentage = Math.round(
-                  (quiz.score / quiz.total_questions) * 100,
-                );
-                const scoreColor = getScoreColor(
-                  quiz.score,
-                  quiz.total_questions,
-                );
-                const performance = getPerformanceLabel(percentage);
+                const scoreColor = getScoreColor(quiz.percentage, 100);
+                const performance = getPerformanceLabel(quiz.percentage);
 
                 return (
                   <View
-                    key={quiz.id}
+                    key={quiz._id}
                     style={[
                       styles.historyCard,
                       { backgroundColor: theme.background },
@@ -405,10 +229,10 @@ export default function ScoresScreen() {
                             styles.historyCardCategory,
                             { color: theme.tint },
                           ]}>
-                          {quiz.category_name}
+                          {quiz.category.name}
                         </Text>
                         <Text style={styles.historyCardDate}>
-                          {formatDate(quiz.completed_at)}
+                          {formatDate(quiz.takenAt)}
                         </Text>
                       </View>
                       <View style={styles.historyCardRight}>
@@ -417,10 +241,10 @@ export default function ScoresScreen() {
                             styles.historyCardScore,
                             { color: scoreColor },
                           ]}>
-                          {quiz.score}/{quiz.total_questions}
+                          {quiz.correctAnswers}/{quiz.questions.length}
                         </Text>
                         <Text style={styles.historyCardPercentage}>
-                          {percentage}%
+                          {quiz.percentage}%
                         </Text>
                       </View>
                     </View>
@@ -430,7 +254,7 @@ export default function ScoresScreen() {
                           style={[
                             styles.historyCardProgressFill,
                             {
-                              width: `${percentage}%`,
+                              width: `${quiz.percentage}%`,
                               backgroundColor: scoreColor,
                             },
                           ]}

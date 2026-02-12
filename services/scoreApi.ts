@@ -1,31 +1,48 @@
 import { apiClient } from "./api.config";
 
-export interface ScoreOverview {
-  total_quizzes: number;
-  total_points: number;
-  average_score: number;
-  best_category?: string;
-  streak?: number;
+export interface BestPerformance {
+  category: string;
+  score: number;
+  percentage: number;
+  date: string;
 }
 
-export interface ScoreHistory {
-  id: string;
-  quiz_id: string;
-  user_id: string;
+export interface ScoreOverview {
+  total_quizzes: number;
+  accuracy: number;
+  average_score: number;
+  best_performance: BestPerformance;
+}
+
+export interface QuestionDetail {
+  question: string;
+  selectedOption: string;
+  isCorrect: boolean;
+}
+
+export interface QuizCategory {
+  _id: string;
+  name: string;
+}
+
+export interface ScoreHistoryItem {
+  _id: string;
+  user: string;
+  category: QuizCategory;
+  questions: QuestionDetail[];
   score: number;
-  total_questions: number;
   percentage: number;
-  category_name: string;
-  completed_at: string;
+  correctAnswers: number;
+  wrongAnswers: number;
+  takenAt: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ScoreHistoryResponse {
-  scores: ScoreHistory[];
-  pagination: {
-    page: number;
-    total_pages: number;
-    total_count: number;
-  };
+  page: number;
+  total: number;
+  items: ScoreHistoryItem[];
 }
 
 export interface LeaderboardEntry {
@@ -43,7 +60,7 @@ export interface LeaderboardResponse {
 export const scoreApi = {
   getOverview: async (userId: string): Promise<ScoreOverview> => {
     const response = await apiClient.get<ScoreOverview>(
-      `/scores/overview/${userId}`,
+      `/user/${userId}/quiz-overview`,
     );
     return response.data;
   },
@@ -53,7 +70,7 @@ export const scoreApi = {
     page: number = 1,
   ): Promise<ScoreHistoryResponse> => {
     const response = await apiClient.get<ScoreHistoryResponse>(
-      `/scores/history/${userId}?page=${page}`,
+      `/user/${userId}/quiz-history?page=${page}`,
     );
     return response.data;
   },
