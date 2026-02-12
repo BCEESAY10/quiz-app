@@ -58,6 +58,22 @@ export default function ScoresScreen() {
     return "Needs Improvement";
   };
 
+  const getCategoryIcon = (iconName: string): string => {
+    const icons: Record<string, string> = {
+      science: "🧪",
+      maths: "🔢",
+      math: "🔢",
+      english: "📚",
+      geography: "🌍",
+      history: "📜",
+      literature: "📖",
+      arts: "🎨",
+      computer: "💻",
+      sports: "⚽",
+    };
+    return icons[iconName.toLowerCase()] || "📝";
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
@@ -203,6 +219,91 @@ export default function ScoresScreen() {
                   </Text>
                 )}
               </View>
+            </View>
+
+            {/* Performance by Category */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: theme.tint }]}>
+                Performance by Category
+              </Text>
+              {overview?.categories?.map((category) => {
+                const accuracyColor =
+                  category.accuracy >= 80
+                    ? "#4CAF50"
+                    : category.accuracy >= 60
+                      ? "#FF9800"
+                      : "#F44336";
+
+                return (
+                  <View
+                    key={category.categoryId}
+                    style={[
+                      styles.categoryStatCard,
+                      { backgroundColor: theme.background },
+                    ]}>
+                    <View style={styles.categoryStatHeader}>
+                      <View style={styles.categoryStatLeft}>
+                        <Text style={styles.categoryStatIcon}>
+                          {getCategoryIcon(category.icon)}
+                        </Text>
+                        <View>
+                          <Text
+                            style={[
+                              styles.categoryStatName,
+                              { color: theme.tint },
+                            ]}>
+                            {category.categoryName}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.categoryStatQuizzes,
+                              { color: theme.text },
+                            ]}>
+                            {category.totalQuizzes}{" "}
+                            {category.totalQuizzes === 1 ? "quiz" : "quizzes"}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text
+                        style={[
+                          styles.categoryStatAccuracy,
+                          { color: accuracyColor },
+                        ]}>
+                        {category.accuracy}%
+                      </Text>
+                    </View>
+                    <View style={styles.categoryStatProgress}>
+                      <View style={styles.categoryStatProgressBar}>
+                        <View
+                          style={[
+                            styles.categoryStatProgressFill,
+                            {
+                              width: `${category.accuracy}%`,
+                              backgroundColor: accuracyColor,
+                            },
+                          ]}
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.categoryStatFooter}>
+                      <Text
+                        style={[
+                          styles.categoryStatDetail,
+                          { color: theme.text },
+                        ]}>
+                        Best: {category.bestScore}%
+                      </Text>
+                      <Text
+                        style={[
+                          styles.categoryStatDetail,
+                          { color: theme.text },
+                        ]}>
+                        Avg: {category.averageScore}%
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })}
             </View>
           </View>
         ) : (

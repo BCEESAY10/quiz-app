@@ -8,11 +8,22 @@ export interface BestPerformance {
   date: string;
 }
 
+export interface CategoryPerformance {
+  categoryId: string;
+  categoryName: string;
+  icon: string;
+  totalQuizzes: number;
+  accuracy: number;
+  bestScore: number;
+  averageScore: number;
+}
+
 export interface ScoreOverview {
   total_quizzes: number;
   accuracy: number;
   average_score: number;
   best_performance: BestPerformance;
+  categories: CategoryPerformance[];
 }
 
 export interface QuestionDetail {
