@@ -26,4 +26,5 @@ export type Stats = {
   completed: number;
   streak: number;
   points: number;
+  longestStreak: number;
 };

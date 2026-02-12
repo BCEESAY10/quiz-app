@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useUserActivities } from "@/hooks/use-activities";
 import { useCategories } from "@/hooks/use-categories";
+import { useUserStats } from "@/hooks/use-user";
 import { useLeaderboard } from "@/hooks/use-scores";
 import { useAuth } from "@/provider/UserProvider";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
@@ -48,9 +49,9 @@ export default function HomeScreen() {
   const { data: categoriesData = [] } = useCategories();
   const { data: leaderboardData } = useLeaderboard(1, 5);
   const { data: activitiesData = [] } = useUserActivities(userId, !!userId);
+  const { data: userStatsData } = useUserStats(userId, !!userId);
 
   const userName = user?.fullName ?? "User";
-  const quizzesCompleted = user?.stats?.quizzesCompleted ?? 0;
 
   const {
     shouldShow,
@@ -58,7 +59,7 @@ export default function HomeScreen() {
     handleDismiss,
     handleDontAskAgain,
     handleSubmitSuccess,
-  } = useReviewPrompt(quizzesCompleted);
+  } = useReviewPrompt(userStatsData?.total_quizzes ?? 0);
 
   const CATEGORY_META: Record<string, { icon: string; color: string }> = {
     science: { icon: "science", color: "#4CAF50" },
@@ -89,9 +90,10 @@ export default function HomeScreen() {
   });
 
   const stats: Stats = {
-    completed: user?.stats?.quizzesCompleted ?? 0,
-    points: user?.stats?.totalPoints ?? 0,
-    streak: user?.stats?.streak ?? 0,
+    completed: userStatsData?.total_quizzes ?? 0,
+    points: userStatsData?.total_points ?? 0,
+    streak: userStatsData?.streak ?? 0,
+    longestStreak: userStatsData?.longest_streak ?? 0,
   };
 
   const recentQuizzes: QuizRecord[] = activitiesData.map((activity, index) => {
@@ -232,6 +234,30 @@ export default function HomeScreen() {
 
               <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
                 Day Streak
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView
+              style={[
+                styles.statCard,
+                { backgroundColor: theme.background },
+                isWideScreen && styles.statCardWide,
+              ]}>
+              <View style={styles.streakContainer}>
+                <ThemedText style={[styles.statValue, { color: theme.tint }]}>
+                  {stats.longestStreak}
+                </ThemedText>
+
+                <IconSymbol
+                  name="flame.fill"
+                  color="#FFA726"
+                  size={22}
+                  style={{ marginLeft: 4 }}
+                />
+              </View>
+
+              <ThemedText style={[styles.statLabel, { color: theme.icon }]}>
+                Longest Streak
               </ThemedText>
             </ThemedView>
           </ThemedView>

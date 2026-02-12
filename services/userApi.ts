@@ -28,6 +28,13 @@ export interface UserActivity {
   takenAt: string;
 }
 
+export interface UserStats {
+  total_quizzes: number;
+  total_points: number;
+  streak: number;
+  longest_streak: number;
+}
+
 export const userApi = {
   updateProfile: async (
     userId: string,
@@ -54,6 +61,13 @@ export const userApi = {
   getActivities: async (userId: string): Promise<UserActivity[]> => {
     const response = await apiClient.get<UserActivity[]>(
       `/user/${userId}/activities`,
+    );
+    return response.data;
+  },
+
+  getUserStats: async (userId: string): Promise<UserStats> => {
+    const response = await apiClient.get<UserStats>(
+      `/user/${userId}/stats`,
     );
     return response.data;
   },

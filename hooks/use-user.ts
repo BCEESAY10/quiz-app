@@ -5,7 +5,7 @@ import {
   userApi,
 } from "@/services/userApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Platform } from "react-native";
 
 export const useUpdateProfile = () => {
@@ -51,5 +51,14 @@ export const useChangePassword = () => {
         confirmPassword: data.confirmPassword,
       });
     },
+  });
+};
+
+export const useUserStats = (userId: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ["userStats", userId],
+    queryFn: () => userApi.getUserStats(userId),
+    enabled: enabled && !!userId,
+    staleTime: 60000, // 1 minute
   });
 };
