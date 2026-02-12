@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/theme";
 import { FormComponentProps } from "@/types/form";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Controller,
   DefaultValues,
@@ -22,6 +22,7 @@ export function FormComponent<T extends FieldValues>({
   onSubmit,
   submitButtonText,
   isLoading = false,
+  resetSignal,
 }: FormComponentProps<T>) {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
@@ -38,9 +39,15 @@ export function FormComponent<T extends FieldValues>({
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<T>({
     defaultValues: defaultValues as DefaultValues<T>,
   });
+
+  useEffect(() => {
+    if (resetSignal === undefined) return;
+    reset(defaultValues as DefaultValues<T>);
+  }, [resetSignal, reset, defaultValues]);
 
   return (
     <View style={styles.formContainer}>

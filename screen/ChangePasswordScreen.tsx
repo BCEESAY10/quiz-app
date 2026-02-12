@@ -1,12 +1,15 @@
 import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Toast } from "@/components/ui/toast";
 import { useChangePassword } from "@/hooks/use-user";
 import { useAppTheme } from "@/provider/ThemeProvider";
 import { useAuth } from "@/provider/UserProvider";
+import { ToastState } from "@/types/toast";
 import { changePasswordFields } from "@/utils/validation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -23,6 +26,8 @@ export default function ChangePasswordScreen() {
   const { user } = useAuth();
 
   const changePasswordMutation = useChangePassword();
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const [resetSignal, setResetSignal] = useState(0);
 
   const onSubmit = async (data: any) => {
     if (!user?.id) {
@@ -37,19 +42,16 @@ export default function ChangePasswordScreen() {
         newPassword: data.newPassword,
         confirmPassword: data.confirmPassword,
       });
-
-      Alert.alert("Success", "Your password has been changed successfully!", [
-        {
-          text: "OK",
-          onPress: () => router.back(),
-        },
-      ]);
+      setToast({ message: "Password updated", type: "success" });
+      setResetSignal((current) => current + 1);
+      router.replace("/settings");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ||
         error?.message ||
         "Failed to change password. Please check your current password and try again.";
-      Alert.alert("Error", errorMessage);
+      setToast({ message: errorMessage, type: "error" });
+      setResetSignal((current) => current + 1);
     }
   };
 
@@ -57,6 +59,13 @@ export default function ChangePasswordScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
       edges={["right", "left", "bottom"]}>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -91,6 +100,7 @@ export default function ChangePasswordScreen() {
               onSubmit={onSubmit}
               submitButtonText="Change Password"
               isLoading={changePasswordMutation.isPending}
+              resetSignal={resetSignal}
             />
           </ThemedView>
         </KeyboardAvoidingView>

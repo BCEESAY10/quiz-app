@@ -22,4 +22,5 @@ export interface FormComponentProps<T extends FieldValues> {
   onSubmit: (data: T) => void;
   submitButtonText: string;
   isLoading?: boolean;
+  resetSignal?: number;
 }
