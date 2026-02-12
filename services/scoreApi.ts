@@ -3,6 +3,7 @@ import { apiClient } from "./api.config";
 export interface BestPerformance {
   category: string;
   score: number;
+  totalScore: number;
   percentage: number;
   date: string;
 }

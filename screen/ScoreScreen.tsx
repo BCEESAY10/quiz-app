@@ -175,13 +175,14 @@ export default function ScoresScreen() {
                           styles.bestPerformanceCategory,
                           { color: theme.tint },
                         ]}>
-                        Category ID: {overview.best_performance.category}
+                        {overview.best_performance.category}
                       </Text>
                       <Text style={styles.bestPerformanceBadge}>🏆 Best</Text>
                     </View>
                     <View style={styles.bestPerformanceBody}>
                       <Text style={styles.bestPerformanceScore}>
-                        {overview.best_performance.score}
+                        {overview.best_performance.score}/{""}
+                        {overview.best_performance.totalScore}
                       </Text>
                       <Text style={styles.bestPerformancePercentage}>
                         {overview.best_performance.percentage}%
