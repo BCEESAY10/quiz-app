@@ -49,13 +49,6 @@ export default function ReviewModal({
       return;
     }
 
-    if (!feedback.trim()) {
-      setToast({
-        message: "Please provide your feedback",
-        type: "error",
-      });
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -156,7 +149,7 @@ export default function ReviewModal({
             {/* Feedback Input */}
             <View style={styles.feedbackContainer}>
               <Text style={[styles.feedbackLabel, { color: theme.text }]}>
-                Tell us about your experience
+                Tell us about your experience (Optional)
               </Text>
               <TextInput
                 style={[
