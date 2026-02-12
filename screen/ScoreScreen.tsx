@@ -124,7 +124,7 @@ export default function ScoresScreen() {
                     {overview?.total_quizzes ?? 0}
                   </Text>
                   <Text
-                    style={[styles.overallStatLabel, { color: theme.tint }]}>
+                    style={[styles.overallStatLabel, { color: theme.text }]}>
                     Total Quizzes
                   </Text>
                 </View>
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   overallStatValue: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#2C3E50",
   },
