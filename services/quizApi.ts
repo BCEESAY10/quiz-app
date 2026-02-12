@@ -1,11 +1,12 @@
 import { apiClient } from "./api.config";
 
 export interface Question {
-  id: string;
+  _id: string;
   question: string;
   options: string[];
-  correct_answer: string;
-  category_id: string;
+  correctAnswer: string | number;
+  timer: number;
+  score: number;
 }
 
 export interface QuizStartRequest {
@@ -13,31 +14,25 @@ export interface QuizStartRequest {
 }
 
 export interface QuizStartResponse {
-  quiz_id: string;
+  category: string;
   questions: Question[];
-  time_limit?: number;
 }
 
 export interface QuizSubmitRequest {
-  quiz_id: string;
+  category_id: string;
   answers: {
     question_id: string;
-    selected_answer: string;
+    selected_option: string;
   }[];
   time_taken?: number;
 }
 
 export interface QuizSubmitResponse {
-  score: number;
-  total_questions: number;
-  correct_answers: number;
+  score: string;
   percentage: number;
-  results: {
-    question_id: string;
-    is_correct: boolean;
-    selected_answer: string;
-    correct_answer: string;
-  }[];
+  correct_answers: number;
+  wrong_answers: number;
+  comment: string;
 }
 
 export const quizApi = {
