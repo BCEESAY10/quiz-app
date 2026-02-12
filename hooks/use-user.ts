@@ -59,6 +59,8 @@ export const useUserStats = (userId: string, enabled: boolean = true) => {
     queryKey: ["userStats", userId],
     queryFn: () => userApi.getUserStats(userId),
     enabled: enabled && !!userId,
-    staleTime: 60000, // 1 minute
+    staleTime: 30000, // 30 seconds
+    refetchOnWindowFocus: true, // Refetch when app regains focus
+    refetchInterval: 60000, // Refetch every 60 seconds for continuous updates
   });
 };
