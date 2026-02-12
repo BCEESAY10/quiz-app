@@ -60,7 +60,7 @@ export interface LeaderboardResponse {
 export const scoreApi = {
   getOverview: async (userId: string): Promise<ScoreOverview> => {
     const response = await apiClient.get<ScoreOverview>(
-      `/user/${userId}/quiz-overview`,
+      `/scores/overview/${userId}`,
     );
     return response.data;
   },
@@ -70,7 +70,7 @@ export const scoreApi = {
     page: number = 1,
   ): Promise<ScoreHistoryResponse> => {
     const response = await apiClient.get<ScoreHistoryResponse>(
-      `/user/${userId}/quiz-history?page=${page}`,
+      `/scores/history/${userId}?page=${page}`,
     );
     return response.data;
   },
