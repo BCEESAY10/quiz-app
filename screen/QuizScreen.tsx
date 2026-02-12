@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useStartQuiz, useSubmitQuiz } from "@/hooks/use-quiz";
 import { useAppTheme } from "@/provider/ThemeProvider";
-import { Question, QuizState } from "@/types/quiz";
+import { Question, QuizState, QuizSubmissionResult } from "@/types/quiz";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -34,33 +34,15 @@ export default function QuizScreen() {
 
   const [quizState, setQuizState] = useState<QuizState | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [quizId, setQuizId] = useState<string | null>(null);
 
   const [timeLeft, setTimeLeft] = useState(0);
-  const [timerActive, setTimerActive] = useState(false);
   const [timeoutNotice, setTimeoutNotice] = useState(false);
+  const [submissionResult, setSubmissionResult] =
+    useState<QuizSubmissionResult | null>(null);
   const hasSubmittedRef = useRef(false);
 
   const startQuizMutation = useStartQuiz();
   const submitQuizMutation = useSubmitQuiz();
-
-  // ========= Timer configuration per category/question type ========
-  const getQuestionTime = (question: Question): number => {
-    if (question.category === "Math") {
-      return 30;
-    }
-
-    if (
-      question.category === "Science" &&
-      (question.question.includes("speed") ||
-        question.question.includes("calculate") ||
-        question.question.includes("value"))
-    ) {
-      return 30;
-    }
-
-    return 15;
-  };
 
   const handleTimeUp = () => {
     if (!quizState) return;
@@ -69,11 +51,8 @@ export default function QuizScreen() {
     newSelectedAnswers[quizState.currentQuestionIndex] = null;
 
     setQuizState({
-      questions: quizState.questions,
-      currentQuestionIndex: quizState.currentQuestionIndex,
+      ...quizState,
       selectedAnswers: newSelectedAnswers,
-      score: quizState.score,
-      isCompleted: quizState.isCompleted,
     });
 
     setShowAnswer(true);
@@ -87,25 +66,39 @@ export default function QuizScreen() {
 
       try {
         const response = await startQuizMutation.mutateAsync(categoryId);
+        console.log("[Quiz] Start quiz response received");
         const normalizedQuestions: Question[] = response.questions.map(
           (question) => {
-            const correctIndex = question.options.findIndex(
-              (option) => option === question.correct_answer,
-            );
+            // Handle correctAnswer - could be a string value or an index string
+            let correctIndex: number;
+            if (typeof question.correctAnswer === "number") {
+              correctIndex = question.correctAnswer;
+            } else if (!isNaN(Number(question.correctAnswer))) {
+              // It's an index as a string (e.g., "0", "2")
+              correctIndex = Number(question.correctAnswer);
+            } else {
+              // It's a string value - find the index
+              correctIndex = question.options.findIndex(
+                (option) => option === question.correctAnswer,
+              );
+            }
 
             return {
-              id: question.id,
+              id: question._id,
               question: question.question,
               options: question.options,
               correctAnswer: correctIndex >= 0 ? correctIndex : 0,
+              timer: question.timer,
+              score: question.score,
               category: categoryName,
-              categoryId: question.category_id,
+              categoryId: categoryId,
             };
           },
         );
 
-        setQuizId(response.quiz_id);
+        console.log("[Quiz] Setting quiz state with category_id:", categoryId);
         setQuizState({
+          category_id: categoryId,
           questions: normalizedQuestions,
           currentQuestionIndex: 0,
           selectedAnswers: new Array(normalizedQuestions.length).fill(null),
@@ -122,56 +115,100 @@ export default function QuizScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, categoryName]);
 
+  // Submit quiz when completed
   useEffect(() => {
     const submitResults = async () => {
-      if (!quizState?.isCompleted || !quizId || hasSubmittedRef.current) return;
+      console.log(
+        "[Quiz] Submission effect triggered - isCompleted:",
+        quizState?.isCompleted,
+        "category_id:",
+        quizState?.category_id,
+        "hasSubmitted:",
+        hasSubmittedRef.current,
+      );
 
+      if (
+        !quizState?.isCompleted ||
+        !quizState?.category_id ||
+        hasSubmittedRef.current
+      ) {
+        console.log(
+          "[Quiz] Skipping submission - early return",
+          "isCompleted:",
+          quizState?.isCompleted,
+          "category_id_empty:",
+          !quizState?.category_id,
+          "already_submitted:",
+          hasSubmittedRef.current,
+        );
+        return;
+      }
+
+      console.log("[Quiz] Preparing to submit answers...");
       const answers = quizState.questions.map((question, index) => {
         const selectedIndex = quizState.selectedAnswers[index];
-        const selectedAnswer =
+        const selectedOption =
           selectedIndex !== null ? question.options[selectedIndex] : "";
 
         return {
           question_id: question.id,
-          selected_answer: selectedAnswer,
+          selected_option: selectedOption,
         };
       });
 
+      console.log("[Quiz] Submitting with answers:", answers);
       try {
-        await submitQuizMutation.mutateAsync({
-          quiz_id: quizId,
-          answers,
+        const response = await submitQuizMutation.mutateAsync({
+          category_id: quizState.category_id,
+          answers: answers,
+        });
+
+        console.log("[Quiz] Submission successful:", response);
+        // Store the submission result from the API response
+        setSubmissionResult({
+          score: response.score,
+          percentage: response.percentage,
+          correct_answers: response.correct_answers,
+          wrong_answers: response.wrong_answers,
+          comment: response.comment,
         });
         hasSubmittedRef.current = true;
       } catch (error) {
-        console.error("Failed to submit quiz:", error);
+        console.error("[Quiz] Failed to submit quiz:", error);
       }
     };
 
     submitResults();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quizId, quizState]);
+  }, [quizState?.isCompleted, quizState?.category_id]);
 
   // Timer effect
   useEffect(() => {
     if (!quizState || quizState.isCompleted || showAnswer) {
-      setTimerActive(false);
       return;
     }
 
-    // Initialize timer for current question
-    const questionTime = getQuestionTime(currentQuestion);
-    setTimeLeft(questionTime);
-    setTimerActive(true);
+    const currentQuestion = quizState.questions[quizState.currentQuestionIndex];
+
+    // Initialize timer for current question using backend value
+    setTimeLeft(currentQuestion.timer);
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
-        if (!timerActive) return prev;
-
         if (prev <= 1) {
           // Time's up! Auto-submit as wrong
-          setTimerActive(false);
-          handleTimeUp();
+          if (quizState) {
+            const newSelectedAnswers = [...quizState.selectedAnswers];
+            newSelectedAnswers[quizState.currentQuestionIndex] = null;
+
+            setQuizState({
+              ...quizState,
+              selectedAnswers: newSelectedAnswers,
+            });
+
+            setShowAnswer(true);
+            setTimeoutNotice(true);
+          }
           clearInterval(interval);
           return 0;
         }
@@ -180,7 +217,7 @@ export default function QuizScreen() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [quizState?.currentQuestionIndex, showAnswer, timerActive]);
+  }, [quizState?.currentQuestionIndex, quizState?.isCompleted, showAnswer]);
 
   // ========= No quiz in progress ==========
   if (!quizState) {
@@ -227,7 +264,6 @@ export default function QuizScreen() {
 
     if (selectedAnswer === null) return;
 
-    setTimerActive(false);
     setShowAnswer(true);
 
     // Update score if correct
@@ -254,14 +290,56 @@ export default function QuizScreen() {
         ...quizState,
         isCompleted: true,
       });
-      setTimerActive(false);
     }
   };
 
-  const handleRestartQuiz = () => {
-    setQuizState(null);
-    setShowAnswer(false);
-    setTimeoutNotice(false);
+  const handleRestartQuiz = async () => {
+    if (!categoryId) return;
+
+    try {
+      const response = await startQuizMutation.mutateAsync(categoryId);
+
+      const normalizedQuestions = response.questions.map((question) => {
+        let correctIndex: number;
+
+        if (typeof question.correctAnswer === "number") {
+          correctIndex = question.correctAnswer;
+        } else if (!isNaN(Number(question.correctAnswer))) {
+          correctIndex = Number(question.correctAnswer);
+        } else {
+          correctIndex = question.options.findIndex(
+            (option) => option === question.correctAnswer,
+          );
+        }
+
+        return {
+          id: question._id,
+          question: question.question,
+          options: question.options,
+          correctAnswer: correctIndex >= 0 ? correctIndex : 0,
+          timer: question.timer,
+          score: question.score,
+          category: categoryName,
+          categoryId: categoryId,
+        };
+      });
+
+      setQuizState({
+        category_id: categoryId,
+        questions: normalizedQuestions,
+        currentQuestionIndex: 0,
+        selectedAnswers: new Array(normalizedQuestions.length).fill(null),
+        score: 0,
+        isCompleted: false,
+      });
+
+      setSubmissionResult(null);
+      setShowAnswer(false);
+      setTimeoutNotice(false);
+      hasSubmittedRef.current = false;
+    } catch (error) {
+      console.error("Failed to restart quiz:", error);
+    }
   };
 
   const selectedAnswer =
@@ -269,10 +347,17 @@ export default function QuizScreen() {
 
   // ========== Quiz completed - Show results ==========
   if (quizState.isCompleted) {
-    const percentage = Math.round(
-      (quizState.score / quizState.questions.length) * 100,
-    );
+    const percentage =
+      submissionResult?.percentage ??
+      Math.round((quizState.score / quizState.questions.length) * 100);
     const passed = percentage >= 60;
+    const correctAnswers = submissionResult?.correct_answers ?? quizState.score;
+    const wrongAnswers =
+      submissionResult?.wrong_answers ??
+      quizState.questions.length - quizState.score;
+    const scoreDisplay =
+      submissionResult?.score ??
+      `${quizState.score}/${quizState.questions.length}`;
 
     return (
       <ThemedView style={[{ backgroundColor: theme.background }, { flex: 1 }]}>
@@ -302,21 +387,26 @@ export default function QuizScreen() {
                   Your Score
                 </Text>
                 <Text style={[styles.scoreValue, { color: theme.tint }]}>
-                  {quizState.score}/{quizState.questions.length}
+                  {scoreDisplay}
                 </Text>
                 <Text style={[styles.scorePercentage, { color: theme.tint }]}>
                   {percentage}%
                 </Text>
+                {submissionResult?.comment && (
+                  <Text style={[styles.scoreComment, { color: theme.text }]}>
+                    {submissionResult.comment}
+                  </Text>
+                )}
               </View>
 
               <View style={styles.resultStats}>
                 <View style={styles.resultStatItem}>
-                  <Text style={styles.resultStatValue}>{quizState.score}</Text>
+                  <Text style={styles.resultStatValue}>{correctAnswers}</Text>
                   <Text style={styles.resultStatLabel}>Correct</Text>
                 </View>
                 <View style={styles.resultStatItem}>
                   <Text style={[styles.resultStatValue, styles.wrongColor]}>
-                    {quizState.questions.length - quizState.score}
+                    {wrongAnswers}
                   </Text>
                   <Text style={styles.resultStatLabel}>Wrong</Text>
                 </View>
@@ -766,6 +856,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#5B48E8",
     marginTop: 4,
+  },
+  scoreComment: {
+    fontSize: 14,
+    color: "#7F8C8D",
+    marginTop: 12,
+    fontStyle: "italic",
   },
   resultStats: {
     flexDirection: "row",
