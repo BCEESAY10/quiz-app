@@ -2,7 +2,13 @@ import { SubmitReviewData } from "@/types/review";
 import { apiClient } from "./api.config";
 
 export interface SubmitReviewResponse {
-  message: string;
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  rating: number;
+  feedback: string;
+  createdAt: string;
 }
 
 export const reviewApi = {

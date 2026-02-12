@@ -49,12 +49,10 @@ export default function ReviewModal({
       return;
     }
 
-
     setIsSubmitting(true);
 
     try {
       await reviewApi.submitReview({
-        userId: user?.email || "unknown",
         userName: user?.fullName || "Anonymous",
         userEmail: user?.email || "",
         rating,

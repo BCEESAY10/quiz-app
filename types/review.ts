@@ -1,5 +1,4 @@
 export interface SubmitReviewData {
-  userId: string;
   userName: string;
   userEmail: string;
   rating: number;
