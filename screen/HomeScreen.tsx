@@ -7,6 +7,7 @@ import { useUserStats } from "@/hooks/use-user";
 import { useAuth } from "@/provider/UserProvider";
 import { Category, LeaderboardEntry, QuizRecord, Stats } from "@/types/home";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -46,8 +47,11 @@ export default function HomeScreen() {
   const isWeb = Platform.OS === "web";
   const isWideScreen = isWeb && width >= 768;
 
+  const [currentLeaderboardLimit, setCurrentLeaderboardLimit] = useState(3);
+
   const { data: categoriesData = [] } = useCategories();
-  const { data: leaderboardData } = useLeaderboard(1, 5);
+  const { data: leaderboardData, isLoading: leaderboardIsLoading } =
+    useLeaderboard(currentLeaderboardLimit);
   const { data: activitiesData = [] } = useUserActivities(userId, !!userId);
   const { data: userStatsData } = useUserStats(userId, !!userId);
 
@@ -143,6 +147,14 @@ export default function HomeScreen() {
         categoryName: category.name,
       },
     });
+  };
+
+  const handleViewMore = () => {
+    setCurrentLeaderboardLimit((prev) => Math.min(prev + 10, 50));
+  };
+
+  const handleViewLess = () => {
+    setCurrentLeaderboardLimit((prev) => Math.max(prev - 10, 3));
   };
 
   return (
@@ -438,11 +450,39 @@ export default function HomeScreen() {
                   </ThemedText>
                 </ThemedView>
               ))}
-              <TouchableOpacity style={styles.viewAllButton}>
-                <ThemedText style={[styles.viewAllText, { color: theme.tint }]}>
-                  View Full Leaderboard →
-                </ThemedText>
-              </TouchableOpacity>
+
+              {/* View More / View Less Buttons */}
+              <ThemedView
+                style={{ flexDirection: "row", gap: 10, marginTop: 16 }}>
+                {currentLeaderboardLimit > 3 && (
+                  <TouchableOpacity
+                    style={[
+                      styles.viewAllButton,
+                      { flex: 1, opacity: leaderboardIsLoading ? 0.6 : 1 },
+                    ]}
+                    onPress={handleViewLess}
+                    disabled={leaderboardIsLoading}>
+                    <ThemedText
+                      style={[styles.viewAllText, { color: theme.tint }]}>
+                      View Less
+                    </ThemedText>
+                  </TouchableOpacity>
+                )}
+                {currentLeaderboardLimit < 50 && (
+                  <TouchableOpacity
+                    style={[
+                      styles.viewAllButton,
+                      { flex: 1, opacity: leaderboardIsLoading ? 0.6 : 1 },
+                    ]}
+                    onPress={handleViewMore}
+                    disabled={leaderboardIsLoading}>
+                    <ThemedText
+                      style={[styles.viewAllText, { color: theme.tint }]}>
+                      View More
+                    </ThemedText>
+                  </TouchableOpacity>
+                )}
+              </ThemedView>
             </ThemedView>
           </View>
 

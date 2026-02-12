@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import { scoreApi } from "@/services/scoreApi";
+import { useQuery } from "@tanstack/react-query";
 
 export const useScoreOverview = (userId: string, enabled: boolean = true) => {
   return useQuery({
@@ -23,10 +23,10 @@ export const useScoreHistory = (
   });
 };
 
-export const useLeaderboard = (page: number = 1, limit: number = 10) => {
+export const useLeaderboard = (limit: number = 3) => {
   return useQuery({
-    queryKey: ["leaderboard", page, limit],
-    queryFn: () => scoreApi.getLeaderboard(page, limit),
+    queryKey: ["leaderboard", limit],
+    queryFn: () => scoreApi.getLeaderboard(limit),
     staleTime: 60 * 1000, // 1 minute
     placeholderData: (previousData) => previousData,
   });

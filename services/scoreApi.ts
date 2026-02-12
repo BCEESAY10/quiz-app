@@ -87,12 +87,9 @@ export const scoreApi = {
     return response.data;
   },
 
-  getLeaderboard: async (
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<LeaderboardResponse> => {
+  getLeaderboard: async (limit: number = 10): Promise<LeaderboardResponse> => {
     const response = await apiClient.get<LeaderboardResponse>(
-      `/leaderboard?page=${page}&limit=${limit}`,
+      `/leaderboard?limit=${limit}`,
     );
     return response.data;
   },
