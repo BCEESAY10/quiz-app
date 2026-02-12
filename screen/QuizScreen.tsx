@@ -66,7 +66,7 @@ export default function QuizScreen() {
 
       try {
         const response = await startQuizMutation.mutateAsync(categoryId);
-        console.log("[Quiz] Start quiz response received");
+
         const normalizedQuestions: Question[] = response.questions.map(
           (question) => {
             // Handle correctAnswer - could be a string value or an index string
@@ -96,7 +96,6 @@ export default function QuizScreen() {
           },
         );
 
-        console.log("[Quiz] Setting quiz state with category_id:", categoryId);
         setQuizState({
           category_id: categoryId,
           questions: normalizedQuestions,
@@ -118,33 +117,14 @@ export default function QuizScreen() {
   // Submit quiz when completed
   useEffect(() => {
     const submitResults = async () => {
-      console.log(
-        "[Quiz] Submission effect triggered - isCompleted:",
-        quizState?.isCompleted,
-        "category_id:",
-        quizState?.category_id,
-        "hasSubmitted:",
-        hasSubmittedRef.current,
-      );
-
       if (
         !quizState?.isCompleted ||
         !quizState?.category_id ||
         hasSubmittedRef.current
       ) {
-        console.log(
-          "[Quiz] Skipping submission - early return",
-          "isCompleted:",
-          quizState?.isCompleted,
-          "category_id_empty:",
-          !quizState?.category_id,
-          "already_submitted:",
-          hasSubmittedRef.current,
-        );
         return;
       }
 
-      console.log("[Quiz] Preparing to submit answers...");
       const answers = quizState.questions.map((question, index) => {
         const selectedIndex = quizState.selectedAnswers[index];
         const selectedOption =
@@ -156,15 +136,12 @@ export default function QuizScreen() {
         };
       });
 
-      console.log("[Quiz] Submitting with answers:", answers);
       try {
         const response = await submitQuizMutation.mutateAsync({
           category_id: quizState.category_id,
           answers: answers,
         });
 
-        console.log("[Quiz] Submission successful:", response);
-        // Store the submission result from the API response
         setSubmissionResult({
           score: response.score,
           percentage: response.percentage,
