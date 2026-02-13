@@ -28,7 +28,7 @@ export function AuthGate() {
     const isAuthRoute =
       pathname.startsWith("/login") ||
       pathname.startsWith("/register") ||
-      pathname.startsWith("forgot-password") ||
+      pathname.startsWith("/forgot-password") ||
       pathname.startsWith("/reset-password");
 
     if (!user && !isAuthRoute) {

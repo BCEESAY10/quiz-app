@@ -23,16 +23,17 @@ export default function ForgotPasswordScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
 
-  const [email] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState("");
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const forgotPasswordMutation = useForgotPassword();
   const isLoading = forgotPasswordMutation.isPending;
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: any) => {
     try {
-      await forgotPasswordMutation.mutateAsync(email);
+      await forgotPasswordMutation.mutateAsync(data.email);
+      setSentEmail(data.email);
       setToast({
         message: "Reset link successfully sent to your email",
         type: "success",
@@ -55,7 +56,7 @@ export default function ForgotPasswordScreen() {
     setEmailSent(false);
 
     try {
-      await forgotPasswordMutation.mutateAsync(email);
+      await forgotPasswordMutation.mutateAsync(sentEmail);
       setEmailSent(true);
       setToast({ message: "Reset link resent successfully!", type: "success" });
     } catch (error: any) {
@@ -119,7 +120,7 @@ export default function ForgotPasswordScreen() {
               </ThemedText>
 
               <ThemedText style={[styles.email, { color: theme.tint }]}>
-                {email}
+                {sentEmail}
               </ThemedText>
 
               <ThemedText style={[styles.description, { color: theme.icon }]}>
