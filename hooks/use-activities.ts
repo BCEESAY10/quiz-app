@@ -6,6 +6,8 @@ export const useUserActivities = (userId: string, enabled: boolean = true) => {
     queryKey: ["user", "activities", userId],
     queryFn: () => userApi.getActivities(userId),
     enabled: enabled && !!userId,
-    staleTime: 60 * 1000,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchOnWindowFocus: true, // Refetch when app regains focus
+    refetchInterval: 60 * 1000, // Refetch every 60 seconds for continuous updates
   });
 };
