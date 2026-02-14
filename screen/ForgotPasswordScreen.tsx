@@ -116,7 +116,7 @@ export default function ForgotPasswordScreen() {
               )}
 
               <ThemedText style={[styles.description, { color: theme.icon }]}>
-                We&apos;ve sent a password reset link to
+                We&apos;ve sent a password reset PIN to{" "}
               </ThemedText>
 
               <ThemedText style={[styles.email, { color: theme.tint }]}>
@@ -124,21 +124,34 @@ export default function ForgotPasswordScreen() {
               </ThemedText>
 
               <ThemedText style={[styles.description, { color: theme.icon }]}>
-                Click the link in the email to reset your password. The link
-                will expire in 1 hour.
+                Check your email for the PIN code. It will expire in 1 hour.
               </ThemedText>
+
+              {/* Proceed to PIN Verification */}
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/reset-password" as any,
+                    params: { email: sentEmail, step: "pin" },
+                  })
+                }
+                style={[styles.proceedButton, { backgroundColor: theme.tint }]}>
+                <ThemedText style={[styles.proceedButtonText]}>
+                  Enter PIN Code
+                </ThemedText>
+              </TouchableOpacity>
 
               {/* Resend Link */}
               <View style={styles.resendContainer}>
                 <ThemedText style={[styles.resendText, { color: theme.icon }]}>
-                  Didn&apos;t receive the email?
+                  Didn&apos;t receive the code?
                 </ThemedText>
                 <TouchableOpacity
                   onPress={handleResendEmail}
                   disabled={isLoading}>
                   <ThemedText
                     style={[styles.resendLink, { color: theme.tint }]}>
-                    Resend Link
+                    Resend Code
                   </ThemedText>
                 </TouchableOpacity>
               </View>
@@ -350,6 +363,18 @@ const styles = StyleSheet.create({
   resendLink: {
     fontSize: 14,
     fontWeight: "600",
+  },
+  proceedButton: {
+    height: 56,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 24,
+  },
+  proceedButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "white",
   },
   backToLoginButton: {
     height: 56,

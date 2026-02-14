@@ -1,18 +1,18 @@
-import { FormComponent } from "@/components/form/Form";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Toast } from "@/components/ui/toast";
 import { useResetPassword } from "@/hooks/use-auth";
 import { useAppTheme } from "@/provider/ThemeProvider";
-import { newPasswordFields } from "@/utils/validation";
+import { ToastState } from "@/types/toast";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -20,49 +20,87 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
-  const { token, email } = useLocalSearchParams<{
-    token: string;
+  const { email, step } = useLocalSearchParams<{
     email: string;
+    step?: string;
   }>();
   const { theme } = useAppTheme();
 
+  const [currentStep, setCurrentStep] = useState<"pin" | "password">(
+    (step as "pin" | "password") || "pin",
+  );
+  const [pin, setPin] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const resetPasswordMutation = useResetPassword();
+  const isLoading = resetPasswordMutation.isPending;
 
-  const onSubmit = async () => {
+  const handlePinSubmit = async () => {
+    if (!pin || pin.length !== 6) {
+      setToast({
+        message: "Please enter a valid 6-digit PIN",
+        type: "error",
+      });
+      return;
+    }
+
+    // PIN is extracted, move to password step
+    setCurrentStep("password");
+  };
+
+  const handlePasswordSubmit = async () => {
     if (!newPassword || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
+      setToast({
+        message: "Please fill in all fields",
+        type: "error",
+      });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      setToast({
+        message: "Passwords do not match",
+        type: "error",
+      });
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setToast({
+        message: "Password must be at least 8 characters",
+        type: "error",
+      });
       return;
     }
 
     try {
       await resetPasswordMutation.mutateAsync({
-        token: token || "",
+        token: pin,
         password: newPassword,
         confirmPassword,
       });
 
-      Alert.alert("Success", "Your password has been reset successfully!", [
-        {
-          text: "OK",
-          onPress: () => router.replace("/login"),
-        },
-      ]);
+      setToast({
+        message: "Password reset successfully!",
+        type: "success",
+      });
+
+      setTimeout(() => {
+        router.replace("/login");
+      }, 1500);
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ||
-        error.message ||
+        error?.message ||
         "Failed to reset password";
-      Alert.alert("Error", errorMessage);
+      setToast({
+        message: errorMessage,
+        type: "error",
+      });
     }
   };
 
@@ -79,45 +117,190 @@ export default function ResetPasswordScreen() {
           style={styles.keyboardView}>
           <ThemedView
             style={[styles.content, { backgroundColor: theme.background }]}>
+            {/* Back Button */}
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color={theme.text} />
+            </TouchableOpacity>
+
             {/* Icon */}
             <View
               style={[
                 styles.iconContainer,
                 { backgroundColor: theme.tint + "15" },
               ]}>
-              <Ionicons name="key-outline" size={64} color={theme.tint} />
+              <Ionicons
+                name={
+                  currentStep === "pin" ? "key-outline" : "lock-closed-outline"
+                }
+                size={64}
+                color={theme.tint}
+              />
             </View>
 
-            {/* Title & Description */}
-            <ThemedText style={[styles.title, { color: theme.text }]}>
-              Reset Password
-            </ThemedText>
-
-            <ThemedText style={[styles.description, { color: theme.icon }]}>
-              Create a new password for your account
-            </ThemedText>
-
-            {email && (
-              <ThemedText style={[styles.email, { color: theme.icon }]}>
-                {email}
-              </ThemedText>
+            {/* Toast */}
+            {toast && (
+              <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(null)}
+              />
             )}
 
-            <FormComponent
-              fields={newPasswordFields}
-              onSubmit={onSubmit}
-              submitButtonText="Reset Password"
-              isLoading={resetPasswordMutation.isPending}
-            />
+            {/* PIN Step */}
+            {currentStep === "pin" ? (
+              <>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
+                  Enter PIN Code
+                </ThemedText>
+
+                <ThemedText style={[styles.description, { color: theme.icon }]}>
+                  Enter the 6-digit PIN code sent to your email
+                </ThemedText>
+
+                {email && (
+                  <ThemedText style={[styles.email, { color: theme.tint }]}>
+                    {email}
+                  </ThemedText>
+                )}
+
+                <TextInput
+                  style={[
+                    styles.pinInput,
+                    {
+                      borderColor: theme.tint,
+                      color: theme.text,
+                      backgroundColor: theme.tabIconDefault + "10",
+                    },
+                  ]}
+                  placeholder="000000"
+                  placeholderTextColor={theme.icon}
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  value={pin}
+                  onChangeText={setPin}
+                  editable={!isLoading}
+                />
+
+                <TouchableOpacity
+                  onPress={handlePinSubmit}
+                  disabled={isLoading || pin.length !== 6}
+                  style={[
+                    styles.submitButton,
+                    {
+                      backgroundColor:
+                        pin.length === 6 ? theme.tint : theme.tabIconDefault,
+                      opacity: isLoading ? 0.6 : 1,
+                    },
+                  ]}>
+                  <ThemedText style={[styles.submitButtonText]}>
+                    {isLoading ? "Verifying..." : "Continue"}
+                  </ThemedText>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <ThemedText style={[styles.title, { color: theme.text }]}>
+                  Create New Password
+                </ThemedText>
+
+                <ThemedText style={[styles.description, { color: theme.icon }]}>
+                  Enter your new password
+                </ThemedText>
+
+                {/* New Password */}
+                <View
+                  style={[
+                    styles.inputContainer,
+                    { borderColor: theme.tabIconDefault },
+                  ]}>
+                  <TextInput
+                    style={[styles.input, { color: theme.text }]}
+                    placeholder="New Password"
+                    placeholderTextColor={theme.icon}
+                    secureTextEntry={!showPassword}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    editable={!isLoading}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}>
+                    <Ionicons
+                      name={showPassword ? "eye-off" : "eye"}
+                      size={20}
+                      color={theme.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Confirm Password */}
+                <View
+                  style={[
+                    styles.inputContainer,
+                    { borderColor: theme.tabIconDefault },
+                  ]}>
+                  <TextInput
+                    style={[styles.input, { color: theme.text }]}
+                    placeholder="Confirm Password"
+                    placeholderTextColor={theme.icon}
+                    secureTextEntry={!showConfirmPassword}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    editable={!isLoading}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }>
+                    <Ionicons
+                      name={showConfirmPassword ? "eye-off" : "eye"}
+                      size={20}
+                      color={theme.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity
+                  onPress={handlePasswordSubmit}
+                  disabled={isLoading || !newPassword || !confirmPassword}
+                  style={[
+                    styles.submitButton,
+                    {
+                      backgroundColor:
+                        newPassword && confirmPassword
+                          ? theme.tint
+                          : theme.tabIconDefault,
+                      opacity: isLoading ? 0.6 : 1,
+                    },
+                  ]}>
+                  <ThemedText style={[styles.submitButtonText]}>
+                    {isLoading ? "Resetting..." : "Reset Password"}
+                  </ThemedText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setCurrentStep("pin")}
+                  style={styles.backStepButton}>
+                  <ThemedText
+                    style={[styles.backStepText, { color: theme.tint }]}>
+                    Back to PIN Entry
+                  </ThemedText>
+                </TouchableOpacity>
+              </>
+            )}
 
             {/* Back to Login */}
-            <TouchableOpacity
-              onPress={() => router.replace("/login")}
-              style={styles.loginLinkContainer}>
-              <ThemedText style={[styles.loginLink, { color: theme.tint }]}>
-                Back to Login
-              </ThemedText>
-            </TouchableOpacity>
+            {currentStep === "pin" && (
+              <TouchableOpacity
+                onPress={() => router.replace("/login")}
+                style={styles.backToLoginButton}>
+                <ThemedText
+                  style={[styles.backToLoginText, { color: theme.tint }]}>
+                  Back to Login
+                </ThemedText>
+              </TouchableOpacity>
+            )}
           </ThemedView>
         </KeyboardAvoidingView>
       </ScrollView>
@@ -173,9 +356,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 24,
   },
-  inputContainer: {
-    marginBottom: 20,
-  },
   label: {
     fontSize: 14,
     fontWeight: "600",
@@ -191,11 +371,6 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    height: "100%",
   },
   requirementsContainer: {
     marginBottom: 24,
@@ -217,6 +392,39 @@ const styles = StyleSheet.create({
   requirementText: {
     fontSize: 14,
   },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    padding: 8,
+    marginBottom: 16,
+  },
+  pinInput: {
+    fontSize: 32,
+    fontWeight: "bold",
+    textAlign: "center",
+    letterSpacing: 12,
+    height: 56,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 24,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 56,
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    height: "100%",
+  },
   submitButton: {
     height: 56,
     borderRadius: 12,
@@ -224,12 +432,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  disabledButton: {
-    opacity: 0.6,
-  },
   submitButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "600",
+  },
+  backStepButton: {
+    alignItems: "center",
+    paddingVertical: 12,
+    marginBottom: 16,
+  },
+  backStepText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  backToLoginButton: {
+    alignItems: "center",
+    paddingVertical: 12,
+  },
+  backToLoginText: {
+    fontSize: 14,
     fontWeight: "600",
   },
   loginLinkContainer: {
